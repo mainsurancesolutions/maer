@@ -1,0 +1,37 @@
+const {app, BrowserWindow} = require('electron');
+const {PythonShell} = require('python-shell');
+const ipc = require('electron').ipcMain;
+
+app.on('ready', createMainWindow);
+
+app.on('window-all-closed', () => {
+	// On macOS it is common for applications and their menu bar
+    // to stay active until the user quits explicitly with Cmd + Q
+	if(process.platform !== 'darwin'){
+		app.quit();
+	}
+});
+
+ipc.on('addWindow', (event, arg) =>{
+	console.log('ipc received');
+});
+
+function createMainWindow(){
+	const mainWindow = new BrowserWindow({
+		icon: 'C:/MA/ElectronTest/images/icon.ico',
+		webPreferences: {
+        nodeIntegration: true
+      }
+	});
+	mainWindow.loadFile('index.html');
+	mainWindow.openDevTools();
+	mainWindow.maximize();
+}
+
+/*
+//Python code, not gotten to backend linking yet
+PythonShell.run('test.py', null, function(err,results) {
+	if(err) throw err;
+	console.log('results:', results);
+});
+*/
