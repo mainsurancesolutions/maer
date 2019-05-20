@@ -6,11 +6,57 @@
 		<title>Shell Mk.1</title>
 	</head>
 	<body>
+		<!--The file upload field itself is hidden
+			We use an input with an image that links to the file upload
+			purely because it looks better-->
+		<div id="block1" class="block">
+			<input hidden
+			type="file" accept=".doc, .docx"
+			onchange="fileAdded()"></input>
+
+			<!--This button activates the input above,
+				asking for a file-->
+			<input class="file-button"
+			type="image" src="images/upload.png"></button>
+
+			<p>Upload a file</p>
+		</div>
+
+		<div id="block2" class="block">
+			<input hidden
+			type="file" accept=".doc, .docx"
+			onchange="fileAdded()"></input>
+
+			<input class="file-button"
+			type="image" src="images/upload.png"></button>
+
+			<p>Upload a file</p>
+		</div>
+
+		<div id="block3" class="block" style="display: none">
+			<input hidden
+			type="file" accept=".doc, .docx"
+			onchange="fileAdded()"></input>
+
+			<input class="file-button"
+			type="image" src="images/plus.png"></button>
+
+			<p></p>
+		</div>
+
+		<div id="block4" class="block" style="display: none">
+			<input hidden
+			type="file" accept=".doc, .docx"
+			onchange="fileAdded()"></input>
+
+			<input class="file-button"
+			type="image" src="images/plus.png"></button>
+
+			<p></p>
+		</div>
 	</body>
 	<footer>
-		<div id="add">
-			<button id="addWindow">Add a version</button>
-		</div> 
+		
 	</footer>
 	<script type="text/javascript" src="./scripts/mainWindow.js">
 	</script>

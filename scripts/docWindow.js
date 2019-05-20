@@ -16,4 +16,6 @@ function fileAdded(){
 	let filepath = document.getElementById('file-input').value
 	let filename = filepath.substring(filepath.lastIndexOf("\\") + 1, filepath.lastIndexOf("."))
 	document.getElementById('doc-text').innerHTML = filename + " uploaded successfully"
+
+	//Embed document in window
 }

@@ -13,6 +13,19 @@ app.on('window-all-closed', () => {
 	}
 });
 
+function createMainWindow(){
+	mainWindow = new BrowserWindow({
+		icon: 'C:/MA/ElectronTest/images/icon.ico',
+		webPreferences: {
+        	nodeIntegration: true
+        }
+	});
+	mainWindow.loadFile('index.html')
+	//mainWindow.openDevTools()
+	mainWindow.maximize()
+}
+
+/*
 ipc.on('addWindow', (event, arg) =>{
 	let versionWindow = new BrowserWindow({
 		parent: mainWindow,
@@ -25,18 +38,7 @@ ipc.on('addWindow', (event, arg) =>{
 	versionWindow.loadFile('docViewer.html')
 	//versionWindow.openDevTools()
 });
-
-function createMainWindow(){
-	mainWindow = new BrowserWindow({
-		icon: 'C:/MA/ElectronTest/images/icon.ico',
-		webPreferences: {
-        	nodeIntegration: true
-        }
-	});
-	mainWindow.loadFile('index.html')
-	//mainWindow.openDevTools()
-	//mainWindow.maximize()
-}
+*/
 
 /*
 //Python code, not gotten to backend linking yet
