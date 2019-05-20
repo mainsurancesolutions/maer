@@ -1,0 +1,9 @@
+footer{
+	width: 100%;
+	position: fixed;
+	bottom: 5%;
+}
+
+#add{
+	padding-left: 10%;
+}

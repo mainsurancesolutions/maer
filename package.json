@@ -1,8 +1,8 @@
 {
-  "name": "learning",
+  "name": "Shell-Mk1",
   "version": "1.0.0",
   "description": "learning electron",
-  "main": "main.js",
+  "main": "scripts/main.js",
   "scripts": {
     "start": "electron ."
   },

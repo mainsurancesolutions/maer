@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" type="text/css" href="./styles/docViewer.css">
+		<h3 id="doc-title"></h3>
+	</head>
+	<body>
+		<!--The file upload field itself is hidden
+			We use an input with an image that links to the file upload
+			purely because it looks better-->
+		<input hidden
+		type="file" id="file-input" accept=".doc, .docx"
+		onchange="fileAdded()"></input>
+
+		<input 
+		type="image" id="file-button" src="images/upload.png"></button>
+
+		<p id="doc-text">Upload a file</p>
+	</body>
+	<script type="text/javascript" src="./scripts/docWindow.js">
+	</script>
+</html>
