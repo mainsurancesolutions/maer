@@ -7,6 +7,19 @@ addWindowButton.addEventListener('click', () => {
 	ipc.send('addWindow')
 })*/
 
+document.getElementById('minimize-button').addEventListener('click', () =>{
+	ipc.send('minimize')
+})
+
+document.getElementById('maximize-button').addEventListener('click', () =>{
+	ipc.send('maximize')
+})
+
+document.getElementById('close-button').addEventListener('click', () =>{
+	ipc.send('close')
+})
+
+
 //The image button that activates the input field
 let inputFileButtons = document.getElementsByClassName('file-button')
 

@@ -16,6 +16,7 @@ app.on('window-all-closed', () => {
 function createMainWindow(){
 	mainWindow = new BrowserWindow({
 		icon: 'C:/MA/ElectronTest/images/icon.ico',
+		frame: false,
 		webPreferences: {
         	nodeIntegration: true
         }
@@ -24,6 +25,27 @@ function createMainWindow(){
 	//mainWindow.openDevTools()
 	mainWindow.maximize()
 }
+
+ipc.on('close', (event, arg) =>{
+	if(process.platform !== 'darwin'){
+		app.quit()
+	}
+	else{
+		win.hide()
+	}
+})
+
+ipc.on('maximize', (event, arg) =>{
+	if(mainWindow.isMaximized()){
+		mainWindow.unmaximize()
+	} else{
+		mainWindow.maximize()
+	}
+})
+
+ipc.on('minimize', (event, arg) =>{
+	mainWindow.minimize()
+})
 
 /*
 ipc.on('addWindow', (event, arg) =>{
