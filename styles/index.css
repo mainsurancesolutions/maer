@@ -8,8 +8,17 @@ body{
 	overflow: hidden;
 	top: 0;
 	width: 100%;
-	height: 5%;
+	height: 48px;
 	background-color: #d11f4a;
+}
+
+#doc-title{
+	position: fixed;
+	left: 50%;
+	top: -.5%;
+	font-family: Arial, sans-serif !important;
+	font-size: 18px;
+	transform: translate(-50%, 0);
 }
 
 .title-buttons{
@@ -18,13 +27,13 @@ body{
 	position: fixed;
 	right: 0px;
 	top: 0px;
-	height: 5%;
+	height: 48px;
 }
 
 .title-buttons input{
 	flex-grow: 1;
 	display: inline-block;
-	max-width: 48px;
+	max-width: 58px;
 }
 
 .docs{
@@ -42,4 +51,29 @@ body{
 .file-button{
 	max-width: 30%;
 	height: auto;
+}
+
+#compare-button{
+	position: fixed;
+	display: block;
+	max-width: 149px;
+	bottom: 20%;
+	left: 50%;
+	transform: translate(-50%, 0);
+}
+
+#restart-button{
+	position: fixed;
+	display: block;
+	max-width: 149px;
+	bottom: 5%;
+	left: 5%;
+}
+
+#logo{
+	position: fixed;
+	display: block;
+	max-width: 125px;
+	bottom: 5%;
+	right: 5%;
 }

@@ -1,5 +1,5 @@
 const ipc = require('electron').ipcRenderer
-let docSlots = [null, null, null, null]
+let docSlots = [null, null, null]
 
 /*let addWindowButton = document.getElementById('addWindow')
 
@@ -25,7 +25,7 @@ let inputFileButtons = document.getElementsByClassName('file-button')
 
 console.log("loaded")
 
-for(let i = 0; i < 4; i++){
+for(let i = 0; i < 3; i++){
 	inputFileButtons[i].addEventListener('click', () => {
 		console.log(event.target.parentElement.childNodes)
 		let buttonParent = event.target.parentElement
@@ -39,13 +39,8 @@ function fileAdded(){
 	let children = event.target.parentElement.childNodes
 
 	//Reveal the next slot if hidden
-	switch(buttonParent.id) {
-		case 'block2':
-			document.getElementById('block3').style.display= "inline-block"
-			break
-		case 'block3':
-			document.getElementById('block4').style.display= "inline-block"
-			break
+	if(buttonParent.id === "block2") {
+		document.getElementById('block3').style.display= "inline-block"
 	}
 
 	//Trim the path and file extension

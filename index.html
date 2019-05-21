@@ -6,8 +6,9 @@
 		<title>Shell Mk.1</title>
 	</head>
 	<body>
-		<!-- Custom title bar -->
+		<!-- Custom title bar with minimize, maximize, and close buttons -->
 		<div class="title-bar">
+			<h3 id="doc-title">M&A Easy Reader</h3>
 			<div class="title-buttons">
 				<input type="image"
 				src="images/minimize.png" id="minimize-button"
@@ -26,6 +27,9 @@
 				>
 			</div>
 		</div>
+
+		<!--This is where the user will upload their documents.
+			The third slot only reveals after the 2nd slot has been filled-->
 		<div class="docs">
 			<!--The file upload field itself is hidden
 				We use an input with an image that links to the file upload
@@ -33,12 +37,12 @@
 			<div id="block1" class="block">
 				<input hidden
 				type="file" accept=".doc, .docx"
-				onchange="fileAdded()"></input>
+				onchange="fileAdded()"/>
 
 				<!--This button activates the input above,
 					asking for a file-->
 				<input class="file-button"
-				type="image" src="images/upload.png"></button>
+				type="image" src="images/upload.png"/>
 
 				<p>Upload a file</p>
 			</div>
@@ -46,10 +50,10 @@
 			<div id="block2" class="block">
 				<input hidden
 				type="file" accept=".doc, .docx"
-				onchange="fileAdded()"></input>
+				onchange="fileAdded()"/>
 
 				<input class="file-button"
-				type="image" src="images/upload.png"></button>
+				type="image" src="images/upload.png"/>
 
 				<p>Upload a file</p>
 			</div>
@@ -57,28 +61,28 @@
 			<div id="block3" class="block" style="display: none">
 				<input hidden
 				type="file" accept=".doc, .docx"
-				onchange="fileAdded()"></input>
+				onchange="fileAdded()"/>
 
 				<input class="file-button"
-				type="image" src="images/plus.png"></button>
-
-				<p></p>
-			</div>
-
-			<div id="block4" class="block" style="display: none">
-				<input hidden
-				type="file" accept=".doc, .docx"
-				onchange="fileAdded()"></input>
-
-				<input class="file-button"
-				type="image" src="images/plus.png"></button>
+				type="image" src="images/plus.png"/>
 
 				<p></p>
 			</div>
 		</div>
+
+		<!--Button to initiate comparison-->
+		<input id="compare-button"
+		type="image" src="images/compare.png"
+		onMouseOver="this.src='images/compareHover.png'"
+		onMouseOut="this.src='images/compare.png'"/>
+
+		<input id="restart-button"
+		type="image" src="images/restart.png"
+		onMouseOver="this.src='images/restartHover.png'"
+		onMouseOut="this.src='images/restart.png'"/>
 	</body>
 	<footer>
-		
+		<img id="logo" src="images/logo.png"/>
 	</footer>
 	<script type="text/javascript" src="./scripts/mainWindow.js">
 	</script>

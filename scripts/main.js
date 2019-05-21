@@ -19,7 +19,9 @@ function createMainWindow(){
 		frame: false,
 		webPreferences: {
         	nodeIntegration: true
-        }
+        },
+        'minHeight': 480,
+        'minWidth': 640
 	});
 	mainWindow.loadFile('index.html')
 	//mainWindow.openDevTools()
