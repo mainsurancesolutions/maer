@@ -49,6 +49,10 @@ ipc.on('minimize', (event, arg) =>{
 	mainWindow.minimize()
 })
 
+ipc.on('restart', (event, arg) =>{
+	mainWindow.reload()
+})
+
 /*
 ipc.on('addWindow', (event, arg) =>{
 	let versionWindow = new BrowserWindow({
