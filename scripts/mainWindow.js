@@ -1,8 +1,11 @@
 const ipc = require('electron').ipcRenderer
+const compareScript = require('.\\scripts\\comparison.js')
 let mammoth = require('mammoth')
+
+//The documents themselves, populated with input
 let docs = [null, null, null]
 
-//The empty slots where the documents will be rendered
+//The empty <p> tags where the documents will be rendered
 let docSlots = [null, null, null]
 
 
@@ -22,6 +25,11 @@ document.getElementById('restart-button').addEventListener('click', () =>{
 	ipc.send('restart')
 })
 
+//Render documents
+document.getElementById('compare-button').addEventListener('click', () =>{
+	compareScript.render(docs, docSlots)
+})
+
 
 //The image button that activates the input field
 let inputFileButtons = document.getElementsByClassName('file-button')
@@ -30,7 +38,6 @@ console.log("loaded")
 
 for(let i = 0; i < 3; i++){
 	inputFileButtons[i].addEventListener('click', () => {
-		console.log(event.target.parentElement.childNodes)
 		let buttonParent = event.target.parentElement
 		buttonParent.childNodes[1].click()
 	})
