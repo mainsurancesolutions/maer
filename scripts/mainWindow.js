@@ -1,5 +1,6 @@
 const ipc = require('electron').ipcRenderer
 const compareScript = require('.\\scripts\\comparison.js')
+const saveScript = require('.\\scripts\\saveManager.js')
 let mammoth = require('mammoth')
 
 //The documents themselves, populated with input
@@ -11,7 +12,8 @@ let docSlots = document.getElementsByClassName('doc')
 //Title slots for each doc
 let docTitleSlots = document.getElementsByClassName('doc-title')
 
-
+//Buttons on each doc to hide the text from it
+let hideButtons = document.getElementsByClassName('hide-button')
 
 document.getElementById('minimize-button').addEventListener('click', () =>{
 	ipc.send('minimize')
@@ -29,26 +31,50 @@ document.getElementById('restart-button').addEventListener('click', () =>{
 	ipc.send('restart')
 })
 
+//The save project button
+document.getElementById('save-button').addEventListener('click', () => {
+	//Pass the save request to the main process to get the path
+	ipc.send('save')
+})
+
+//Once we get the path from the main process, we can pass it to the saveScript to save it
+ipc.on('savePath', (event, arg) =>{
+	if(arg !== undefined)
+		saveScript.save(arg, docs)
+})
+
 //Read and render provided documents
 document.getElementById('compare-button').addEventListener('click', () =>{
 	//Don't show console/hide third slot if the upload wasn't successful
 	let success = compareScript.render(docs, docSlots)
 	if(success){
 		//Hide the third slot if it wasn't used
-		if(docSlots[2] === null)
+		if(docs[2] === null)
 			document.getElementById('block3').style.display= "none"
-		//Hide compare button to free space
+		//Hide compare button to free space and show console
 		document.getElementById('compare-button').style.display= "none"
 		document.getElementById('console-block').style.display= "inline-block"
+		//Show 'hide' buttons
+		for(let i = 0; i < 3; i++)
+			hideButtons[i].style.display = "inline-block"
+		//Show 'save' button
+		document.getElementById('save-button').style.display= "inline-block"
 	}
-	
 })
 
+//Hide a doc
+for(let i = 0; i < 3; i++){
+	hideButtons[i].addEventListener('click', () => {
+		//If it's not hidden, hide it. Otherwise, display it
+		if(docSlots[i].style.display !== "none")
+			docSlots[i].style.display = "none"
+		else
+			docSlots[i].style.display = "inline-block"
+	})
+}
 
-//The image button that activates the input field
+//The image button that activates the input field to upload files
 let inputFileButtons = document.getElementsByClassName('file-button')
-
-console.log("loaded")
 
 for(let i = 0; i < 3; i++){
 	inputFileButtons[i].addEventListener('click', () => {

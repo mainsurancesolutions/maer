@@ -1,4 +1,4 @@
-const {app, BrowserWindow, BrowserView} = require('electron')
+const {app, BrowserWindow, BrowserView, dialog} = require('electron')
 const {PythonShell} = require('python-shell')
 const ipc = require('electron').ipcMain
 let mainWindow
@@ -53,20 +53,13 @@ ipc.on('restart', (event, arg) =>{
 	mainWindow.reload()
 })
 
-/*
-ipc.on('addWindow', (event, arg) =>{
-	let versionWindow = new BrowserWindow({
-		parent: mainWindow,
-		icon: 'C:/MA/ElectronTest/images/icon.ico',
-		skipTaskbar: true,
-		webPreferences: {
-	    	nodeIntegration: true
-	    }
+ipc.on('save', (event, arg) =>{
+	dialog.showSaveDialog(mainWindow, {
+		filters:{extensions: 'maer'}
+	}, (path) =>{
+		mainWindow.webContents.send('savePath', path + ".maer")
 	})
-	versionWindow.loadFile('docViewer.html')
-	//versionWindow.openDevTools()
-});
-*/
+})
 
 /*
 //Python code, not gotten to backend linking yet

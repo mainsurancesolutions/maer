@@ -12,6 +12,12 @@ body{
 	background-color: #d11f4a;
 }
 
+#save-button{
+	-webkit-app-region: no-drag;
+	left: 1%;
+	top: 1%;
+}
+
 #app-title{
 	position: fixed;
 	left: 50%;

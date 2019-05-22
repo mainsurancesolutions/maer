@@ -8,6 +8,9 @@
 	<body>
 		<!-- Custom title bar with minimize, maximize, and close buttons -->
 		<div class="title-bar">
+			<input type="button"
+			id="save-button" value="Save"
+			style="display:none">
 			<h3 id="app-title">M&A Easy Reader</h3>
 			<div class="title-buttons">
 				<input type="image"
@@ -50,6 +53,14 @@
 				type="image" src="images/upload.png"/>
 
 				<p class="doc-title">Upload a file</p>
+
+				<!-- Button to hide document. Starts hidden -->
+				<input class="hide-button"
+				type="image" src="images/hide.png"
+				style="display:none"
+				onMouseOver="this.src='images/hideHover.png'"
+				onMouseOut="this.src='images/hide.png'"/>
+
 				<p class="doc"></p>
 			</div>
 
@@ -62,6 +73,13 @@
 				type="image" src="images/upload.png"/>
 
 				<p class="doc-title">Upload a file</p>
+
+				<input class="hide-button"
+				type="image" src="images/hide.png"
+				style="display:none"
+				onMouseOver="this.src='images/hideHover.png'"
+				onMouseOut="this.src='images/hide.png'"/>
+
 				<p class="doc"></p>
 			</div>
 
@@ -74,6 +92,13 @@
 				type="image" src="images/plus.png"/>
 
 				<p class="doc-title"></p>
+
+				<input class="hide-button"
+				type="image" src="images/hide.png"
+				style="display:none"
+				onMouseOver="this.src='images/hideHover.png'"
+				onMouseOut="this.src='images/hide.png'"/>
+
 				<p class="doc"></p>
 			</div>
 		</div>
