@@ -10,14 +10,14 @@ module.exports ={
 		nickname for file 2
 
 		If file 3 exists, same as above. Otherwise "null"*/
-		let data = "blah"
+		let data = ""
 		for(let i = 0; i < 3; i++){
 			if(docPaths[i] !== null){
-				data.concat(docPaths[i].path + "\n")
-				data.concat("Nickname here" + "\n\n")
+				data += (docPaths[i].path + "\r\n")
+				data += ("Nickname here" + "\r\n\r\n")
 			}
 			else{
-				data.concat("null")
+				data += "null"
 			}
 		}
 
