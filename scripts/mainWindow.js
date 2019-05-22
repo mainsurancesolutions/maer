@@ -6,7 +6,11 @@ let mammoth = require('mammoth')
 let docs = [null, null, null]
 
 //The empty <p> tags where the documents will be rendered
-let docSlots = [null, null, null]
+let docSlots = document.getElementsByClassName('doc')
+
+//Title slots for each doc
+let docTitleSlots = document.getElementsByClassName('doc-title')
+
 
 
 document.getElementById('minimize-button').addEventListener('click', () =>{
@@ -27,7 +31,17 @@ document.getElementById('restart-button').addEventListener('click', () =>{
 
 //Read and render provided documents
 document.getElementById('compare-button').addEventListener('click', () =>{
-	compareScript.render(docs, docSlots)
+	//Don't show console/hide third slot if the upload wasn't successful
+	let success = compareScript.render(docs, docSlots)
+	if(success){
+		//Hide the third slot if it wasn't used
+		if(docSlots[2] === null)
+			document.getElementById('block3').style.display= "none"
+		//Hide compare button to free space
+		document.getElementById('compare-button').style.display= "none"
+		document.getElementById('console-block').style.display= "inline-block"
+	}
+	
 })
 
 
@@ -48,9 +62,11 @@ function fileAdded(){
 	let buttonParent = event.target.parentElement
 	let children = event.target.parentElement.childNodes
 
-	//This switch will put the file into the array of docs
+	
+	//First get the file from the input that triggered the event
 	let inputFile = event.target.files[0]
-	//Find out which slot it was uploaded to
+
+	//This switch will put the file into the array of docs after finding the slot
 	let whichDoc
 	switch(buttonParent.id){
 		case 'block1':
@@ -68,31 +84,16 @@ function fileAdded(){
 			whichDoc = 2
 	}
 
-	docs[whichDoc] = inputFile
-
-
-	//Trim the path and file extension
+	//Trim the path and file extension to get the filename
 	let filepath = children[1].value
 	let filename = filepath.substring(filepath.lastIndexOf("\\") + 1, filepath.lastIndexOf("."))
 
-	/*There will be two<p> tags in the block
-	The first will be the "Upload file" => "Uploaded"
-	The second will display the document text itself
-	*/
-	let whichP = 0;
-	//Find the <p> in the children
+	//Store the doc and change the title
+	docs[whichDoc] = inputFile
+	docTitleSlots[whichDoc].innerHTML = filename + " uploaded successfully"
+
+	//Find and remove the 'Upload file' button once a file has been uploaded
 	for(let i = 0; i < children.length; i++){
-		if(children[i].tagName === "P"){
-			if(whichP === 0){
-				children[i].innerHTML = filename + " uploaded successfully"
-				whichP++
-			} else{
-				//Store the <p> where we will render the doc for later use
-				docSlots[whichDoc] = children[i]
-				break
-			}
-			
-		}
 		if(children[i].className === "file-button"){
 			event.target.parentElement.removeChild(children[i])
 		}

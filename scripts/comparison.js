@@ -22,10 +22,11 @@ module.exports ={
 		}
 		else{
 			alert("You must upload at least 2 files to be compared")
-			return
+			return false
 		}
 
 		for(let i=0; i<numOfFiles; i++){
+			field[i].innerHTML = "Processing..."
 			await mammoth.convertToHtml(files[i])
 			.then(function(result){
 				rippedHtml[i] = result.value //Html generated from docx
@@ -34,6 +35,7 @@ module.exports ={
 			})
 			.done()
 		}
+		return true
 	}
 }
 
