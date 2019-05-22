@@ -25,7 +25,7 @@ document.getElementById('restart-button').addEventListener('click', () =>{
 	ipc.send('restart')
 })
 
-//Render documents
+//Read and render provided documents
 document.getElementById('compare-button').addEventListener('click', () =>{
 	compareScript.render(docs, docSlots)
 })
@@ -55,11 +55,14 @@ function fileAdded(){
 	switch(buttonParent.id){
 		case 'block1':
 			whichDoc = 0
+			//Reveal the next slot if hidden and the other slot has also been filled
+			if(docs[1] !== null)
+				document.getElementById('block3').style.display= "inline-block"
 			break
 		case 'block2':
 			whichDoc = 1
-			//Reveal the next slot if hidden
-			document.getElementById('block3').style.display= "inline-block"
+			if(docs[0] !== null)
+				document.getElementById('block3').style.display= "inline-block"
 			break
 		case 'block3':
 			whichDoc = 2
