@@ -12,6 +12,8 @@ let docSlots = document.getElementsByClassName('doc')
 //Title slots for each doc
 let docTitleSlots = document.getElementsByClassName('doc-title')
 
+let docNicknames = [null, null, null]
+
 //Buttons on each doc to hide the text from it
 let hideButtons = document.getElementsByClassName('hide-button')
 
@@ -40,7 +42,33 @@ document.getElementById('save-button').addEventListener('click', () => {
 //Once we get the path from the main process, we can pass it to the saveScript to save it
 ipc.on('savePath', (event, arg) =>{
 	if(arg !== undefined)
-		saveScript.save(arg, docs)
+		saveScript.save(arg, docs, docNicknames)
+})
+
+document.getElementById('load-button').addEventListener('click', () => {
+	ipc.send('load')
+})
+
+//Pass the selected project to be loaded by the saveScript
+ipc.on('loadFile', async (event, arg) =>{
+	if(arg === undefined)
+		return
+	let project = await saveScript.load(arg)
+	console.log(project)
+	docs = project[0]
+	docNicknames = project[1]
+	//Basically do the processes as if we just uploaded the files
+	let fileButtons = document.getElementsByClassName('file-button')
+	
+	for(let i = 0; i < project[0].length; i++){
+		//First hide the file upload buttons
+		fileButtons[i].style.display= "none"
+		//Then show doc titles
+		docTitleSlots[i].innerHTML = docNicknames[i]
+	}
+
+	//Now compare
+	document.getElementById('compare-button').click()
 })
 
 //Read and render provided documents
@@ -88,7 +116,6 @@ function fileAdded(){
 	let buttonParent = event.target.parentElement
 	let children = event.target.parentElement.childNodes
 
-	
 	//First get the file from the input that triggered the event
 	let inputFile = event.target.files[0]
 
@@ -113,6 +140,7 @@ function fileAdded(){
 	//Trim the path and file extension to get the filename
 	let filepath = children[1].value
 	let filename = filepath.substring(filepath.lastIndexOf("\\") + 1, filepath.lastIndexOf("."))
+	docNicknames[whichDoc] = filename
 
 	//Store the doc and change the title
 	docs[whichDoc] = inputFile

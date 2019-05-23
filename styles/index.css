@@ -18,6 +18,10 @@ body{
 	top: 1%;
 }
 
+#load-button{
+	-webkit-app-region: no-drag;
+}
+
 #app-title{
 	position: fixed;
 	left: 50%;

@@ -61,6 +61,15 @@ ipc.on('save', (event, arg) =>{
 	})
 })
 
+ipc.on('load', (event, arg) =>{
+	dialog.showOpenDialog(mainWindow, {
+		filters:{extension: 'maer'},
+		properties: ['openfile']
+	}, (file) =>{
+		mainWindow.webContents.send('loadFile', file[0])
+	})
+})
+
 /*
 //Python code, not gotten to backend linking yet
 PythonShell.run('test.py', null, function(err,results) {

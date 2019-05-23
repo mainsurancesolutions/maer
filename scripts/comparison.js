@@ -17,7 +17,7 @@ module.exports ={
 		let numOfFiles
 		if(files[0] !== null && files[1] !== null){
 			numOfFiles = 2
-			if(files[2] !== null)
+			if(files[2] !== null && files[2] !== undefined)
 				numOfFiles++
 		}
 		else{
@@ -25,9 +25,10 @@ module.exports ={
 			return false
 		}
 
+		await new Promise((resolve) => {setTimeout(resolve, 5) });
 		for(let i=0; i<numOfFiles; i++){
 			field[i].innerHTML = "Processing..."
-			await mammoth.convertToHtml(files[i])
+			await mammoth.convertToHtml({path: files[i].path})
 			.then(function(result){
 				rippedHtml[i] = result.value //Html generated from docx
 				messages[i] = result.messages //Warnings or errors generated
