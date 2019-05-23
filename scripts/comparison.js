@@ -25,7 +25,6 @@ module.exports ={
 			return false
 		}
 
-		await new Promise((resolve) => {setTimeout(resolve, 5) });
 		for(let i=0; i<numOfFiles; i++){
 			field[i].innerHTML = "Processing..."
 			await mammoth.convertToHtml({path: files[i].path})

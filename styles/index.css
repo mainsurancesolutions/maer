@@ -58,6 +58,7 @@ body{
 /*div containing a document and related items (title and hide button for example)*/
 .doc-block{
 	max-width: 50%;
+	min-width: 5%;
 	padding: 5%
 	padding-top: 4%;
 	margin-left: 1%;
@@ -88,14 +89,20 @@ body{
 	border: 4px solid #d11f4a;
 }
 
-/*Doc text, specifically*/
-#doc{
-
-}
-
 .file-button{
 	max-width: 30%;
 	height: auto;
+}
+
+.doc-title{
+	border: none;
+	background: transparent;
+	border-bottom: 2px solid #d11f4a;
+	outline: none;
+	display: none;
+	margin-top: 10px;
+	text-align: center;
+	font-size: 18px;
 }
 
 #compare-button{

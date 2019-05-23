@@ -66,7 +66,8 @@ ipc.on('load', (event, arg) =>{
 		filters:{extension: 'maer'},
 		properties: ['openfile']
 	}, (file) =>{
-		mainWindow.webContents.send('loadFile', file[0])
+		if(file !== undefined)
+			mainWindow.webContents.send('loadFile', file[0])
 	})
 })
 

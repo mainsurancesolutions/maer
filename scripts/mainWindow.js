@@ -12,6 +12,9 @@ let docSlots = document.getElementsByClassName('doc')
 //Title slots for each doc
 let docTitleSlots = document.getElementsByClassName('doc-title')
 
+//"Upload a file" text
+let uploadTextSlots = document.getElementsByClassName('upload-text')
+
 let docNicknames = [null, null, null]
 
 //Buttons on each doc to hide the text from it
@@ -54,7 +57,8 @@ ipc.on('loadFile', async (event, arg) =>{
 	if(arg === undefined)
 		return
 	let project = await saveScript.load(arg)
-	console.log(project)
+	//Wait for the files to be fetched first before reading them
+	await new Promise((resolve) => {setTimeout(resolve, 50) });
 	docs = project[0]
 	docNicknames = project[1]
 	//Basically do the processes as if we just uploaded the files
@@ -79,6 +83,8 @@ document.getElementById('compare-button').addEventListener('click', () =>{
 		//Hide the third slot if it wasn't used
 		if(docs[2] === null)
 			document.getElementById('block3').style.display= "none"
+		else
+			document.getElementById('block3').style.display= "inline-block"
 		//Hide compare button to free space and show console
 		document.getElementById('compare-button').style.display= "none"
 		document.getElementById('console-block').style.display= "inline-block"
@@ -87,6 +93,12 @@ document.getElementById('compare-button').addEventListener('click', () =>{
 			hideButtons[i].style.display = "inline-block"
 		//Show 'save' button
 		document.getElementById('save-button').style.display= "inline-block"
+		//Change doc titles
+		for(let i = 0; i < 3; i++){
+			docTitleSlots[i].style.display = "inline-block"
+			docTitleSlots[i].value = docNicknames[i]
+			uploadTextSlots[i].innerHTML = ""
+		}
 	}
 })
 
@@ -109,6 +121,22 @@ for(let i = 0; i < 3; i++){
 		let buttonParent = event.target.parentElement
 		buttonParent.childNodes[1].click()
 	})
+}
+
+//Triggered when a doc name is changed
+function nameChange(){
+	//Find out which block the nickname belongs to
+	let blockId = event.target.parentElement.id
+	switch(blockId){
+		case 'block1':
+			docNicknames[0] = event.target.value
+			break
+		case 'block2':
+			docNicknames[1] = event.target.value
+			break
+		case 'block3':
+			docNicknames[2] = event.target.value
+	}
 }
 
 //Triggered upon a file being uploaded
@@ -144,7 +172,7 @@ function fileAdded(){
 
 	//Store the doc and change the title
 	docs[whichDoc] = inputFile
-	docTitleSlots[whichDoc].innerHTML = filename + " uploaded successfully"
+	uploadTextSlots[whichDoc].innerHTML = filename + " uploaded successfully"
 
 	//Find and remove the 'Upload file' button once a file has been uploaded
 	for(let i = 0; i < children.length; i++){
