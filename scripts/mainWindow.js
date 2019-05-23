@@ -42,6 +42,15 @@ document.getElementById('save-button').addEventListener('click', () => {
 	ipc.send('save')
 })
 
+//Edit button, opens last doc in default application for the user
+document.getElementById('edit-button').addEventListener('click', () =>{
+	//find the rightmost doc to edit
+	if(docs[2] !== null)
+		ipc.send('edit', docs[2].path)
+	else
+		ipc.send('edit', docs[1].path)
+})
+
 //Once we get the path from the main process, we can pass it to the saveScript to save it
 ipc.on('savePath', (event, arg) =>{
 	if(arg !== undefined)

@@ -1,5 +1,6 @@
-const {app, BrowserWindow, BrowserView, dialog} = require('electron')
+const {app, BrowserWindow, BrowserView, dialog, shell} = require('electron')
 const {PythonShell} = require('python-shell')
+const path = require('path')
 const ipc = require('electron').ipcMain
 let mainWindow
 
@@ -69,6 +70,10 @@ ipc.on('load', (event, arg) =>{
 		if(file !== undefined)
 			mainWindow.webContents.send('loadFile', file[0])
 	})
+})
+
+ipc.on('edit', (event, arg) =>{
+	shell.openItem(arg)
 })
 
 /*
