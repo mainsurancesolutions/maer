@@ -115,10 +115,15 @@ document.getElementById('compare-button').addEventListener('click', () =>{
 for(let i = 0; i < 3; i++){
 	hideButtons[i].addEventListener('click', () => {
 		//If it's not hidden, hide it. Otherwise, display it
-		if(docSlots[i].style.display !== "none")
+		if(docSlots[i].style.display !== "none"){
 			docSlots[i].style.display = "none"
-		else
+			//Move title to the left so it can be seen while hidden
+			document.getElementsByClassName('doc-title')[i].style.textAlign = "left"
+		}
+		else{
 			docSlots[i].style.display = "inline-block"
+			document.getElementsByClassName('doc-title')[i].style.textAlign = "center"
+		}
 	})
 }
 
