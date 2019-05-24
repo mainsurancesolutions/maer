@@ -58,7 +58,12 @@ ipc.on('save', (event, arg) =>{
 	dialog.showSaveDialog(mainWindow, {
 		filters:{extensions: 'maer'}
 	}, (path) =>{
-		mainWindow.webContents.send('savePath', path + ".maer")
+		if(path !== undefined){
+			//No need to add the .maer extension if it already has it
+			if(path.substring(path.lastIndexOf(".")) !== ".maer")
+				path += ".maer"
+			mainWindow.webContents.send('savePath', path)
+		}
 	})
 })
 

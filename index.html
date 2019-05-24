@@ -8,13 +8,21 @@
 	<body>
 		<!-- Custom title bar with minimize, maximize, and close buttons -->
 		<div class="title-bar">
-			<input type="button"
-			id="save-button" value="Save"
-			style="display:none">
-			<input type="button"
-			id="load-button" value="Load">
+			<div id="save-load-buttons">
+				<input type="image"
+				src="images/save.png" id="save-button"
+				onMouseOver="this.src='images/saveHover.png'"
+				onMouseOut="this.src='images/save.png'" 
+				style="display:none"
+				>
+				<input type="image"
+				src="images/load.png" id="load-button"
+				onMouseOver="this.src='images/loadHover.png'"
+				onMouseOut="this.src='images/load.png'"
+				>
+			</div>
 			<h3 id="app-title">M&A Easy Reader</h3>
-			<div class="title-buttons">
+			<div id="title-buttons">
 				<input type="image"
 				src="images/minimize.png" id="minimize-button"
 				onMouseOver="this.src='images/minimizeHover.png'"
@@ -127,7 +135,8 @@
 
 		<input id="edit-button"
 		type="image" src="images/edit.png"
-		accept=".doc, .docx"/>
+		onMouseOver="this.src='images/editHover.png'"
+		onMouseOut="this.src='images/edit.png'"/>
 	</body>
 	<footer>
 		<img id="logo" src="images/logo.png"/>

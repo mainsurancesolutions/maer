@@ -53,8 +53,7 @@ document.getElementById('edit-button').addEventListener('click', () =>{
 
 //Once we get the path from the main process, we can pass it to the saveScript to save it
 ipc.on('savePath', (event, arg) =>{
-	if(arg !== undefined)
-		saveScript.save(arg, docs, docNicknames)
+	saveScript.save(arg, docs, docNicknames)
 })
 
 document.getElementById('load-button').addEventListener('click', () => {
@@ -97,6 +96,7 @@ document.getElementById('compare-button').addEventListener('click', () =>{
 		//Hide compare button to free space and show console
 		document.getElementById('compare-button').style.display= "none"
 		document.getElementById('console-block').style.display= "inline-block"
+		document.getElementById('edit-button').style.display= "inline-block"
 		//Show 'hide' buttons
 		for(let i = 0; i < 3; i++)
 			hideButtons[i].style.display = "inline-block"

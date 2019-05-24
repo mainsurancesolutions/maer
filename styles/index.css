@@ -12,14 +12,16 @@ body{
 	background-color: #d11f4a;
 }
 
-#save-button{
+#save-load-buttons{
 	-webkit-app-region: no-drag;
+	display: flex;
+	position: fixed;
 	left: 1%;
 	top: 1%;
 }
 
-#load-button{
-	-webkit-app-region: no-drag;
+#save-load-buttons input{
+	max-width: 80px;
 }
 
 #app-title{
@@ -31,7 +33,7 @@ body{
 	transform: translate(-50%, 0);
 }
 
-.title-buttons{
+#title-buttons{
 	-webkit-app-region: no-drag;
 	display: flex;
 	position: fixed;
@@ -40,7 +42,7 @@ body{
 	height: 48px;
 }
 
-.title-buttons input{
+#title-buttons input{
 	flex-grow: 1;
 	display: inline-block;
 	max-width: 58px;
@@ -120,6 +122,16 @@ body{
 	max-width: 149px;
 	bottom: 2%;
 	left: 1%;
+}
+
+#edit-button{
+	position: fixed;
+	display: block;
+	max-width: 141px;
+	bottom: 5%;
+	left: 50%;
+	transform: translate(-50%, 0);
+	display: none;
 }
 
 #logo{
