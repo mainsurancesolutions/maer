@@ -46,7 +46,12 @@
 		<div class="docs">
 			<!--The console that appears when you begin comparing-->
 			<div id="console-block" style="display:none">
-				<p>Console stuff will go here</p>
+				<div id="console-contents">
+					<input id="hide-console"
+					type="image" src="images/hide.png"
+					onMouseOver="this.src='images/hideHover.png'"
+					onMouseOut="this.src='images/hide.png'"/>
+				</div>
 			</div>
 
 			<!--The file upload field itself is hidden
@@ -84,28 +89,6 @@
 
 				<input class="file-button"
 				type="image" src="images/upload.png"/>
-
-				<input class="doc-title" 
-				onClick="this.select()" value=""
-				onchange="nameChange()">
-				<p class="upload-text">Upload a file</p>
-
-				<input class="hide-button"
-				type="image" src="images/hide.png"
-				style="display:none"
-				onMouseOver="this.src='images/hideHover.png'"
-				onMouseOut="this.src='images/hide.png'"/>
-
-				<p class="doc"></p>
-			</div>
-
-			<div id="block3" class="doc-block" style="display: none">
-				<input hidden
-				type="file" accept=".doc, .docx"
-				onchange="fileAdded()"/>
-
-				<input class="file-button"
-				type="image" src="images/plus.png"/>
 
 				<input class="doc-title" 
 				onClick="this.select()" value=""

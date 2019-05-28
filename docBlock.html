@@ -1,0 +1,21 @@
+<div class="doc-block">
+	<input hidden
+	type="file" accept=".doc, .docx"
+	onchange="fileAdded()"/>
+
+	<input class="file-button"
+	type="image" src="images/plus.png"/>
+
+	<input class="doc-title" 
+	onClick="this.select()" value=""
+	onchange="nameChange()">
+	<p class="upload-text">Upload a file</p>
+
+	<input class="hide-button"
+	type="image" src="images/hide.png"
+	style="display:none"
+	onMouseOver="this.src='images/hideHover.png'"
+	onMouseOut="this.src='images/hide.png'"/>
+
+	<p class="doc"></p>
+</div>

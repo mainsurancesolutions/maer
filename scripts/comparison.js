@@ -1,8 +1,7 @@
 let mammoth = require('mammoth')
 
 //HTML ripped from files as well as error/warning messages
-let rippedHtml = [null, null, null]
-let messages = [null, null, null]
+let rippedHtml
 
 module.exports ={
 
@@ -15,10 +14,10 @@ module.exports ={
 
 		//At LEAST the first 2 docs have to be filled
 		let numOfFiles
-		if(files[0] !== null && files[1] !== null){
-			numOfFiles = 2
-			if(files[2] !== null && files[2] !== undefined)
-				numOfFiles++
+		if(files.length > 2){
+			numOfFiles = files.length-1
+			rippedHtml = new Array(files.length-1)
+			rippedHtml.fill(null)
 		}
 		else{
 			alert("You must upload at least 2 files to be compared")
@@ -30,7 +29,6 @@ module.exports ={
 			await mammoth.convertToHtml({path: files[i].path})
 			.then(function(result){
 				rippedHtml[i] = result.value //Html generated from docx
-				messages[i] = result.messages //Warnings or errors generated
 				field[i].innerHTML = rippedHtml[i]
 			})
 			.done()
