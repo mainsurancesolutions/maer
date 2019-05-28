@@ -9,7 +9,7 @@ module.exports ={
 		nickname for file 2
 		If file 3 exists, same as above. Otherwise "null"*/
 		let data = ""
-		for(let i = 0; i < 3; i++){
+		for(let i = 0; i < docPaths.length; i++){
 			if(docPaths[i] !== null){
 				data += (docPaths[i].path + "\r\n")
 				data += (docNicknames[i] + "\r\n")

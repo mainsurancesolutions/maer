@@ -8,7 +8,7 @@
 	<body>
 		<!-- Custom title bar with minimize, maximize, and close buttons -->
 		<div class="title-bar">
-			<div id="save-load-buttons">
+			<div id="left-title-buttons">
 				<input type="image"
 				src="images/save.png" id="save-button"
 				onMouseOver="this.src='images/saveHover.png'"
@@ -20,9 +20,15 @@
 				onMouseOver="this.src='images/loadHover.png'"
 				onMouseOut="this.src='images/load.png'"
 				>
+				<input id="restart-button"
+				type="image" src="images/restart.png"
+				onMouseOver="this.src='images/restartHover.png'"
+				onMouseOut="this.src='images/restart.png'"
+				>
 			</div>
+
 			<h3 id="app-title">M&A Easy Reader</h3>
-			<div id="title-buttons">
+			<div id="right-title-buttons">
 				<input type="image"
 				src="images/minimize.png" id="minimize-button"
 				onMouseOver="this.src='images/minimizeHover.png'"
@@ -111,10 +117,11 @@
 		onMouseOver="this.src='images/compareHover.png'"
 		onMouseOut="this.src='images/compare.png'"/>
 
-		<input id="restart-button"
-		type="image" src="images/restart.png"
-		onMouseOver="this.src='images/restartHover.png'"
-		onMouseOut="this.src='images/restart.png'"/>
+		<!--Button to add a new doc after comparing-->
+		<input id="add-button"
+		type="image" src="images/add.png"
+		onMouseOver="this.src='images/addHover.png'"
+		onMouseOut="this.src='images/add.png'"/>
 
 		<input id="edit-button"
 		type="image" src="images/edit.png"

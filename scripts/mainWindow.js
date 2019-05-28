@@ -45,6 +45,16 @@ document.getElementById('restart-button').addEventListener('click', () =>{
 	ipc.send('restart')
 })
 
+//To add a new file after loading, simply un-hide the last one
+//If there is no last one, add a new one
+document.getElementById('add-button').addEventListener('click', () =>{
+	try{
+		docBlocks[docBlocks.length-1].style.display= "inline-block"
+	} catch{
+		docsFull()
+	}
+})
+
 //The save project button
 document.getElementById('save-button').addEventListener('click', () => {
 	//Pass the save request to the main process to get the path
@@ -74,19 +84,24 @@ ipc.on('loadFile', async (event, arg) =>{
 	if(arg === undefined)
 		return
 	let project = await saveScript.load(arg)
+	
 	//Wait for the files to be fetched first before reading them
-	await new Promise((resolve) => {setTimeout(resolve, 50) });
+	await new Promise((resolve) => {setTimeout(resolve, 5)});
+
+	//Force the creation of new doc slots if needed
+	for(let i = 2; i < project[0].length; i++){
+		docsFull(true)
+	}
 	docs = project[0]
-	docNicknames = project[1]
-	console.log(docs)
+	docNicknames = project[1];
+
 	//Basically do the processes as if we just uploaded the files
 	let fileButtons = document.getElementsByClassName('file-button')
-	
-	for(let i = 0; i < project[0].length; i++){
+	for(let j = 0; j < project[0].length; j++){
 		//First hide the file upload buttons
-		fileButtons[i].style.display= "none"
+		fileButtons[j].style.display= "none"
 		//Then show doc titles
-		docTitleSlots[i].innerHTML = docNicknames[i]
+		docTitleSlots[j].innerHTML = docNicknames[j]
 	}
 
 	//Now compare
@@ -95,16 +110,13 @@ ipc.on('loadFile', async (event, arg) =>{
 
 //Read and render provided documents
 document.getElementById('compare-button').addEventListener('click', () =>{
-	//Don't show console/hide third slot if the upload wasn't successful
+	//Don't show console if the upload wasn't successful
 	let success = compareScript.render(docs, docSlots)
 	if(success){
-		//Hide the last slot if it wasn't used
-		if(docs[docs.length-1] === null)
+		//Hide the last unused slot
+		if(docs[docBlocks.length-1] === null)
 			docBlocks[docBlocks.length-1].style.display= "none"
-		else
-			docBlocks[docBlocks.length-1].style.display= "inline-block"
-		//Hide compare button to free space and show console
-		document.getElementById('compare-button').style.display= "none"
+		//Show console
 		consoleBlock.style.display= "inline-block"
 		document.getElementById('edit-button').style.display= "inline-block"
 		//Show 'hide' buttons
@@ -113,11 +125,13 @@ document.getElementById('compare-button').addEventListener('click', () =>{
 		//Show 'save' button
 		document.getElementById('save-button').style.display= "inline-block"
 		//Change doc titles
-		for(let i = 0; i < docBlocks.length-1; i++){
+		for(let i = 0; i < docBlocks.length; i++){
 			docTitleSlots[i].style.display = "inline-block"
 			docTitleSlots[i].value = docNicknames[i]
 			uploadTextSlots[i].innerHTML = ""
 		}
+		//Reveal add button
+		document.getElementById('add-button').style.display= "inline-block"
 	}
 })
 
@@ -133,7 +147,7 @@ for(let i = 0; i < 2; i++){
 		}
 		else{
 			docSlots[i].style.display = "inline-block"
-			docBlocks[i].style.minWidth = "25vw"
+			docBlocks[i].style.minWidth = "20vw"
 			document.getElementsByClassName('doc-title')[i].style.textAlign = "center"
 		}
 	})
@@ -202,12 +216,16 @@ function fileAdded(){
 
 //Check if all slots are full and a new one must be made
 //If so, do so and update certain variables
-function docsFull(){
-	for(let i = 0; i < docs.length; i++){
+//Force will make it create a new slot no matter what
+function docsFull(force = false){
+	if(!force){
+		for(let i = 0; i < docs.length; i++){
 		//If there's an empty slot left, no need to add a new one
 		if(docs[i] === null)
 			return
+		}
 	}
+	console.log('created')
 	docs.push(null)
 	let docNumber = docs.length
 	docBlocks[docBlocks.length-1].insertAdjacentHTML('afterend', docBlockHTML)
