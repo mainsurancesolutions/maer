@@ -1,12 +1,13 @@
 const ipc = require('electron').ipcRenderer
 const fs = require('fs')
+const diffMatchPatch = require('diff-match-patch')
 const compareScript = require('.\\scripts\\comparison.js')
 const saveScript = require('.\\scripts\\saveManager.js')
 let mammoth = require('mammoth')
 
 let docBlockHTML = fs.readFileSync('docBlock.html')
 
-//Console block dic
+//Console block div
 let consoleBlock = document.getElementById('console-block')
 
 //The entire block divs for each doc
@@ -50,6 +51,7 @@ document.getElementById('restart-button').addEventListener('click', () =>{
 document.getElementById('add-button').addEventListener('click', () =>{
 	try{
 		docBlocks[docBlocks.length-1].style.display= "inline-block"
+		document.getElementsByClassName('file-button')[docBlocks.length-1].style.display= "inline-block"
 	} catch{
 		docsFull()
 	}
@@ -112,7 +114,7 @@ ipc.on('loadFile', async (event, arg) =>{
 document.getElementById('compare-button').addEventListener('click', () =>{
 	//Don't show console if the upload wasn't successful
 	let success = compareScript.render(docs, docSlots)
-	if(success){
+	if(success === true){
 		//Hide the last unused slot
 		if(docs[docBlocks.length-1] === null)
 			docBlocks[docBlocks.length-1].style.display= "none"
@@ -142,12 +144,14 @@ for(let i = 0; i < 2; i++){
 		if(docSlots[i].style.display !== "none"){
 			docSlots[i].style.display = "none"
 			docBlocks[i].style.minWidth = "80px"
+			docBlocks[i].style.maxWidth = "80px"
 			//Move title to the left so it can be seen while hidden
 			document.getElementsByClassName('doc-title')[i].style.textAlign = "left"
 		}
 		else{
 			docSlots[i].style.display = "inline-block"
 			docBlocks[i].style.minWidth = "20vw"
+			docBlocks[i].style.maxWidth = "45vw"
 			document.getElementsByClassName('doc-title')[i].style.textAlign = "center"
 		}
 	})
@@ -225,7 +229,8 @@ function docsFull(force = false){
 			return
 		}
 	}
-	console.log('created')
+	
+	//Update the arrays containing all docs/elements from all docs
 	docs.push(null)
 	let docNumber = docs.length
 	docBlocks[docBlocks.length-1].insertAdjacentHTML('afterend', docBlockHTML)
@@ -247,13 +252,15 @@ function docsFull(force = false){
 		//If it's not hidden, hide it. Otherwise, display it
 		if(docSlots[docNumber-1].style.display !== "none"){
 			docBlocks[docNumber-1].style.minWidth = "80px"
+			docBlocks[docNumber-1].style.maxWidth = "80px"
 			docSlots[docNumber-1].style.display = "none"
 			//Move title to the left so it can be seen while hidden
 			document.getElementsByClassName('doc-title')[docNumber-1].style.textAlign = "left"
 		}
 		else{
 			docSlots[docNumber-1].style.display = "inline-block"
-			docBlocks[docNumber-1].style.minWidth = "25vw"
+			docBlocks[docNumber-1].style.minWidth = "20vw"
+			docBlocks[docNumber-1].style.maxWidth = "45vw"
 			document.getElementsByClassName('doc-title')[docNumber-1].style.textAlign = "center"
 		}
 	})

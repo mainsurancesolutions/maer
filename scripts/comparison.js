@@ -6,8 +6,8 @@ let rippedHtml
 module.exports ={
 
 	/*Reads the contents of a docx and converts it to html
-	file: array of 3 docx files
-	field: array of 3 <p> tags. This is where the html will go
+	files: array of all uploaded docx files
+	field: array of <p> tags. This is where the html will go
 	Possible for some or all elements to be null
 	*/
 	render: async function (files, field){
@@ -34,6 +34,8 @@ module.exports ={
 			.done()
 		}
 		return true
-	}
+	},
+
+
 }
 

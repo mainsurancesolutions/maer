@@ -12,8 +12,8 @@
     "electron": "^5.0.1"
   },
   "dependencies": {
+    "diff-match-patch": "^1.0.4",
     "jszip": "^2.6.1",
-    "mammoth": "^1.4.8",
-    "python-shell": "^1.0.7"
+    "mammoth": "^1.4.8"
   }
 }
