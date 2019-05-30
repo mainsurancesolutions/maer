@@ -48,7 +48,7 @@ for(let i = 0; i < diffArray.length; i++){
 	}
 }
 
-renderDeletionBlock(deletedString){
+renderDeletionBlock(deletedString, docNumber){
 	//String from the difference in the doc to the end of the paragraph its in
 	diffParagraph = docs[docNumber-1].subString(
 		docs[docNumber-1].indexOf(deletedString),
@@ -62,7 +62,9 @@ renderDeletionBlock(deletedString){
 		)
 	return diffParagraphUnchangedPrior + "<p class=\'deleted\'>" + deletedString + "</p>" + diffParagraphUnchanged
 }
-renderAddedBlock(addedString){
+
+//Wait this one won't work. Need a new approach for additions
+renderAddedBlock(addedString, docNumber){
 	//String from the difference in the doc to the end of the paragraph its in
 	diffParagraph = docs[docNumber-1].subString(
 		docs[docNumber-1].indexOf(addedString),

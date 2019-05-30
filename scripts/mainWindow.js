@@ -1,9 +1,7 @@
 const ipc = require('electron').ipcRenderer
 const fs = require('fs')
-const diffMatchPatch = require('diff-match-patch')
 const compareScript = require('.\\scripts\\comparison.js')
 const saveScript = require('.\\scripts\\saveManager.js')
-let mammoth = require('mammoth')
 
 let docBlockHTML = fs.readFileSync('docBlock.html')
 

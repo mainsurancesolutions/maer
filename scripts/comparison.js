@@ -1,41 +1,97 @@
-let mammoth = require('mammoth')
+const mammoth = require('mammoth')
+const diffMatchPatch = require('diff-match-patch')
+let dmp = new diffMatchPatch
 
 //HTML ripped from files as well as error/warning messages
 let rippedHtml
 
 module.exports ={
-
-	/*Reads the contents of a docx and converts it to html
-	files: array of all uploaded docx files
-	field: array of <p> tags. This is where the html will go
-	Possible for some or all elements to be null
-	*/
-	render: async function (files, field){
-
-		//At LEAST the first 2 docs have to be filled
-		let numOfFiles
-		if(files.length > 2){
-			numOfFiles = files.length-1
-			rippedHtml = new Array(files.length-1)
-			rippedHtml.fill(null)
+	//Main function, calls readDocs to rip the text, 
+	//waits until that's done, then finds and renders differences
+	render: async function(files, fields){
+		readDocs(files, fields)
+		function ensureHtmlIsSet() {
+		    return new Promise(function (resolve, reject) {
+		        (function waitForHtml(){
+		            if (rippedHtml[rippedHtml.length-1]) return resolve();
+		            setTimeout(waitForHtml, 5000);
+		        })();
+		    });
 		}
-		else{
-			alert("You must upload at least 2 files to be compared")
-			return false
-		}
-
-		for(let i=0; i<numOfFiles; i++){
-			field[i].innerHTML = "Processing..."
-			await mammoth.convertToHtml({path: files[i].path})
-			.then(function(result){
-				rippedHtml[i] = result.value //Html generated from docx
-				field[i].innerHTML = rippedHtml[i]
-			})
-			.done()
-		}
+		ensureHtmlIsSet().then(function(){
+			findDiffs(fields)
+		})
 		return true
-	},
-
-
+	}
 }
 
+/*Reads the contents of a docx and converts it to html
+files: array of all uploaded docx files
+field: array of <p> tags. This is where the html will go
+Possible for some or all elements to be null
+*/
+async function readDocs(files, fields){
+
+	//At LEAST the first 2 docs have to be filled
+	let numOfFiles
+	if(files.length > 2){
+		numOfFiles = files.length-1
+		rippedHtml = new Array(files.length-1)
+		rippedHtml.fill(null)
+	}
+	else{
+		alert("You must upload at least 2 files to be compared")
+		return false
+	}
+
+	for(let i=0; i<numOfFiles; i++){
+		fields[i].innerHTML = "Processing..."
+		await mammoth.convertToHtml({path: files[i].path})
+		.then(function(result){
+			rippedHtml[i] = result.value //Html generated from docx
+		})
+		.done()
+	}
+	fields[0].innerHTML = rippedHtml[0]
+	return true
+}
+
+/*This loop will find all differences between two docs
+The array will store all the arrays of differences
+ie, on first run we find diffs between doc 1 and 2. Second run finds diffs between 2 and 3
+Array first element would be that first set of diffs, second element would be that second set of diffs
+*/
+async function findDiffs(fields){
+	let diffArray = []
+	let differences
+	for(let i=0; i<rippedHtml.length-1; i++){
+		differences = dmp.diff_main(rippedHtml[i], rippedHtml[i+1])
+		dmp.diff_cleanupSemantic(differences)
+		diffArray.push(differences)
+	}
+	//Iterate through array of arrays of differences (remember 0 = differences between doc 1 and 2, etc)
+	for(let i=0; i<diffArray.length; i++){
+		for(let j=0; j<diffArray[i].length; j++){
+			if(diffArray[i][j][0] === -1)
+				renderDeletionBlock(diffArray[i][j][1], i+1, fields)
+			//else if(diffArray[i][j][0] === 1)
+				//renderAdditionBlock(diffArray[i][j][1], i+1, fields)
+		}
+	}
+}
+
+function renderDeletionBlock(deletedString, docNumber, fields){
+	//String from the difference in the previous doc to the end of the paragraph its in
+	//String from the difference in the doc to the end of the paragraph its in
+	diffParagraph = rippedHtml[docNumber-1].subString(
+		rippedHtml[docNumber-1].indexOf(deletedString),
+		rippedHtml[docNumber-1].indexOf("\r\n\r\n", rippedHtml[docNumber-1].indexOf(deletedString)+100)
+		)
+	diffParagraphUnchanged = diffParagraph.subString(deletedString.length)
+
+	docSplit = rippedHtml[docNumber-1].split(deletedString)
+	diffParagraphUnchangedPrior = docSplit[0].subString(
+		docSplit[0].lastIndexOf("\r\n\r\n")
+		)
+	fields[docNumber]= (diffParagraphUnchangedPrior + "<p class=\'deleted\'>" + deletedString + "</p>" + diffParagraphUnchanged)
+}
