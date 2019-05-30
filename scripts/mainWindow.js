@@ -114,7 +114,7 @@ ipc.on('loadFile', async (event, arg) =>{
 document.getElementById('compare-button').addEventListener('click', () =>{
 	//Don't show console if the upload wasn't successful
 	let success = compareScript.render(docs, docSlots)
-	if(success === true){
+	if(success !== false){
 		//Hide the last unused slot
 		if(docs[docBlocks.length-1] === null)
 			docBlocks[docBlocks.length-1].style.display= "none"

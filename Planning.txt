@@ -1,0 +1,86 @@
+To-do list:
+Red/greenline
+Table of contents
+Trim docs beyond first to only show things that changed
+Clicking on a section in the table of contents brings all docs to that header (when applicable)
+Scroll to matching text on click (when applicable)
+Hide certain docs and re-compare to show differences between only visible docs
+Search bar
+Definitions page
+Right click a term to have definitions pop out
+	
+Front-end clean-up
+
+'Console' window:
+Search bar with favorites and search button
+Table of contents with search algorithm
+
+Compute differences pseudo-code:
+
+/*This loop will find all differences between two docs
+The array will store all the arrays of differences
+ie, on first run we find diffs between doc 1 and 2. Second run finds diffs between 2 and 3
+Array first element would be that first set of diffs, second element would be that second set of diffs*/
+
+let diffArray = []
+for(let i = 0; i < numOfDocs-1; i++){
+	let differences = diffMatchPatch.diff_main(doc[i], doc[i+1])
+	diffMatchPatch.diff_cleanupSemantic(differences)
+	diffArray.push(differences)
+}
+
+Basic process is to find differences, then do the following to print docs past the 1st
+1st doc will just be the full thing
+//Iterate through array of differences (remember 0 = differences between doc 1 and 2, etc)
+//docNumber starts at 0 btw
+for(let i = 0; i < diffArray.length; i++){
+	//If it's not the last set of differences
+	if(i < docs.length-1){ 
+		//Iterate through the differences in a given doc
+		for(let j = 0; j < diffArray[docNumber-1].length; j++){
+			//If its a deletion
+			if(diffArray[i][j][0] === -1)
+				renderDeletionBlock(diffArray[i][j][1], docNumber)
+			//or an addition
+			else if(diffArray[i][j][0] === 1)
+				renderAdditionBlock(diffArray[i][j][1], docNumber)
+		}
+	}
+}
+
+renderDeletionBlock(deletedString){
+	//String from the difference in the doc to the end of the paragraph its in
+	diffParagraph = docs[docNumber-1].subString(
+		docs[docNumber-1].indexOf(deletedString),
+		docs[docNumber-1].indexOf("\r\n\r\n", docs[docNumber-1].indexOf(deletedString)+100
+		)
+	diffParagraphUnchanged = diffParagraph.subString(deletedString.length)
+
+	docSplit = docs[docNumber-1].split(deletedString)
+	diffParagraphUnchangedPrior = docSplit[0].subString(
+		docSplit[0].lastIndexOf("\r\n\r\n")
+		)
+	return diffParagraphUnchangedPrior + "<p class=\'deleted\'>" + deletedString + "</p>" + diffParagraphUnchanged
+}
+renderAddedBlock(addedString){
+	//String from the difference in the doc to the end of the paragraph its in
+	diffParagraph = docs[docNumber-1].subString(
+		docs[docNumber-1].indexOf(addedString),
+		docs[docNumber-1].indexOf("\r\n\r\n", docs[docNumber-1].indexOf(addedString)+100
+		)
+	diffParagraphUnchanged = diffParagraph.subString(addedString.length)
+
+	docSplit = docs[docNumber-1].split(addedString)
+	diffParagraphUnchangedPrior = docSplit[0].subString(
+		docSplit[0].lastIndexOf("\r\n\r\n")
+		)
+	return diffParagraphUnchangedPrior + "<p class=\'added\'>" + addedString + "</p>" + diffParagraphUnchanged
+}
+
+Notes from reviews:
+Don't show all slots from the start in case they just want 2
+No moving contracts
+drag docs and drop them on the app to open them (like google docs importing)
+Add new doc when open a save (button)
+Scrollbar through docs (unlimited)
+Hide console

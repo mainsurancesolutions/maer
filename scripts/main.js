@@ -1,5 +1,4 @@
 const {app, BrowserWindow, BrowserView, dialog, shell} = require('electron')
-const {PythonShell} = require('python-shell')
 const path = require('path')
 const ipc = require('electron').ipcMain
 let mainWindow
@@ -80,11 +79,3 @@ ipc.on('load', (event, arg) =>{
 ipc.on('edit', (event, arg) =>{
 	shell.openItem(arg)
 })
-
-/*
-//Python code, not gotten to backend linking yet
-PythonShell.run('test.py', null, function(err,results) {
-	if(err) throw err
-	console.log('results:', results)
-});
-*/
