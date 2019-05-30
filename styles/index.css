@@ -62,6 +62,12 @@ body{
 	overflow-x: auto;
 }
 
+.deleted{
+	color: red;
+	text-decoration: line-through;
+	text-decoration-color: red;
+}
+
 /*div containing a document and related items (title and hide button for example)*/
 .doc-block{
 	max-width: 45vw;

@@ -52,7 +52,6 @@ async function readDocs(files, fields){
 		})
 		.done()
 	}
-	fields[0].innerHTML = rippedHtml[0]
 	return true
 }
 
@@ -64,6 +63,7 @@ Array first element would be that first set of diffs, second element would be th
 async function findDiffs(fields){
 	let diffArray = []
 	let differences
+	fields[0].innerHTML = rippedHtml[0]
 	for(let i=0; i<rippedHtml.length-1; i++){
 		differences = dmp.diff_main(rippedHtml[i], rippedHtml[i+1])
 		dmp.diff_cleanupSemantic(differences)
@@ -82,16 +82,15 @@ async function findDiffs(fields){
 
 function renderDeletionBlock(deletedString, docNumber, fields){
 	//String from the difference in the previous doc to the end of the paragraph its in
-	//String from the difference in the doc to the end of the paragraph its in
-	diffParagraph = rippedHtml[docNumber-1].subString(
+	diffParagraph = rippedHtml[docNumber-1].substring(
 		rippedHtml[docNumber-1].indexOf(deletedString),
-		rippedHtml[docNumber-1].indexOf("\r\n\r\n", rippedHtml[docNumber-1].indexOf(deletedString)+100)
+		rippedHtml[docNumber-1].indexOf("\n\n", rippedHtml[docNumber-1].indexOf(deletedString))
 		)
-	diffParagraphUnchanged = diffParagraph.subString(deletedString.length)
+	diffParagraphUnchanged = diffParagraph.substring(deletedString.length)
 
 	docSplit = rippedHtml[docNumber-1].split(deletedString)
-	diffParagraphUnchangedPrior = docSplit[0].subString(
-		docSplit[0].lastIndexOf("\r\n\r\n")
+	diffParagraphUnchangedPrior = docSplit[0].substring(
+		docSplit[0].lastIndexOf("\n\n")
 		)
-	fields[docNumber]= (diffParagraphUnchangedPrior + "<p class=\'deleted\'>" + deletedString + "</p>" + diffParagraphUnchanged)
+	fields[docNumber].innerHTML += (diffParagraphUnchangedPrior + "<p class=\'deleted\'>" + deletedString + "</p>" + diffParagraphUnchanged)
 }
