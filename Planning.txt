@@ -1,10 +1,14 @@
 To-do list:
 Red/greenline
 Table of contents
-Trim docs beyond first to only show things that changed
 Clicking on a section in the table of contents brings all docs to that header (when applicable)
 Scroll to matching text on click (when applicable)
 Hide certain docs and re-compare to show differences between only visible docs
+Back-end fixes{
+	FIX REDLINING AAAAA
+	Put additions and deletions in the same paragraph
+}
+
 Search bar
 Definitions page
 Right click a term to have definitions pop out

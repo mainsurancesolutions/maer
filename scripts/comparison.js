@@ -69,28 +69,51 @@ async function findDiffs(fields){
 		dmp.diff_cleanupSemantic(differences)
 		diffArray.push(differences)
 	}
-	//Iterate through array of arrays of differences (remember 0 = differences between doc 1 and 2, etc)
+	//Iterate through array of arrays of differences, writing each deletion/addition to the docBlock 
+	//(remember diffArray[0] = differences between doc 1 and 2, etc)
 	for(let i=0; i<diffArray.length; i++){
 		for(let j=0; j<diffArray[i].length; j++){
 			if(diffArray[i][j][0] === -1)
 				renderDeletionBlock(diffArray[i][j][1], i+1, fields)
-			//else if(diffArray[i][j][0] === 1)
-				//renderAdditionBlock(diffArray[i][j][1], i+1, fields)
+			else if(diffArray[i][j][0] === 1)
+				renderAdditionBlock(diffArray[i][j][1], i+1, fields)
+			//Remove the "Processing..." text on the last run
+			if(j === diffArray.length-1)
+				fields[i+1].innerHTML = fields[i+1].innerHTML.substring(13)
 		}
 	}
 }
 
 function renderDeletionBlock(deletedString, docNumber, fields){
 	//String from the difference in the previous doc to the end of the paragraph its in
-	diffParagraph = rippedHtml[docNumber-1].substring(
+	let diffParagraph = rippedHtml[docNumber-1].substring(
 		rippedHtml[docNumber-1].indexOf(deletedString),
+		rippedHtml[docNumber-1].indexOf("</p>", rippedHtml[docNumber-1].indexOf(deletedString) + 100)
+		)
+
+	/*
+	diffParagraphUnchanged: The part of the paragraph with the deletion AFTER the deletion
+	diffParagraphUnchangedPrior: The part of the paragraph with the deletion BEFORE the deletion
+	*/
+	let diffParagraphUnchanged = diffParagraph.substring(deletedString.length)
+	let docSplit = rippedHtml[docNumber-1].split(deletedString)
+	diffParagraphUnchangedPrior = docSplit[0].substring(
+		docSplit[0].lastIndexOf("</p>")
+		)
+	fields[docNumber].innerHTML += (diffParagraphUnchangedPrior + "<span class=\'deleted\'>" + deletedString + "</span>" + diffParagraphUnchanged)
+}
+
+function renderAdditionBlock(addedString, docNumber, fields){
+	//String from the difference in the previous doc to the end of the paragraph its in
+	let diffParagraph = rippedHtml[docNumber-1].substring(
+		rippedHtml[docNumber-1].indexOf(addedString),
 		rippedHtml[docNumber-1].indexOf("\n\n", rippedHtml[docNumber-1].indexOf(deletedString))
 		)
-	diffParagraphUnchanged = diffParagraph.substring(deletedString.length)
 
-	docSplit = rippedHtml[docNumber-1].split(deletedString)
-	diffParagraphUnchangedPrior = docSplit[0].substring(
-		docSplit[0].lastIndexOf("\n\n")
+	let diffParagraphUnchanged = diffParagraph.substring(addedString.length)
+	let docSplit = rippedHtml[docNumber-1].split(addedString)
+	let diffParagraphUnchangedPrior = docSplit[0].substring(
+		docSplit[0].lastIndexOf("</p>")
 		)
-	fields[docNumber].innerHTML += (diffParagraphUnchangedPrior + "<p class=\'deleted\'>" + deletedString + "</p>" + diffParagraphUnchanged)
+	fields[docNumber].innerHTML += (diffParagraphUnchangedPrior + "<span class=\'added\'>" + addedString + "</span>" + diffParagraphUnchanged)
 }
