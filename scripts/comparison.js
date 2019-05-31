@@ -60,7 +60,7 @@ The array will store all the arrays of differences
 ie, on first run we find diffs between doc 1 and 2. Second run finds diffs between 2 and 3
 Array first element would be that first set of diffs, second element would be that second set of diffs
 */
-async function findDiffs(fields){
+function findDiffs(fields){
 	let diffArray = []
 	let differences
 	fields[0].innerHTML = rippedHtml[0]
@@ -88,9 +88,15 @@ function renderDeletionBlock(deletedString, docNumber, fields){
 	//String from the difference in the previous doc to the end of the paragraph its in
 	let diffParagraph = rippedHtml[docNumber-1].substring(
 		rippedHtml[docNumber-1].indexOf(deletedString),
-		rippedHtml[docNumber-1].indexOf("</p>", rippedHtml[docNumber-1].indexOf(deletedString) + 100)
+		rippedHtml[docNumber-1].indexOf("</p>", rippedHtml[docNumber-1].indexOf(deletedString))
 		)
-
+	//Make sure we're not deleting text into the middle of a <p> tag
+	if(diffParagraph.slice(-1) === "<"){
+		while(diffParagraph.slice(-1) !== ">"){
+			diffParagraph = diffParagraph.push(deletedString.substring(0, 1))
+			deletedString = deletedString.substring(1)
+		}
+	}
 	/*
 	diffParagraphUnchanged: The part of the paragraph with the deletion AFTER the deletion
 	diffParagraphUnchangedPrior: The part of the paragraph with the deletion BEFORE the deletion
@@ -98,22 +104,39 @@ function renderDeletionBlock(deletedString, docNumber, fields){
 	let diffParagraphUnchanged = diffParagraph.substring(deletedString.length)
 	let docSplit = rippedHtml[docNumber-1].split(deletedString)
 	diffParagraphUnchangedPrior = docSplit[0].substring(
-		docSplit[0].lastIndexOf("</p>")
+		docSplit[0].lastIndexOf("<p>")+3
 		)
 	fields[docNumber].innerHTML += (diffParagraphUnchangedPrior + "<span class=\'deleted\'>" + deletedString + "</span>" + diffParagraphUnchanged)
+	console.log((diffParagraphUnchangedPrior + "<span class=\'deleted\'>" + deletedString + "</span>" + diffParagraphUnchanged))
 }
 
 function renderAdditionBlock(addedString, docNumber, fields){
-	//String from the difference in the previous doc to the end of the paragraph its in
-	let diffParagraph = rippedHtml[docNumber-1].substring(
-		rippedHtml[docNumber-1].indexOf(addedString),
-		rippedHtml[docNumber-1].indexOf("\n\n", rippedHtml[docNumber-1].indexOf(deletedString))
+	//String from the addition in the current doc to the end of the paragraph its in
+	let diffParagraph = rippedHtml[docNumber].substring(
+		rippedHtml[docNumber].indexOf(addedString),
+		rippedHtml[docNumber].indexOf("</p>", rippedHtml[docNumber].indexOf(addedString))
 		)
-
+	
+	/*
+	diffParagraphUnchanged: The part of the paragraph with the addition AFTER the addition
+	diffParagraphUnchangedPrior: The part of the paragraph with the addition BEFORE the addition
+	*/
 	let diffParagraphUnchanged = diffParagraph.substring(addedString.length)
-	let docSplit = rippedHtml[docNumber-1].split(addedString)
-	let diffParagraphUnchangedPrior = docSplit[0].substring(
-		docSplit[0].lastIndexOf("</p>")
+	let docSplit = rippedHtml[docNumber].split(addedString)
+	console.log()
+	diffParagraphUnchangedPrior = docSplit[0].substring(
+		docSplit[0].lastIndexOf("<p>")+3
 		)
+	//Make sure we're not inserting text into the middle of a <p> tag
+	/*if(diffParagraphUnchangedPrior.slice(-1) === "<"){
+		console.log("In a tag")
+		while(diffParagraphUnchangedPrior.slice(-1) !== ">"){
+			console.log("Getting out of a tag")
+			diffParagraphUnchangedPrior = diffParagraphUnchangedPrior.push(addedString.substring(0, 1))
+			addedString = addedString.substring(1)
+		}
+	}*/
 	fields[docNumber].innerHTML += (diffParagraphUnchangedPrior + "<span class=\'added\'>" + addedString + "</span>" + diffParagraphUnchanged)
+	console.log((diffParagraphUnchangedPrior + "<span class=\'added\'>" + addedString + "</span>" + diffParagraphUnchanged))
+
 }
