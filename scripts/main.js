@@ -24,7 +24,7 @@ function createMainWindow(){
         'minWidth': 640
 	});
 	mainWindow.loadFile('index.html')
-	mainWindow.openDevTools()
+	//mainWindow.openDevTools()
 	mainWindow.maximize()
 }
 

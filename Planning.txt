@@ -1,14 +1,8 @@
 To-do list:
-Additions
 Table of contents
 Clicking on a section in the table of contents brings all docs to that header (when applicable)
 Scroll to matching text on click (when applicable)
 Hide certain docs and re-compare to show differences between only visible docs
-Back-end fixes{
-	FIX REDLINING AAAAA
-	Put additions and deletions in the same paragraph
-}
-
 Search bar
 Definitions page
 Right click a term to have definitions pop out
@@ -19,86 +13,9 @@ Front-end clean-up
 Search bar with favorites and search button
 Table of contents with search algorithm
 
-Compute differences pseudo-code:
 
-/*This loop will find all differences between two docs
-The array will store all the arrays of differences
-ie, on first run we find diffs between doc 1 and 2. Second run finds diffs between 2 and 3
-Array first element would be that first set of diffs, second element would be that second set of diffs*/
 
-let diffArray = []
-for(let i = 0; i < numOfDocs-1; i++){
-	let differences = diffMatchPatch.diff_main(doc[i], doc[i+1])
-	diffMatchPatch.diff_cleanupSemantic(differences)
-	diffArray.push(differences)
-}
 
-Basic process is to find differences, then do the following to print docs past the 1st
-1st doc will just be the full thing
-//Iterate through array of differences (remember 0 = differences between doc 1 and 2, etc)
-//docNumber starts at 0 btw
-for(let i = 0; i < diffArray.length; i++){
-	//If it's not the last set of differences
-	if(i < docs.length-1){ 
-		//Iterate through the differences in a given doc
-		for(let j = 0; j < diffArray[docNumber-1].length; j++){
-			//If its a deletion
-			if(diffArray[i][j][0] === -1)
-				renderDeletionBlock(diffArray[i][j][1], docNumber)
-			//or an addition
-			else if(diffArray[i][j][0] === 1)
-				renderAdditionBlock(diffArray[i][j][1], docNumber)
-		}
-	}
-}
-
-renderDeletionBlock(deletedString, docNumber){
-	//String from the difference in the doc to the end of the paragraph its in
-	diffParagraph = docs[docNumber-1].subString(
-		docs[docNumber-1].indexOf(deletedString),
-		docs[docNumber-1].indexOf("\r\n\r\n", docs[docNumber-1].indexOf(deletedString)+100
-		)
-	diffParagraphUnchanged = diffParagraph.subString(deletedString.length)
-
-	docSplit = docs[docNumber-1].split(deletedString)
-	diffParagraphUnchangedPrior = docSplit[0].subString(
-		docSplit[0].lastIndexOf("\r\n\r\n")
-		)
-	return diffParagraphUnchangedPrior + "<p class=\'deleted\'>" + deletedString + "</p>" + diffParagraphUnchanged
-}
-
-//Wait this one won't work. Need a new approach for additions
-renderAddedBlock(addedString, docNumber){
-	//String from the difference in the doc to the end of the paragraph its in
-	diffParagraph = docs[docNumber-1].subString(
-		docs[docNumber-1].indexOf(addedString),
-		docs[docNumber-1].indexOf("\r\n\r\n", docs[docNumber-1].indexOf(addedString)+100
-		)
-	diffParagraphUnchanged = diffParagraph.subString(addedString.length)
-
-	docSplit = docs[docNumber-1].split(addedString)
-	diffParagraphUnchangedPrior = docSplit[0].subString(
-		docSplit[0].lastIndexOf("\r\n\r\n")
-		)
-	return diffParagraphUnchangedPrior + "<p class=\'added\'>" + addedString + "</p>" + diffParagraphUnchanged
-}
-
-OKAY, gotta fix deletions and additions
-Deletion issue: The same string that was deleted could be in multiple spots
-(for example, if the number 6 was changed to 7, the code wouldnt know which 6 to replace)
-Ideas:
-	I've got to use my head and think...
-Addition issue: 
-Breaks HTML tags
-Ideas:
-	Convert tags to unicode characters, do insertions, then convert back
-	or
-	Check if we're in a tag. If so, make sure we move out of it first
-
-Doesn't know where to insert the addition
-Ideas:
-	For the doc where it was added, check the 10-ish characters before the addition, then search for those
-	That way we know the context for the addition and can place it there
 
 Notes from reviews:
 Don't show all slots from the start in case they just want 2

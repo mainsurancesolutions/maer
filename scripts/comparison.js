@@ -63,7 +63,26 @@ Updating the text fields for the 2nd parameter as it goes
 function findDiffs(fields){
 	//Set first field to simply be the first doc
 	fields[0].innerHTML = rippedHtml[0]
+
+	let diffText
+	let pTags
+	//Iterate through all docs
 	for(let i = 1; i < rippedHtml.length; i++){
 		fields[i].innerHTML = diff(rippedHtml[i-1], rippedHtml[i])
+
+		//Iterate through all <p> tags in a doc
+		pTags = fields[i].getElementsByTagName('p')
+		for(let j = 0; j < pTags.length; j++){
+			//Iterate through the childNodes of each p tag to find an ins or del
+			for(let k = 0; k < pTags[j].childNodes.length; k++){
+				if(pTags[j].childNodes[k].tagName === 'INS' || pTags[j].childNodes[k].tagName === 'DEL')
+					break
+				//If we haven't found an ins or del tag, remove the paragraph
+				if(k === pTags[j].childNodes.length-1 && !(pTags[j].childNodes[k].tagName === 'INS' || pTags[j].childNodes[k].tagName === 'DEL')){
+					pTags[j].style.display = "none"
+					break
+				}
+			}
+		}
 	}
 }
