@@ -6,16 +6,16 @@ Hide certain docs and re-compare to show differences between only visible docs
 Search bar
 Definitions page
 Right click a term to have definitions pop out
-	
-Front-end clean-up
+Front-end clean-up:
+	Add new version
+	Empty slots when you load
+	Everything, really
+
+
 
 'Console' window:
 Search bar with favorites and search button
 Table of contents with search algorithm
-
-
-
-
 
 Notes from reviews:
 Don't show all slots from the start in case they just want 2
