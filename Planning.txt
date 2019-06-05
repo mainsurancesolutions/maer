@@ -3,6 +3,7 @@ Table of contents
 Clicking on a section in the table of contents brings all docs to that header (when applicable)
 Scroll to matching text on click (when applicable)
 Hide certain docs and re-compare to show differences between only visible docs
+Hide table at the bottom if no changes
 Search bar
 Definitions page
 Right click a term to have definitions pop out

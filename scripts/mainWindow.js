@@ -2,6 +2,7 @@ const ipc = require('electron').ipcRenderer
 const fs = require('fs')
 const compareScript = require('.\\scripts\\comparison.js')
 const saveScript = require('.\\scripts\\saveManager.js')
+const ToCScript = require('.\\scripts\\tableOfContents.js')
 
 let docBlockHTML = fs.readFileSync('docBlock.html')
 
@@ -115,39 +116,38 @@ document.getElementById('compare-button').addEventListener('click', () =>{
 		alert("You must upload at least 2 files to be compared")
 		return false
 	}
-	//Don't switch to doc analysis stage if the upload wasn't successful
-	let success = compareScript.render(docs, docSlots)
-	if(success !== false){
-		//Hide the last unused slot
-		if(docs[docBlocks.length-1] === null)
-			docBlocks[docBlocks.length-1].style.display= "none"
-		//Show console
-		consoleBlock.style.display= "inline-block"
-		document.getElementById('edit-button').style.display= "inline-block"
-		//Show 'hide' buttons
-		for(let i = 0; i < docBlocks.length; i++)
-			hideButtons[i].style.display = "inline-block"
-		//Show 'save' button
-		document.getElementById('save-button').style.display= "inline-block"
-		//Change doc titles
-		for(let i = 0; i < docBlocks.length; i++){
-			docTitleSlots[i].style.display = "inline-block"
-			docTitleSlots[i].value = docNicknames[i]
-			uploadTextSlots[i].innerHTML = ""
-		}
-		//Reveal add button
-		document.getElementById('add-button').style.display= "inline-block"
-		//Adjust width of docblocks based on how many docs are present
-		if(docs[2] === null || docs[2] === undefined){
-			for(let i = 0; i < docBlocks.length; i++)
-				docBlocks[i].style.maxWidth = '33vw'
-		}
-		else
-			for(let i = 0; i < docBlocks.length; i++){
-				docBlocks[i].style.maxWidth = '20vw'
-				docBlocks[i].style.minWidth = '15vw'
-			}
+	let tableOfContents = compareScript.render(docs, docSlots)
+	//Render table of contents
+	ToCScript.renderToC(document.getElementById('table-of-contents'), tableOfContents)
+	//Hide the last unused slot
+	if(docs[docBlocks.length-1] === null)
+		docBlocks[docBlocks.length-1].style.display= "none"
+	//Show console
+	consoleBlock.style.display= "inline-block"
+	document.getElementById('edit-button').style.display= "inline-block"
+	//Show 'hide' buttons
+	for(let i = 0; i < docBlocks.length; i++)
+		hideButtons[i].style.display = "inline-block"
+	//Show 'save' button
+	document.getElementById('save-button').style.display= "inline-block"
+	//Change doc titles
+	for(let i = 0; i < docBlocks.length; i++){
+		docTitleSlots[i].style.display = "inline-block"
+		docTitleSlots[i].value = docNicknames[i]
+		uploadTextSlots[i].innerHTML = ""
 	}
+	//Reveal add button
+	document.getElementById('add-button').style.display= "inline-block"
+	//Adjust width of docblocks based on how many docs are present
+	if(docs[2] === null || docs[2] === undefined){
+		for(let i = 0; i < docBlocks.length; i++)
+			docBlocks[i].style.maxWidth = '33vw'
+	}
+	else
+		for(let i = 0; i < docBlocks.length; i++){
+			docBlocks[i].style.maxWidth = '20vw'
+			docBlocks[i].style.minWidth = '15vw'
+		}
 })
 
 //Hide a doc

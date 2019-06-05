@@ -4,6 +4,10 @@ const diff = require('node-htmldiff')
 //HTML ripped from files as well as error/warning messages
 let rippedHtml
 
+//Will be populated by sections and subsections, in tuples of the format
+//[section, [subsections]]
+let tableOfContents = []
+
 module.exports ={
 	//Main function, calls readDocs to rip the text, 
 	//waits until that's done, then finds and renders differences
@@ -20,7 +24,7 @@ module.exports ={
 		ensureHtmlIsSet().then(function(){
 			findDiffs(fields)
 		})
-		return true
+		return tableOfContents.reverse()
 	}
 }
 
@@ -36,9 +40,22 @@ async function readDocs(files, fields){
 		rippedHtml = new Array(files.length-1)
 		rippedHtml.fill(null)
 	}
+	//Map docx styles to html styles
+	let options = {
+		styleMap: [
+			"p[style-name='Corp 1'] => h2:fresh",
+			"p[style-name='MTGen1 L1'] => h2:fresh",
+			"p[style-name='Article_L1'] => h2:fresh",
+			"p[style-name='Heading 1'] => h2:fresh",
+			"p[style-name='Corp 2'] => h3:fresh",
+			"p[style-name='MTGen2 L2'] => h3:fresh",
+			"p[style-name='Article_L2'] => h3:fresh",
+			"p[style-name='Heading 2'] => h3:fresh"
+		]
+	}
 	for(let i=0; i<numOfFiles; i++){
 		fields[i].innerHTML = "Processing..."
-		await mammoth.convertToHtml({path: files[i].path})
+		await mammoth.convertToHtml({path: files[i].path}, options)
 		.then(function(result){
 			rippedHtml[i] = result.value //Html generated from docx
 		})
@@ -58,23 +75,59 @@ function findDiffs(fields){
 	fields[0].innerHTML = rippedHtml[0]
 
 	let diffText
-	let pTags
+	let docElements
+	let showNextH2 = false
+	let showNextH3 = false
 	//Iterate through all docs
 	for(let i = 1; i < rippedHtml.length; i++){
 		fields[i].innerHTML = diff(rippedHtml[i-1], rippedHtml[i])
 
-		//Iterate through all <p> tags in a doc
-		pTags = fields[i].getElementsByTagName('p')
-		for(let j = 0; j < pTags.length; j++){
-			//Iterate through the childNodes of each p tag to find an ins or del
-			for(let k = 0; k < pTags[j].childNodes.length; k++){
-				if(pTags[j].childNodes[k].tagName === 'INS' || pTags[j].childNodes[k].tagName === 'DEL')
+		//See section comments at the top. We will push subsections to this then
+		//push this + the section title to the tableOfContents
+		subSections = []
+
+		//Iterate through all elements in a doc backwards
+		docElements = fields[i].childNodes
+		for(let j = docElements.length-1; j >= 0; j--){
+			switch(docElements[j].tagName){
+				//If its a P tag, check if its has insertions/deletions
+				case 'P':
+					for(let k = 0; k < docElements[j].childNodes.length; k++){
+						//If we find a change, we leave it visible and make sure the next h2/h3 tags are shown
+						if(docElements[j].childNodes[k].tagName === 'INS' || docElements[j].childNodes[k].tagName === 'DEL'){
+							showNextH3 = true
+							showNextH2 = true
+							break
+						}
+						//If we haven't found an ins or del tag, remove the paragraph
+						if(k === docElements[j].childNodes.length-1 && !(docElements[j].childNodes[k].tagName === 'INS' || docElements[j].childNodes[k].tagName === 'DEL')){
+							docElements[j].style.display = "none"
+							break
+						}
+					}
 					break
-				//If we haven't found an ins or del tag, remove the paragraph
-				if(k === pTags[j].childNodes.length-1 && !(pTags[j].childNodes[k].tagName === 'INS' || pTags[j].childNodes[k].tagName === 'DEL')){
-					pTags[j].style.display = "none"
+				//If we found a p tag with changes, we wanna show the category/subcategory before it
+				case 'H2':
+					if(showNextH2)
+						showNextH2 = false
+					else
+						docElements[j].style.display = "none"
+					//We only wanna catalogue the table of contents once
+					if(i === 1){
+						tableOfContents.push(docElements[j].textContent, subSections)
+						subSections = []
+					}
 					break
-				}
+				case 'H3':
+					if(showNextH3)
+						showNextH3 = false
+					else
+						docElements[j].style.display = "none"
+					if(i === 1){
+						subSections.push(docElements[j].textContent)
+					}
+					
+					break
 			}
 		}
 	}
