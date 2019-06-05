@@ -10,7 +10,7 @@ Front-end clean-up:
 	Add new version
 	Empty slots when you load
 	Everything, really
-
+Security Verification
 
 
 'Console' window:
@@ -24,3 +24,4 @@ drag docs and drop them on the app to open them (like google docs importing)
 Add new doc when open a save (button)
 Scrollbar through docs (unlimited)
 Hide console
+Make sure the clients feel secure

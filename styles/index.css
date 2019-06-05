@@ -9,7 +9,7 @@ body{
 	top: 0;
 	width: 100%;
 	height: 48px;
-	background-color: #d11f4a;
+	background-color: #ff0000;
 }
 
 #left-title-buttons{
@@ -90,7 +90,7 @@ ins{
 	display: inline-block;
 	word-wrap: break-word;
 	border-radius: 25px;
-	border: 4px solid #d11f4a;
+	border: 4px solid #ff0000;
 }
 
 .hide-button{
