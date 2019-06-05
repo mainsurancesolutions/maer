@@ -149,7 +149,9 @@ function findDiffs(fields, tocBlock){
 				newListItem.appendChild(document.createTextNode(tableOfContents[i][0]))
 				newSubList = newListItem.appendChild(document.createElement("ul"))
 				for(let j = 0; j < tableOfContents[i][1].length; j++){
-					newSubList.appendChild(document.createElement("li").appendChild(document.createTextNode(tableOfContents[i][1][j])))
+					newSubListItem = document.createElement("li")
+					newSubListItem.appendChild(document.createTextNode(tableOfContents[i][1][j]))
+					newSubList.appendChild(newSubListItem)
 				}
 				tocBlock.appendChild(newListItem)
 			}
