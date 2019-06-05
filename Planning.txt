@@ -1,7 +1,6 @@
 To-do list:
-Table of contents
 Clicking on a section in the table of contents brings all docs to that header (when applicable)
-Scroll to matching text on click (when applicable)
+On clicking a paragraph in the doc itself, scroll all docs to that (when applicable)
 Hide certain docs and re-compare to show differences between only visible docs
 Hide table at the bottom if no changes
 Search bar
