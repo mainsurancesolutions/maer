@@ -11,7 +11,7 @@ let tableOfContents = []
 module.exports ={
 	//Main function, calls readDocs to rip the text, 
 	//waits until that's done, then finds and renders differences
-	render: async function(files, fields){
+	render: async function(files, fields, tocBlock){
 		readDocs(files, fields)
 		function ensureHtmlIsSet() {
 		    return new Promise(function (resolve, reject) {
@@ -22,9 +22,9 @@ module.exports ={
 		    });
 		}
 		ensureHtmlIsSet().then(function(){
-			findDiffs(fields)
+			findDiffs(fields, tocBlock)
 		})
-		return tableOfContents.reverse()
+		return true
 	}
 }
 
@@ -69,8 +69,9 @@ This loop will find all differences between two docs
 It will call the diffs pacakge to return a new html text with the 
 diffs pointed out. Insertions in <ins>, deletions in <del>
 Updating the text fields for the 2nd parameter as it goes
+It will also generate the table of contents as it goes
 */
-function findDiffs(fields){
+function findDiffs(fields, tocBlock){
 	//Set first field to simply be the first doc
 	fields[0].innerHTML = rippedHtml[0]
 
@@ -114,7 +115,7 @@ function findDiffs(fields){
 						docElements[j].style.display = "none"
 					//We only wanna catalogue the table of contents once
 					if(i === 1){
-						tableOfContents.push(docElements[j].textContent, subSections)
+						tableOfContents.push([docElements[j].textContent, subSections.reverse()])
 						subSections = []
 					}
 					break
@@ -130,5 +131,29 @@ function findDiffs(fields){
 					break
 			}
 		}
+		
+		if(i === 1){
+			tableOfContents.reverse()
+			console.log(tableOfContents[0])
+			/*
+			Fill the table of contents
+			The contents will be of the form
+			[[section, [subsections]], [section, [subsections]], ...]
+			So we will iterate through the array to each [section, [subsections]]
+			Then create a new listitem for each section with a sub-list and listitems for each subsection
+			*/
+			let newListItem
+			let document = tocBlock.ownerDocument
+			for(let i = 0; i < tableOfContents.length; i++){
+				newListItem = document.createElement("li")
+				newListItem.appendChild(document.createTextNode(tableOfContents[i][0]))
+				newSubList = newListItem.appendChild(document.createElement("ul"))
+				for(let j = 0; j < tableOfContents[i][1].length; j++){
+					newSubList.appendChild(document.createElement("li").appendChild(document.createTextNode(tableOfContents[i][1][j])))
+				}
+				tocBlock.appendChild(newListItem)
+			}
+		}
+		
 	}
 }

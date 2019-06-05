@@ -2,7 +2,6 @@ const ipc = require('electron').ipcRenderer
 const fs = require('fs')
 const compareScript = require('.\\scripts\\comparison.js')
 const saveScript = require('.\\scripts\\saveManager.js')
-const ToCScript = require('.\\scripts\\tableOfContents.js')
 
 let docBlockHTML = fs.readFileSync('docBlock.html')
 
@@ -116,9 +115,7 @@ document.getElementById('compare-button').addEventListener('click', () =>{
 		alert("You must upload at least 2 files to be compared")
 		return false
 	}
-	let tableOfContents = compareScript.render(docs, docSlots)
-	//Render table of contents
-	ToCScript.renderToC(document.getElementById('table-of-contents'), tableOfContents)
+	compareScript.render(docs, docSlots, document.getElementById('table-of-contents'))
 	//Hide the last unused slot
 	if(docs[docBlocks.length-1] === null)
 		docBlocks[docBlocks.length-1].style.display= "none"
