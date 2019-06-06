@@ -114,13 +114,19 @@ ins{
 }
 
 ul{
-	list-style-type: square;
 	padding: 10px;
 	margin-left: 15px;
 	text-align: left;
 }
-ul li{
 
+.section{
+	list-style-type: disc;
+}
+
+.subsection{
+	list-style-type: circle;
+	list-style-position: inside;
+	padding-left: 10px;
 }
 
 .file-button{
