@@ -6,6 +6,7 @@ module.exports ={
 			h3s = docSlots[i].getElementsByTagName("H3")
 			//Iterate through all of the h2s then all of the h3s
 			//to find the selected section
+			//When we find it, scroll to it using scrollToSection
 			for(let j = 0; j < (h2s.length + h3s.length); j++){
 				if(j < h2s.length){
 					if(h2s[j].textContent === clickedTextContent){
@@ -25,5 +26,6 @@ module.exports ={
 
 
 function scrollToSection(scrollingDoc, targetP){
-	scrollingDoc.scrollTop = targetP.offsetTop - (scrollingDoc.offsetHeight/2)
+	scrollTarget = targetP.offsetTop - (scrollingDoc.offsetHeight/2)
+	scrollingDoc.scrollTop = scrollTarget
 }

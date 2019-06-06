@@ -198,7 +198,17 @@ for(let i = 0; i < 2; i++){
 
 //Hide console
 document.getElementById('hide-console').addEventListener('click', () =>{
-	consoleBlock.style.display = "none"
+	tableOfContents = document.getElementById('table-of-contents')
+	if(tableOfContents.style.display === "none"){
+		tableOfContents.style.display = "inline-block"
+		consoleBlock.style.minWidth = "15vw"
+		consoleBlock.style.maxWidth = "20vw"
+	}
+	else{
+		tableOfContents.style.display = "none"
+		consoleBlock.style.minWidth = "84px"
+		consoleBlock.style.maxWidth = "84px"
+	}
 })
 
 //The image button that activates the input field to upload files
