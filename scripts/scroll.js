@@ -9,13 +9,13 @@ module.exports ={
 			for(let j = 0; j < (h2s.length + h3s.length); j++){
 				if(j < h2s.length){
 					if(h2s[j].textContent === clickedTextContent){
-						scrollToSection(docSlots[i], h2s[j])
+						scrollToSection(docBlocks[i], h2s[j])
 						break
 					}
 				}
 				else
 					if(h3s[j-h2s.length].textContent === clickedTextContent){
-						scrollToSection(docSlots[i], h3s[j-h2s.length])
+						scrollToSection(docBlocks[i], h3s[j-h2s.length])
 						break
 					}
 			}
@@ -25,6 +25,5 @@ module.exports ={
 
 
 function scrollToSection(scrollingDoc, targetP){
-	console.log(targetP)
-	scrollingDoc.scrollTop += 100
+	scrollingDoc.scrollTop = targetP.offsetTop - (scrollingDoc.offsetHeight/2)
 }
