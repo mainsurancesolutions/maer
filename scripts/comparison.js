@@ -134,7 +134,6 @@ function findDiffs(fields, tocBlock){
 		
 		if(i === 1){
 			tableOfContents.reverse()
-			console.log(tableOfContents[0])
 			/*
 			Fill the table of contents
 			The contents will be of the form

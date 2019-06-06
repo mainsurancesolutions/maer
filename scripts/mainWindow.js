@@ -2,6 +2,7 @@ const ipc = require('electron').ipcRenderer
 const fs = require('fs')
 const compareScript = require('.\\scripts\\comparison.js')
 const saveScript = require('.\\scripts\\saveManager.js')
+const scrollScript = require('.\\scripts\\scroll.js')
 
 let docBlockHTML = fs.readFileSync('docBlock.html')
 
@@ -145,7 +146,35 @@ document.getElementById('compare-button').addEventListener('click', () =>{
 			docBlocks[i].style.maxWidth = '20vw'
 			docBlocks[i].style.minWidth = '15vw'
 		}
+	//Implement the ability to click on a section and have all docs
+	//scroll to it
+	setUpScrollFunction()
 })
+
+async function setUpScrollFunction(){
+	//Need to wait for the table of contents to be generated before setting this up
+	function ensureListIsGenerated() {
+	    return new Promise(function (resolve, reject) {
+	        (function waitForListItems(){
+	            if (document.getElementsByTagName('LI')[1] !== undefined) return resolve();
+	            setTimeout(waitForListItems, 5000);
+	        })();
+	    });
+	}
+	ensureListIsGenerated().then(function(){
+		let listItems = document.getElementsByTagName('LI')
+		for(let i = 0; i < listItems.length; i++){
+			listItems[i].addEventListener('click', function(){findSection(i)})
+		}
+	})
+}
+
+//When you click on a section in the table of contents,
+//scroll all docs to that section
+function findSection(section){
+	let listItems = document.getElementsByTagName('LI')
+	scrollScript.findSection(listItems[section], docSlots, docBlocks)
+}
 
 //Hide a doc
 for(let i = 0; i < 2; i++){

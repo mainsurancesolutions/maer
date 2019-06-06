@@ -1,8 +1,10 @@
 To-do list:
 Clicking on a section in the table of contents brings all docs to that header (when applicable)
+Make the console presentable
 On clicking a paragraph in the doc itself, scroll all docs to that (when applicable)
 Hide certain docs and re-compare to show differences between only visible docs
 Hide table at the bottom if no changes
+Fix adding new version after comparing
 Search bar
 Definitions page
 Right click a term to have definitions pop out
@@ -12,6 +14,23 @@ Front-end clean-up:
 	Everything, really
 Security Verification
 
+Clicking on a section in the table of contents brings all docs to that header (when applicable)
+Planning:
+	onClick() {findSection(event.target)}
+
+	findSection(clickedSection, docSlots){
+		get textContent of clicked section/subsection
+		Iterate through each doc{
+			headers = docBlock[i].getElementsByTagName("H2") + docBlock[i].getElementsByTagName("H3")
+			iterate through headers{
+				if(headers[j].textContent === clickedTextContent)
+					scroll to it
+		}
+	}
+
+	'scroll to it'(element scrollingDoc, element targetP){
+		scrollingDoc.scrollTop = targetP.offsetTop
+	}
 
 'Console' window:
 Search bar with favorites and search button
