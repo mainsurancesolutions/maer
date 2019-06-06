@@ -2,16 +2,29 @@ module.exports ={
 	findSection: function(clickedSection, docSlots, docBlocks){
 		let clickedTextContent = clickedSection.textContent
 		for(let i = 0; i < docSlots.length; i++){
-			headers = docSlots[i].getElementsByTagName("H2") + docSlots[i].getElementsByTagName("H3")
-			for(let j = 0; j < headers.length; j++)
-				if(headers[j].textContent === clickedTextContent)
-					scrollToSection(docSlots[i], headers[j])
+			h2s = docSlots[i].getElementsByTagName("H2")
+			h3s = docSlots[i].getElementsByTagName("H3")
+			//Iterate through all of the h2s then all of the h3s
+			//to find the selected section
+			for(let j = 0; j < (h2s.length + h3s.length); j++){
+				if(j < h2s.length){
+					if(h2s[j].textContent === clickedTextContent){
+						scrollToSection(docSlots[i], h2s[j])
+						break
+					}
+				}
+				else
+					if(h3s[j-h2s.length].textContent === clickedTextContent){
+						scrollToSection(docSlots[i], h3s[j-h2s.length])
+						break
+					}
+			}
 		}
-		console.log(clickedTextContent)
 	}
 }
 
 
-function scrollTo(scrollingDoc, targetP){
-	scrollingDoc.scrollTop = targetP.offsetTop
+function scrollToSection(scrollingDoc, targetP){
+	console.log(targetP)
+	scrollingDoc.scrollTop += 100
 }
