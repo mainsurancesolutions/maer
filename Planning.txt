@@ -1,8 +1,8 @@
 To-do list:
-Make the console presentable
 On clicking a paragraph in the doc itself, scroll all docs to that (when applicable)
 Hide certain docs and re-compare to show differences between only visible docs
 Hide table at the bottom if no changes
+Make the console presentable
 Fix loading docs (sometimes last one doesnt load)
 Fix adding new version after comparing
 Search bar
@@ -14,6 +14,9 @@ Front-end clean-up:
 	Everything, really
 Security Verification
 
+On clicking a paragraph in the doc itself, scroll all docs to that (when applicable)
+Planning:
+	Use string-similarity package with the
 
 'Console' window:
 Search bar with favorites and search button
@@ -27,3 +30,4 @@ Add new doc when open a save (button)
 Scrollbar through docs (unlimited)
 Hide console
 Make sure the clients feel secure
+Scroll through one doc, it scrolls through all
