@@ -14,10 +14,6 @@ Front-end clean-up:
 	Everything, really
 Security Verification
 
-On clicking a paragraph in the doc itself, scroll all docs to that (when applicable)
-Planning:
-	Use string-similarity package with the
-
 'Console' window:
 Search bar with favorites and search button
 Table of contents with search algorithm

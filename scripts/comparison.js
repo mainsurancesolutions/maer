@@ -57,7 +57,8 @@ async function readDocs(files, fields){
 		fields[i].innerHTML = "Processing..."
 		await mammoth.convertToHtml({path: files[i].path}, options)
 		.then(function(result){
-			rippedHtml[i] = result.value //Html generated from docx
+			if(rippedHtml[i] !== "")
+				rippedHtml[i] = result.value //Html generated from docx
 		})
 		.done()
 	}

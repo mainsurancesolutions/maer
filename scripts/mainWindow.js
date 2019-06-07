@@ -162,9 +162,20 @@ async function setUpScrollFunction(){
 	    });
 	}
 	ensureListIsGenerated().then(function(){
+		//First set up section searching from table of contents
 		let listItems = document.getElementsByTagName('LI')
 		for(let i = 0; i < listItems.length; i++){
 			listItems[i].addEventListener('click', function(){findSection(i)})
+		}
+		//then set up seraching for matching paragraphs by clicking on a
+		//paragraph in a doc
+		let paragraphs
+		for(let i = 0; i < docSlots.length; i++){
+			paragraphs = docSlots[i].getElementsByTagName("P")
+			//Put a click event on each paragraph indicating which doc its from
+			for(let j = 0; j < paragraphs.length; j++){
+				paragraphs[j].addEventListener('click', ()=>{findParagraphs(i, event.target.textContent)})
+			}
 		}
 	})
 }
@@ -174,6 +185,11 @@ async function setUpScrollFunction(){
 function findSection(section){
 	let listItems = document.getElementsByTagName('LI')
 	scrollScript.findSection(listItems[section], docSlots, docBlocks)
+}
+
+//When you click a paragraph, scroll all docs to that paragraph
+function findParagraphs(whichDoc, paragraphText){
+	scrollScript.findMatchingParagraphs(paragraphText, whichDoc, docSlots, docBlocks)
 }
 
 //Hide a doc
