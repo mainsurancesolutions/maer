@@ -1,5 +1,4 @@
 To-do list:
-On clicking a paragraph in the doc itself, scroll all docs to that (when applicable)
 Hide certain docs and re-compare to show differences between only visible docs
 Hide table at the bottom if no changes
 Make the console presentable

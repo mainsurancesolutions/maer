@@ -43,14 +43,14 @@ async function readDocs(files, fields){
 	//Map docx styles to html styles
 	let options = {
 		styleMap: [
-			"p[style-name='Corp 1'] => h2:fresh",
-			"p[style-name='MTGen1 L1'] => h2:fresh",
-			"p[style-name='Article_L1'] => h2:fresh",
-			"p[style-name='Heading 1'] => h2:fresh",
-			"p[style-name='Corp 2'] => h3:fresh",
-			"p[style-name='MTGen2 L2'] => h3:fresh",
-			"p[style-name='Article_L2'] => h3:fresh",
-			"p[style-name='Heading 2'] => h3:fresh"
+			"p[style-name='Corp 1'] => h1:fresh",
+			"p[style-name='MTGen1 L1'] => h1:fresh",
+			"p[style-name='Article_L1'] => h1:fresh",
+			"p[style-name='Heading 1'] => h1:fresh",
+			"p[style-name='Corp 2'] => h2:fresh",
+			"p[style-name='MTGen2 L2'] => h2:fresh",
+			"p[style-name='Article_L2'] => h2:fresh",
+			"p[style-name='Heading 2'] => h2:fresh"
 		]
 	}
 	for(let i=0; i<numOfFiles; i++){
@@ -78,8 +78,8 @@ function findDiffs(fields, tocBlock){
 
 	let diffText
 	let docElements
+	let showNextH1 = false
 	let showNextH2 = false
-	let showNextH3 = false
 	//Iterate through all docs
 	for(let i = 1; i < rippedHtml.length; i++){
 		fields[i].innerHTML = diff(rippedHtml[i-1], rippedHtml[i])
@@ -92,26 +92,10 @@ function findDiffs(fields, tocBlock){
 		docElements = fields[i].childNodes
 		for(let j = docElements.length-1; j >= 0; j--){
 			switch(docElements[j].tagName){
-				//If its a P tag, check if its has insertions/deletions
-				case 'P':
-					for(let k = 0; k < docElements[j].childNodes.length; k++){
-						//If we find a change, we leave it visible and make sure the next h2/h3 tags are shown
-						if(docElements[j].childNodes[k].tagName === 'INS' || docElements[j].childNodes[k].tagName === 'DEL'){
-							showNextH3 = true
-							showNextH2 = true
-							break
-						}
-						//If we haven't found an ins or del tag, remove the paragraph
-						if(k === docElements[j].childNodes.length-1 && !(docElements[j].childNodes[k].tagName === 'INS' || docElements[j].childNodes[k].tagName === 'DEL')){
-							docElements[j].style.display = "none"
-							break
-						}
-					}
-					break
-				//If we found a p tag with changes, we wanna show the category/subcategory before it
-				case 'H2':
-					if(showNextH2)
-						showNextH2 = false
+				//If we found a tag with changes, we wanna show the category/subcategory before it
+				case 'H1':
+					if(showNextH1)
+						showNextH1 = false
 					else
 						docElements[j].style.display = "none"
 					//We only wanna catalogue the table of contents once
@@ -120,15 +104,31 @@ function findDiffs(fields, tocBlock){
 						subSections = []
 					}
 					break
-				case 'H3':
-					if(showNextH3)
-						showNextH3 = false
+				case 'H2':
+					if(showNextH2)
+						showNextH2 = false
 					else
 						docElements[j].style.display = "none"
 					if(i === 1){
 						subSections.push(docElements[j].textContent)
 					}
 					
+					break
+				default:
+					//Check if its has insertions/deletions
+					for(let k = 0; k < docElements[j].childNodes.length; k++){
+						//If we find a change, we leave it visible and make sure the next h2/h3 tags are shown
+						if(docElements[j].childNodes[k].tagName === 'INS' || docElements[j].childNodes[k].tagName === 'DEL'){
+							showNextH2 = true
+							showNextH1 = true
+							break
+						}
+						//If we haven't found an ins or del tag, remove the paragraph
+						if(k === docElements[j].childNodes.length-1 && !(docElements[j].childNodes[k].tagName === 'INS' || docElements[j].childNodes[k].tagName === 'DEL')){
+							docElements[j].style.display = "none"
+							break
+						}
+					}
 					break
 			}
 		}

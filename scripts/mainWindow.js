@@ -109,14 +109,19 @@ ipc.on('loadFile', async (event, arg) =>{
 	document.getElementById('compare-button').click()
 })
 
-//Read and render provided documents
+//Read and render all non-hidden documents
 document.getElementById('compare-button').addEventListener('click', () =>{
+	let shownDocs = []
+	//Find out which docs are hidden
+	for(let i = 0; i < docs.length; i++)
+		if(docSlots[i].style.display !== "none")
+			shownDocs.push(docs[i])
 	//At LEAST the first 2 docs have to be filled
-	if(docs.length <= 2){
-		alert("You must upload at least 2 files to be compared")
+	if(shownDocs.length <= 2){
+		alert("You must compare at least 2 documents")
 		return false
 	}
-	compareScript.render(docs, docSlots, document.getElementById('table-of-contents'))
+	compareScript.render(shownDocs, docSlots, document.getElementById('table-of-contents'))
 	//Hide the last unused slot
 	if(docs[docBlocks.length-1] === null)
 		docBlocks[docBlocks.length-1].style.display= "none"
@@ -146,8 +151,7 @@ document.getElementById('compare-button').addEventListener('click', () =>{
 			docBlocks[i].style.maxWidth = '20vw'
 			docBlocks[i].style.minWidth = '15vw'
 		}
-	//Implement the ability to click on a section and have all docs
-	//scroll to it
+	//Implement the ability to click on a section and have all docs scroll to it
 	setUpScrollFunction()
 })
 
