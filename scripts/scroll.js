@@ -11,13 +11,13 @@ module.exports ={
 			//When we find it, scroll to it using scrollTo
 			for(let j = 0; j < (h2s.length + h3s.length); j++){
 				if(j < h2s.length){
-					if(h2s[j].textContent === clickedTextContent){
+					if(h2s[j].textContent === clickedTextContent && h2s[j].style.display !== "none"){
 						scrollTo(docBlocks[i], h2s[j])
 						break
 					}
 				}
 				else
-					if(h3s[j-h2s.length].textContent === clickedTextContent){
+					if(h3s[j-h2s.length].textContent === clickedTextContent && h3s[j-h2s.length].style.display !== "none"){
 						scrollTo(docBlocks[i], h3s[j-h2s.length])
 						break
 					}
@@ -43,6 +43,8 @@ module.exports ={
 				//Now rip the textContent from each one so we have an array of strings
 				allParagraphsText = Array.from(allParagraphs).map(x => x.textContent)
 				bestMatch = stringSimilarity.findBestMatch(clickedTextContent, allParagraphsText)
+				//Since each doc only shows paragraphs with differences, scrolling to a paragraph that's an
+				//exact match causes issues
 				if(bestMatch.ratings[bestMatch.bestMatchIndex].rating !== 1)
 					scrollTo(docBlocks[i], allParagraphs[bestMatch.bestMatchIndex])
 			}
