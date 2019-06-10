@@ -1,8 +1,6 @@
 To-do list:
 Hide certain docs and re-compare to show differences between only visible docs
-Hide table at the bottom if no changes
 Make the console presentable
-Fix loading docs (sometimes last one doesnt load)
 Fix adding new version after comparing
 Search bar
 Definitions page
