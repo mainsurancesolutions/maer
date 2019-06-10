@@ -1,5 +1,4 @@
 To-do list:
-Hide certain docs and re-compare to show differences between only visible docs
 Make the console presentable
 Fix adding new version after comparing
 Search bar
@@ -7,6 +6,7 @@ Definitions page
 Right click a term to have definitions pop out
 Front-end clean-up:
 	Add new version
+	Hiding docs
 	Empty slots when you load
 	Everything, really
 Security Verification

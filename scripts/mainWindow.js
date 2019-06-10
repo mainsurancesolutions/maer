@@ -146,16 +146,6 @@ document.getElementById('compare-button').addEventListener('click', () =>{
 	}
 	//Reveal add button
 	document.getElementById('add-button').style.display= "inline-block"
-	//Adjust width of docblocks based on how many docs are present
-	if(docs[2] === null || docs[2] === undefined){
-		for(let i = 0; i < docBlocks.length; i++)
-			docBlocks[i].style.maxWidth = '33vw'
-	}
-	else
-		for(let i = 0; i < docBlocks.length; i++){
-			docBlocks[i].style.maxWidth = '20vw'
-			docBlocks[i].style.minWidth = '15vw'
-		}
 	//Implement the ability to click on a section and have all docs scroll to it
 	setUpScrollFunction()
 })
