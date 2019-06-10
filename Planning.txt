@@ -24,3 +24,10 @@ Scrollbar through docs (unlimited)
 Hide console
 Make sure the clients feel secure
 Scroll through one doc, it scrolls through all
+Show article numbers
+Go even deeper in terms of layering (article 1, section 1.01, a)
+Make bottom buttons side-by-side to give more space to the docs
+Indicate changed sections, mostly hide unchanged
+Should be able to open tearoff windows from an existing tearoff window, recursively if you like
+Tearoff appears if you hover for a bit (1 second maybe)
+Simplify buttons (change edit to Open latest document (clean), change load to Open a Project)
