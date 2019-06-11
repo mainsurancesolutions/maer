@@ -167,6 +167,7 @@ function findDiffs(fields, tocBlock){
 					newSubListItem.classList.add("subsection")
 					newSubListItem.appendChild(document.createTextNode(subsectionNumberString + tableOfContents[i][1][j]))
 					tocBlock.appendChild(newSubListItem)
+					newSubListItem.style.display = "none"
 				}
 			}
 		}
