@@ -136,8 +136,9 @@ document.getElementById('compare-button').addEventListener('click', () =>{
 	//Show 'hide' buttons
 	for(let i = 0; i < docBlocks.length; i++)
 		hideButtons[i].style.display = "inline-block"
-	//Show 'save' button
+	//Show 'save' button and hide 'load' button
 	document.getElementById('save-button').style.display= "inline-block"
+	document.getElementById('load-button').style.display= "none"
 	//Change doc titles
 	for(let i = 0; i < docBlocks.length; i++){
 		docTitleSlots[i].style.display = "inline-block"

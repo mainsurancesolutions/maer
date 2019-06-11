@@ -155,9 +155,10 @@ function findDiffs(fields, tocBlock){
 			for(let i = 0; i < tableOfContents.length; i++){
 				newListItem = document.createElement("li")
 				newListItem.classList.add("section")
-				newListItem.appendChild(hideSectionButtonElement.cloneNode(true))
+				//newListItem.appendChild(hideSectionButtonElement.cloneNode(true))
 				newListItem.appendChild(document.createTextNode((i+1) + ". " + tableOfContents[i][0]))
 				tocBlock.appendChild(newListItem)
+				tocBlock.insertBefore(hideSectionButtonElement.cloneNode(true), newListItem)
 				for(let j = 0; j < tableOfContents[i][1].length; j++){
 					//Subsection number must be of the form 1.01, 1.02, 1.03, ..., 1.10, 1.11, ...
 					if(j < 9)
