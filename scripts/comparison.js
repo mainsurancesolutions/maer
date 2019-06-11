@@ -80,7 +80,7 @@ function findDiffs(fields, tocBlock){
 
 	let diffText
 	let docElements
-	let showNextH1 = false
+	let showNextH1 = 0
 	let showNextH2 = false
 	//Iterate through all docs
 	for(let i = 1; i < rippedHtml.length; i++){
@@ -96,8 +96,8 @@ function findDiffs(fields, tocBlock){
 			switch(docElements[j].tagName){
 				//If we found a tag with changes, we wanna show the category/subcategory before it
 				case 'H1':
-					if(showNextH1)
-						showNextH1 = false
+					if(showNextH1 > 0)
+						showNextH1--
 					else
 						docElements[j].style.display = "none"
 					//We only wanna catalogue the table of contents once
@@ -122,7 +122,7 @@ function findDiffs(fields, tocBlock){
 						//If we find a change, we leave it visible and make sure the next h2/h3 tags are shown
 						if(docElements[j].childNodes[k].tagName === 'INS' || docElements[j].childNodes[k].tagName === 'DEL'){
 							showNextH2 = true
-							showNextH1 = true
+							showNextH1 = 2
 							break
 						}
 						//If we haven't found an ins or del tag, remove the paragraph
@@ -143,18 +143,25 @@ function findDiffs(fields, tocBlock){
 			[[section, [subsections]], [section, [subsections]], ...]
 			So we will iterate through the array to each [section, [subsections]]
 			Then create a new listitem for each section with a sub-list and listitems for each subsection
+			Use a counter to determine subsection numbers
 			*/
 			let newListItem
+			let subsectionNumberString = ""
 			let document = tocBlock.ownerDocument
 			for(let i = 0; i < tableOfContents.length; i++){
 				newListItem = document.createElement("li")
-				newListItem.appendChild(document.createTextNode(tableOfContents[i][0]))
+				newListItem.appendChild(document.createTextNode((i+1) + ". " + tableOfContents[i][0]))
 				newListItem.classList.add("section")
 				tocBlock.appendChild(newListItem)
 				for(let j = 0; j < tableOfContents[i][1].length; j++){
+					//Subsection number must be of the form 1.01, 1.02, 1.03, ..., 1.10, 1.11, ...
+					if(j < 9)
+						subsectionNumberString = (i + 1) + ".0" + (j + 1) + ". "
+					else
+						subsectionNumberString = (i + 1) + "." + (j + 1) + ". "
 					newSubListItem = document.createElement("li")
 					newSubListItem.classList.add("subsection")
-					newSubListItem.appendChild(document.createTextNode(tableOfContents[i][1][j]))
+					newSubListItem.appendChild(document.createTextNode(subsectionNumberString + tableOfContents[i][1][j]))
 					tocBlock.appendChild(newSubListItem)
 				}
 			}

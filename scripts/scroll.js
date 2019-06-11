@@ -2,7 +2,8 @@ let stringSimilarity = require('string-similarity')
 
 module.exports ={
 	findSection: function(clickedSection, docSlots, docBlocks){
-		let clickedTextContent = clickedSection.textContent
+		//remove the section number
+		let clickedTextContent = clickedSection.textContent.substring(clickedSection.textContent.indexOf(clickedSection.textContent.split(" ")[1]))
 		for(let i = 0; i < docSlots.length; i++){
 			h2s = docSlots[i].getElementsByTagName("H2")
 			h3s = docSlots[i].getElementsByTagName("H3")

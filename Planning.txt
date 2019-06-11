@@ -1,9 +1,14 @@
 To-do list:
-Make the console presentable
+Collapsable Table of Contents subsections
+Indicate changed sections, mostly hide unchanged
+Page Numbers
 Fix adding new version after comparing
+Fix issue where not all docs load sometimes
+Simplify buttons
+Hover a term to have definitions pop out (recursive)
+Scroll through one doc, it scrolls through all
 Search bar
 Definitions page
-Right click a term to have definitions pop out
 Front-end clean-up:
 	Add new version
 	Hiding docs
@@ -11,22 +16,21 @@ Front-end clean-up:
 	Everything, really
 Security Verification
 
-'Console' window:
-Search bar with favorites and search button
-Table of contents with search algorithm
+Ideas for collapsable ToC sections:
+
 
 Notes from reviews:
-Don't show all slots from the start in case they just want 2
-No moving contracts
+//Don't show all slots from the start in case they just want 2
+//No moving contracts
 drag docs and drop them on the app to open them (like google docs importing)
-Add new doc when open a save (button)
-Scrollbar through docs (unlimited)
-Hide console
+//Add new doc when open a save (button)
+//Scrollbar through docs (unlimited)
+//Hide console
 Make sure the clients feel secure
 Scroll through one doc, it scrolls through all
 Show article numbers
 Go even deeper in terms of layering (article 1, section 1.01, a)
-Make bottom buttons side-by-side to give more space to the docs
+//Make bottom buttons side-by-side to give more space to the docs.
 Indicate changed sections, mostly hide unchanged
 Should be able to open tearoff windows from an existing tearoff window, recursively if you like
 Tearoff appears if you hover for a bit (1 second maybe)
