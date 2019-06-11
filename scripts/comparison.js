@@ -81,7 +81,7 @@ function findDiffs(fields, tocBlock){
 
 	let diffText
 	let docElements
-	let showNextH1 = 0
+	let showNextH1 = false
 	let showNextH2 = false
 	//Iterate through all docs
 	for(let i = 1; i < rippedHtml.length; i++){
@@ -97,8 +97,9 @@ function findDiffs(fields, tocBlock){
 			switch(docElements[j].tagName){
 				//If we found a tag with changes, we wanna show the category/subcategory before it
 				case 'H1':
-					if(showNextH1 > 0)
-						showNextH1--
+					if(showNextH1){
+						showNextH1 = false
+					}
 					else
 						docElements[j].style.display = "none"
 					//We only wanna catalogue the table of contents once
@@ -123,7 +124,7 @@ function findDiffs(fields, tocBlock){
 						//If we find a change, we leave it visible and make sure the next h2/h3 tags are shown
 						if(docElements[j].childNodes[k].tagName === 'INS' || docElements[j].childNodes[k].tagName === 'DEL'){
 							showNextH2 = true
-							showNextH1 = 2
+							showNextH1 = true
 							break
 						}
 						//If we haven't found an ins or del tag, remove the paragraph

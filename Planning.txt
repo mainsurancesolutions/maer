@@ -1,5 +1,4 @@
 To-do list:
-Collapsable Table of Contents subsections
 Indicate changed sections, mostly hide unchanged
 Page Numbers
 Fix adding new version after comparing
@@ -31,7 +30,7 @@ drag docs and drop them on the app to open them (like google docs importing)
 //Hide console
 Make sure the clients feel secure
 Scroll through one doc, it scrolls through all
-Show article numbers
+//Show article numbers
 Go even deeper in terms of layering (article 1, section 1.01, a)
 //Make bottom buttons side-by-side to give more space to the docs.
 Indicate changed sections, mostly hide unchanged
