@@ -133,6 +133,11 @@ ol{
 	padding-left: 10px;
 }
 
+.hide-section{
+	height: 12px;
+	width: 12px;
+}
+
 .file-button{
 	width: 15vw;
 	height: auto;

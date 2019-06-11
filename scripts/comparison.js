@@ -1,5 +1,6 @@
 const mammoth = require('mammoth')
 const diff = require('node-htmldiff')
+let hideSectionButton = fs.readFileSync('hideSectionButton.html')
 
 //HTML ripped from files as well as error/warning messages
 let rippedHtml
@@ -148,10 +149,13 @@ function findDiffs(fields, tocBlock){
 			let newListItem
 			let subsectionNumberString = ""
 			let document = tocBlock.ownerDocument
+			let hideSectionButtonElement = document.createElement('span')
+			hideSectionButtonElement.innerHTML = hideSectionButton
 			for(let i = 0; i < tableOfContents.length; i++){
 				newListItem = document.createElement("li")
-				newListItem.appendChild(document.createTextNode((i+1) + ". " + tableOfContents[i][0]))
 				newListItem.classList.add("section")
+				newListItem.appendChild(hideSectionButtonElement.cloneNode(true))
+				newListItem.appendChild(document.createTextNode((i+1) + ". " + tableOfContents[i][0]))
 				tocBlock.appendChild(newListItem)
 				for(let j = 0; j < tableOfContents[i][1].length; j++){
 					//Subsection number must be of the form 1.01, 1.02, 1.03, ..., 1.10, 1.11, ...
@@ -166,6 +170,5 @@ function findDiffs(fields, tocBlock){
 				}
 			}
 		}
-		
 	}
 }

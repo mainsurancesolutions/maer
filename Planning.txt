@@ -17,8 +17,11 @@ Front-end clean-up:
 Security Verification
 
 Ideas for collapsable ToC sections:
-
-
+	Add an "arrow" button to each article in ToC as it's being generated
+	Have event listener for button click
+		Change arrow from hidden to shown
+		Iterate through list starting from the part with the button, keep making the next listitems hidden until you reach a new article
+		Do the same but make their display inline-block to un-hide
 Notes from reviews:
 //Don't show all slots from the start in case they just want 2
 //No moving contracts

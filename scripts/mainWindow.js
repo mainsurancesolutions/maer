@@ -176,6 +176,30 @@ async function setUpScrollFunction(){
 				paragraphs[j].addEventListener('click', ()=>{findParagraphs(i, event.target.textContent)})
 			}
 		}
+		//then set up the drop-down part of the section in the ToC
+		let articles = document.getElementsByClassName("section")
+		let articleHideButtons = document.getElementsByClassName("hide-section")
+		for(let i = 0; i < articleHideButtons.length; i++){
+			//Find where the button was pressed, then hide all subsections after that
+			//If already hidden, do the opposite
+			articles[i].addEventListener('click', ()=>{
+				for(let j = (Array.from(listItems).indexOf(articles[i]) + 1); j < listItems.length; j++){
+					console.log(listItems[j].style.display)
+					//If we've reached the next section, stop hiding/showing
+					if(listItems[j].classList.contains("section")){
+						break
+					}
+					if(listItems[j].style.display !== "none"){
+						listItems[j].style.display = "none"
+						articleHideButtons[i].src = "images/showSection.png"
+					}
+					else{
+						listItems[j].style.display = "inline-block"
+						articleHideButtons[i].src = "images/hideSection.png"
+					}
+				}
+			})
+		}
 	})
 }
 
