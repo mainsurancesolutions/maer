@@ -182,7 +182,7 @@ async function setUpScrollFunction(){
 		for(let i = 0; i < articleHideButtons.length; i++){
 			//Find where the button was pressed, then hide all subsections after that
 			//If already hidden, do the opposite
-			articles[i].addEventListener('click', ()=>{
+			articleHideButtons[i].addEventListener('click', ()=>{
 				for(let j = (Array.from(listItems).indexOf(articles[i]) + 1); j < listItems.length; j++){
 					console.log(listItems[j].style.display)
 					//If we've reached the next section, stop hiding/showing
@@ -194,7 +194,7 @@ async function setUpScrollFunction(){
 						articleHideButtons[i].src = "images/showSection.png"
 					}
 					else{
-						listItems[j].style.display = "inline-block"
+						listItems[j].style.display = ""
 						articleHideButtons[i].src = "images/hideSection.png"
 					}
 				}

@@ -5,21 +5,21 @@ module.exports ={
 		//remove the section number
 		let clickedTextContent = clickedSection.textContent.substring(clickedSection.textContent.indexOf(clickedSection.textContent.split(" ")[1]))
 		for(let i = 0; i < docSlots.length; i++){
+			h1s = docSlots[i].getElementsByTagName("H1")
 			h2s = docSlots[i].getElementsByTagName("H2")
-			h3s = docSlots[i].getElementsByTagName("H3")
-			//Iterate through all of the h2s then all of the h3s
+			//Iterate through all of the h1s then all of the h2s
 			//to find the selected section
 			//When we find it, scroll to it using scrollTo
-			for(let j = 0; j < (h2s.length + h3s.length); j++){
-				if(j < h2s.length){
-					if(h2s[j].textContent === clickedTextContent && h2s[j].style.display !== "none"){
-						scrollTo(docBlocks[i], h2s[j])
+			for(let j = 0; j < (h1s.length + h2s.length); j++){
+				if(j < h1s.length){
+					if(h1s[j].textContent === clickedTextContent && h1s[j].style.display !== "none"){
+						scrollTo(docBlocks[i], h1s[j])
 						break
 					}
 				}
 				else
-					if(h3s[j-h2s.length].textContent === clickedTextContent && h3s[j-h2s.length].style.display !== "none"){
-						scrollTo(docBlocks[i], h3s[j-h2s.length])
+					if(h2s[j-h1s.length].textContent === clickedTextContent && h2s[j-h1s.length].style.display !== "none"){
+						scrollTo(docBlocks[i], h2s[j-h1s.length])
 						break
 					}
 			}
