@@ -179,23 +179,27 @@ async function setUpScrollFunction(){
 		}
 		//then set up the drop-down part of the section in the ToC
 		let articles = document.getElementsByClassName("section")
+		let allSections = Array.from(consoleBlock.getElementsByTagName('LI'))
+		console.log(allSections)
 		let articleHideButtons = document.getElementsByClassName("hide-section")
+		//Go through all the sections and assign them which subsections to hide when clicked
 		for(let i = 0; i < articleHideButtons.length; i++){
 			//Find where the button was pressed, then hide all subsections after that
 			//If already hidden, do the opposite
 			articleHideButtons[i].addEventListener('click', ()=>{
-				for(let j = (Array.from(listItems).indexOf(articles[i]) + 1); j < listItems.length; j++){
-					console.log(listItems[j].style.display)
+				for(let j = allSections.indexOf(articles[i]) + 1; j < allSections.length; j++){
 					//If we've reached the next section, stop hiding/showing
-					if(listItems[j].classList.contains("section")){
+					console.log(allSections[j])
+					console.log(j)
+					if(allSections[j].classList.contains("section")){
 						break
 					}
-					if(listItems[j].style.display !== "none"){
-						listItems[j].style.display = "none"
+					if(allSections[j].style.display !== "none"){
+						allSections[j].style.display = "none"
 						articleHideButtons[i].src = "images/showSection.png"
 					}
 					else{
-						listItems[j].style.display = ""
+						allSections[j].style.display = ""
 						articleHideButtons[i].src = "images/hideSection.png"
 					}
 				}
