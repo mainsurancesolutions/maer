@@ -107,7 +107,9 @@ function findDiffs(fields, tocBlock){
 					}
 					if(showNextH1){
 						showNextH1 = false
-						changedHeaders.push(docElements[j].textContent)
+						//We only care if the last version has changes
+						if(i === rippedHtml.length-1)
+							changedHeaders.push(docElements[j].textContent)
 					}
 					else
 						docElements[j].style.display = "none"
@@ -119,7 +121,8 @@ function findDiffs(fields, tocBlock){
 					}
 					if(showNextH2){
 						showNextH2 = false
-						changedHeaders.push(docElements[j].textContent)
+						if(i === rippedHtml.length-1)
+							changedHeaders.push(docElements[j].textContent)
 					}
 					else
 						docElements[j].style.display = "none"					
@@ -143,7 +146,7 @@ function findDiffs(fields, tocBlock){
 			}
 		}
 		
-		if(i === 1){
+		if(i === rippedHtml.length-1){
 			tableOfContents.reverse()
 			/*
 			Fill the table of contents
