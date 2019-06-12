@@ -1,5 +1,4 @@
 To-do list:
-Indicate changed sections, mostly hide unchanged
 Page Numbers
 Fix adding new version after comparing
 Fix issue where not all docs load sometimes

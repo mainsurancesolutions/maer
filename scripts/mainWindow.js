@@ -201,6 +201,18 @@ async function setUpScrollFunction(){
 					}
 				}
 			})
+			//If the section has changes, the subsections should start visible
+			if(articles[i].classList.contains('changed')){
+				//First change the button to reflect that the subsections are visible
+				articleHideButtons[i].src = "images/hideSection.png"
+				//Then actually show the subsections
+				for(let j = allSections.indexOf(articles[i]) + 1; j < allSections.length; j++){
+					if(allSections[j].classList.contains("section")){
+						break
+					}
+					allSections[j].style.display = ""
+				}
+			}
 		}
 	})
 }
