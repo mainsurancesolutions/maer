@@ -180,7 +180,6 @@ async function setUpScrollFunction(){
 		//then set up the drop-down part of the section in the ToC
 		let articles = document.getElementsByClassName("section")
 		let allSections = Array.from(consoleBlock.getElementsByTagName('LI'))
-		console.log(allSections)
 		let articleHideButtons = document.getElementsByClassName("hide-section")
 		//Go through all the sections and assign them which subsections to hide when clicked
 		for(let i = 0; i < articleHideButtons.length; i++){
@@ -189,8 +188,6 @@ async function setUpScrollFunction(){
 			articleHideButtons[i].addEventListener('click', ()=>{
 				for(let j = allSections.indexOf(articles[i]) + 1; j < allSections.length; j++){
 					//If we've reached the next section, stop hiding/showing
-					console.log(allSections[j])
-					console.log(j)
 					if(allSections[j].classList.contains("section")){
 						break
 					}

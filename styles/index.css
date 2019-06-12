@@ -142,6 +142,10 @@ ol{
 	padding-left: 10px;
 }
 
+.changed{
+	color: red;
+}
+
 .hide-section{
 	height: 12px;
 	width: 12px;

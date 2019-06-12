@@ -81,6 +81,9 @@ function findDiffs(fields, tocBlock){
 
 	let diffText
 	let docElements
+	//We will keep track of all sections that had changes
+	//That way when we populate the table of contents, we can mark which changed
+	let changedHeaders = []
 	let showNextH1 = false
 	let showNextH2 = false
 	//Iterate through all docs
@@ -97,26 +100,29 @@ function findDiffs(fields, tocBlock){
 			switch(docElements[j].tagName){
 				//If we found a tag with changes, we wanna show the category/subcategory before it
 				case 'H1':
-					if(showNextH1){
-						showNextH1 = false
-					}
-					else
-						docElements[j].style.display = "none"
 					//We only wanna catalogue the table of contents once
 					if(i === 1){
 						tableOfContents.push([docElements[j].textContent, subSections.reverse()])
 						subSections = []
 					}
-					break
-				case 'H2':
-					if(showNextH2)
-						showNextH2 = false
+					if(showNextH1){
+						showNextH1 = false
+						changedHeaders.push(docElements[j].textContent)
+					}
 					else
 						docElements[j].style.display = "none"
+					
+					break
+				case 'H2':
 					if(i === 1){
 						subSections.push(docElements[j].textContent)
 					}
-					
+					if(showNextH2){
+						showNextH2 = false
+						changedHeaders.push(docElements[j].textContent)
+					}
+					else
+						docElements[j].style.display = "none"					
 					break
 				default:
 					//Check if its has insertions/deletions
@@ -155,7 +161,9 @@ function findDiffs(fields, tocBlock){
 			for(let i = 0; i < tableOfContents.length; i++){
 				newListItem = document.createElement("li")
 				newListItem.classList.add("section")
-				//newListItem.appendChild(hideSectionButtonElement.cloneNode(true))
+				//If the section contained a change, add the 'changed' class to it
+				if(changedHeaders.includes(tableOfContents[i][0]))
+					newListItem.classList.add("changed")
 				newListItem.appendChild(document.createTextNode((i+1) + ". " + tableOfContents[i][0]))
 				tocBlock.appendChild(newListItem)
 				tocBlock.insertBefore(hideSectionButtonElement.cloneNode(true), newListItem)
@@ -167,6 +175,8 @@ function findDiffs(fields, tocBlock){
 						subsectionNumberString = (i + 1) + "." + (j + 1) + ". "
 					newSubListItem = document.createElement("li")
 					newSubListItem.classList.add("subsection")
+					if(changedHeaders.includes(tableOfContents[i][1][j]))
+						newSubListItem.classList.add("changed")
 					newSubListItem.appendChild(document.createTextNode(subsectionNumberString + tableOfContents[i][1][j]))
 					tocBlock.appendChild(newSubListItem)
 					newSubListItem.style.display = "none"
