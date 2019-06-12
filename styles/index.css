@@ -128,6 +128,15 @@ ol{
 	list-style-type: none;
 }
 
+.section{
+	display: inline;
+}
+
+.section:after{
+	content: "";
+	display: block;
+}
+
 .subsection{
 	list-style-position: inside;
 	padding-left: 10px;
@@ -136,6 +145,7 @@ ol{
 .hide-section{
 	height: 12px;
 	width: 12px;
+	display: inline;
 }
 
 .file-button{
