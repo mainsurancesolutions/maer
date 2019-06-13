@@ -3,6 +3,7 @@ const fs = require('fs')
 const compareScript = require('.\\scripts\\comparison.js')
 const saveScript = require('.\\scripts\\saveManager.js')
 const scrollScript = require('.\\scripts\\scroll.js')
+const popupScript = require('.\\scripts\\popup.js')
 
 let docBlockHTML = fs.readFileSync('docBlock.html')
 
@@ -25,6 +26,8 @@ let docTitleSlots = document.getElementsByClassName('doc-title')
 let uploadTextSlots = document.getElementsByClassName('upload-text')
 
 let docNicknames = [null, null]
+
+let allDefinitions = []
 
 //Buttons on each doc to hide the text from it
 let hideButtons = document.getElementsByClassName('hide-button')
@@ -156,11 +159,22 @@ async function setUpScrollFunction(){
 	function ensureListIsGenerated() {
 	    return new Promise(function (resolve, reject) {
 	        (function waitForListItems(){
-	            if (document.getElementsByTagName('LI')[1] !== undefined) return resolve();
-	            setTimeout(waitForListItems, 5000);
-	        })();
-	    });
+	            if (document.getElementsByTagName('LI')[1] !== undefined) return resolve()
+	            setTimeout(waitForListItems, 5000)
+	        })()
+	    })
 	}
+	//After that, we want a function to make sure all the words have been wrapped in
+	//<span>s for use with the pop-up function
+	/*
+	function ensureWordsAreWrapped() {
+	    return new Promise(function (resolve, reject) {
+	        (function waitForWrappedWords(){
+	            if (document.getElementsByTagName('word')[1] !== undefined) return resolve()
+	            setTimeout(waitForWrappedWords, 5000)
+	        })()
+	    })
+	}*/
 	ensureListIsGenerated().then(function(){
 		//First set up section searching from table of contents
 		let listItems = document.getElementsByTagName('LI')
@@ -213,7 +227,24 @@ async function setUpScrollFunction(){
 					allSections[j].style.display = ""
 				}
 			}
-		}
+		}/*
+		//We will also setup the pop-up functionality here now
+		popupScript.wrapWords(docSlots)
+		//Also generate the definitions
+		allDefinitions = popupScript.getDefs(docSlots)
+		ensureWordsAreWrapped().then(function(){
+			//Wrap each word in a <span class='word'></span>, then set up an event listener
+			//on each of those spans
+			for(let i = 0; i < docs.length; i++){
+				let words = i.getElementsByClass('word')
+				for(let j = 0; j < words.length; j++){
+					words[j].addEventListener('mouseover', (e)=> {
+						popupScript.hover(allDefinitions, e.target, docSlots, i)
+					})
+				}
+			}
+		})*/
+		
 	})
 }
 

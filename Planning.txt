@@ -1,10 +1,11 @@
 To-do list:
+Hover a term to have definitions pop out (recursive)
+Hover a section to have a link pop out
 Page Numbers
+Scroll through one doc, it scrolls through all
+Table of Contents goes layers deeper (Article 1, section 1.01, subsection a)
 Fix adding new version after comparing
 Fix issue where not all docs load sometimes
-Simplify buttons
-Hover a term to have definitions pop out (recursive)
-Scroll through one doc, it scrolls through all
 Search bar
 Definitions page
 Front-end clean-up:
@@ -12,10 +13,48 @@ Front-end clean-up:
 	Hiding docs
 	Empty slots when you load
 	Everything, really
-Security Verification
+Security Verification	
 
-Ideas for indicating which sections have changes
-	
+Hover a term to have definitions pop out ideas:
+/*
+In a new file, first we wrap all words in a doc in a span with a class 'word'
+We create an event listener in the mainWindow, then pass (allDefinitions, event.target, docs)
+*/
+Event listener:
+document.addEventListener('mouseover', (e)=> {
+	if(e.target.classList.contains('word')){
+		popup.hover(allDefinitions, e.target, docs)
+	}
+})
+
+
+//Run this somewhere to generate allDefinitions
+let allDefinitions = []
+/*
+Create an array of arrays of [term, definition] for each doc
+so [ [ [term, definition], [term, definition], [term, definition] ] , [ [term, definition], [term, definition], [term, definition] ], ...]
+*/
+for(let i = 0; i < docs.length; i++){
+	let docTermsAndDefs = []
+	Somehow get an array of all <p> tags in the definitions section in docs[i]
+	for(let j = 0; j < definitions.length; j++){
+		term = definitions[j].split()[0]
+		def = definitions[j].substring(term.length + 1)
+		docTermsAndDefs.push([term, def])
+	}
+	allDefinitions.push(docTermsAndDefs)
+}
+
+
+
+Table of Contents goes layers deeper (Article 1, section 1.01, subsection a) notes:
+Sections are formatted as such:
+This would be the first paragraph v
+3.05 __Financial Statements__ text here
+If there is more than one paragraph in the section, those beyond the first
+will be given letters (a), (b), (c), ...
+Then in *those* sections, if there is more than one paragraph, any paragraphs
+beyond the first will be numbered (i), (ii), (iii), ...
 
 
 Notes from reviews:

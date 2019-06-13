@@ -80,7 +80,7 @@ del{
 
 ins{
 	font-weight: bold;
-	color: green;
+	color: #1cc916;
 	text-decoration: none;
 }
 
@@ -120,6 +120,10 @@ ins{
 	word-wrap: break-word;
 	border-radius: 25px;
 	border: 4px solid #ff0000;
+}
+
+#hide-console{
+	padding-top: 10px;
 }
 
 ol{
