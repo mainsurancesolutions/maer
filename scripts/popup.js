@@ -6,9 +6,9 @@ module.exports ={
 	If you hover over long enough, the definition of that term will appear
 	along with buttons to scroll to it
 	*/
-	hover: function(allDefinitions, clickedWord, docSlots, docNumber){
+	//hover: function(allDefinitions, clickedWord, docSlots, docNumber){
 
-	},
+	//},
 
 	//Populate the allDefinitions array with tuples of terms and their definitions
 	getDefs: function(docSlots){
@@ -46,6 +46,13 @@ module.exports ={
 
 	//Sets up for the hover function by wrapping each word in a <span class='word'></span>
 	wrapWords: function(docSlots){
-
+		for(let i = 0; i < docSlots.length; i++){
+			let textNodes = docSlots[i].childNodes
+			for(let j = 0; j < textNodes.length; j++){
+				console.log(j)
+				textNodes[j].insertAdjacentHTML('beforebegin', '<span class=\'word\'>')
+				textNodes[j].insertAdjacentHTML('afterend', '</span>')
+			}
+		}
 	}
 }

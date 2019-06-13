@@ -227,23 +227,9 @@ async function setUpScrollFunction(){
 					allSections[j].style.display = ""
 				}
 			}
-		}/*
-		//We will also setup the pop-up functionality here now
-		popupScript.wrapWords(docSlots)
+		}
 		//Also generate the definitions
 		allDefinitions = popupScript.getDefs(docSlots)
-		ensureWordsAreWrapped().then(function(){
-			//Wrap each word in a <span class='word'></span>, then set up an event listener
-			//on each of those spans
-			for(let i = 0; i < docs.length; i++){
-				let words = i.getElementsByClass('word')
-				for(let j = 0; j < words.length; j++){
-					words[j].addEventListener('mouseover', (e)=> {
-						popupScript.hover(allDefinitions, e.target, docSlots, i)
-					})
-				}
-			}
-		})*/
 		
 	})
 }
