@@ -164,17 +164,7 @@ async function setUpScrollFunction(){
 	        })()
 	    })
 	}
-	//After that, we want a function to make sure all the words have been wrapped in
-	//<span>s for use with the pop-up function
-	/*
-	function ensureWordsAreWrapped() {
-	    return new Promise(function (resolve, reject) {
-	        (function waitForWrappedWords(){
-	            if (document.getElementsByTagName('word')[1] !== undefined) return resolve()
-	            setTimeout(waitForWrappedWords, 5000)
-	        })()
-	    })
-	}*/
+	
 	ensureListIsGenerated().then(function(){
 		//First set up section searching from table of contents
 		let listItems = document.getElementsByTagName('LI')
@@ -230,7 +220,6 @@ async function setUpScrollFunction(){
 		}
 		//Also generate the definitions
 		allDefinitions = popupScript.getDefs(docSlots)
-		
 	})
 }
 
