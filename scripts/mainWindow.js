@@ -28,6 +28,7 @@ let uploadTextSlots = document.getElementsByClassName('upload-text')
 let docNicknames = [null, null]
 
 let allDefinitions = []
+let hoverTimer
 
 //Buttons on each doc to hide the text from it
 let hideButtons = document.getElementsByClassName('hide-button')
@@ -164,7 +165,7 @@ async function setUpScrollFunction(){
 	        })()
 	    })
 	}
-	
+
 	ensureListIsGenerated().then(function(){
 		//First set up section searching from table of contents
 		let listItems = document.getElementsByTagName('LI')
@@ -220,6 +221,20 @@ async function setUpScrollFunction(){
 		}
 		//Also generate the definitions
 		allDefinitions = popupScript.getDefs(docSlots)
+		//Start watching for mouse hovers
+		for(let i = 0; i < docSlots.length-1; i++){
+			docSlots[i].addEventListener('mousemove', () =>{
+				clearTimeout(hoverTimer)
+			})
+			docSlots[i].addEventListener('mousemove', () =>{
+				hoverTimer = setTimeout(() =>{
+					alert('Hovered')
+				}, 1500)
+			})
+			docSlots[i].addEventListener('mouseout', () =>{
+				clearTimeout(hoverTimer)
+			})
+		}
 	})
 }
 

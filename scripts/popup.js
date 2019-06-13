@@ -6,7 +6,7 @@ module.exports ={
 	If you hover over long enough, the definition of that term will appear
 	along with buttons to scroll to it
 	*/
-	//hover: function(allDefinitions, clickedWord, docSlots, docNumber){
+	//hover: function(allDefinitions, hoveredWord, docSlots, docNumber){
 
 	//},
 
