@@ -226,9 +226,13 @@ async function setUpScrollFunction(){
 			docSlots[i].addEventListener('mousemove', () =>{
 				clearTimeout(hoverTimer)
 			})
-			docSlots[i].addEventListener('mousemove', () =>{
+			docSlots[i].addEventListener('mousemove', (mouseEvent) =>{
 				hoverTimer = setTimeout(() =>{
-					alert('Hovered')
+					//Get the element that was hover'd
+					let hoveredElement = document.elementFromPoint(mouseEvent.screenX, mouseEvent.screenY)
+					let mousePos = [mouseEvent.screenX, mouseEvent.screenY]
+					//Prepare the element to have a hover box appear
+					wrapWords(hoveredElement, mousePos)
 				}, 1500)
 			})
 			docSlots[i].addEventListener('mouseout', () =>{
@@ -387,4 +391,41 @@ function docsFull(force = false){
 			document.getElementsByClassName('doc-title')[docNumber-1].style.textAlign = "center"
 		}
 	})
+}
+
+//Now that we know what paragraph was hovered, split it into words
+//then find the exact word that was hover'd
+function wrapWords(hoveredElement, mousePos){
+	let paragraph
+	switch(hoveredElement.tagName){
+		case 'INS' || 'DEL':
+			paragraph = hoveredElement.parentElement
+			break
+		case 'P':
+			paragraph = hoveredElement
+			break
+		case 'SPAN':
+			//This will happen if the paragraph has been hovered once before
+			//in which case it's already prepared to be sent off
+			return
+		default:
+			return
+	}
+	//Split the paragraph into words and wrap them in spans
+	console.log(paragraph.innerHTML)
+	let splitParagraph = paragraph.innerHTML.split(" ")
+	let reconstructed = ""
+	for(let i = 0; i < splitParagraph.length; i++){
+		//We don't wanna insert <span> tags in the middle of existing tags
+		if(splitParagraph[i].includes('<') || splitParagraph[i].includes('>') || splitParagraph.length < 1)
+			reconstructed += splitParagraph[i] + " "
+		else{
+			reconstructed += '<span>' + splitParagraph[i] + '</span>' + " "
+		}
+	}
+	paragraph.innerHTML = reconstructed
+	//Now that we've split the paragraph, check the hover'd element once again
+	let hoveredWord = document.elementFromPoint(mousePos[0], mousePos[1]).innerText
+	console.log(hoveredWord)
+	//popupScript.hover(allDefinitions, mousePos, hoveredWord, docSlots, docNumber)
 }
