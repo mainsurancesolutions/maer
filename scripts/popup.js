@@ -7,18 +7,75 @@ module.exports ={
 	We want to give the user the definition as it is defined in the current document
 	If the definition is not present in the given document, see if it's in the others, starting with the most recent doc
 	*/
-	/*
-	hover: function(allDefinitions, hoveredWord, docSlots, docNumber){
+	hover: function(allDefinitions, hoveredWord, mousePos, docSlots, docNumber){
 		//Remember that allDefinitions[docNumber] is the array of [term, definition] for the given doc
 		//We'll populate this with all of the terms from the current doc, then compare the hovered word to them
 		//to find the closest match
+		let definition
+		/*
+		We will extract from the definitions array the following:
+		[any term that has the hovered word as a substring, the index of said term]
+		We will then take the longest substring, and get the definition from that
+		*/
+		//First trim the end of the term if it's a period or comma
+		console.log(hoveredWord)
+		if(hoveredWord.substring(-1) === "," || hoveredWord.substring(-1) === "." || hoveredWord.substring(-1) === "\"")
+			hoveredWord = hoveredWord.slice(0, -1)
+		if(hoveredWord[0] === "\"")
+			hoveredWord = hoveredWord.substring(1)
 		let docTerms = []
-		for(let i = ; i < allDefinitions[docNumber].length; i++){
-			docTerms.push(allDefinitions[docNumber][i])
+		console.log(hoveredWord)
+		for(let i = 0; i < allDefinitions[docNumber].length; i++){
+			if(allDefinitions[docNumber][i][0].includes(hoveredWord)){
+				docTerms.push([allDefinitions[docNumber][i][0], i])
+			}
 		}
-		bestMatch = stringSimilarity.findBestMatch(hoveredWord, docTerms)
-
-	},*/
+		//In case we don't find it there, we also check the most recent doc and compare
+		let lastDocTerms = []
+		for(let i = 0; i < allDefinitions[docSlots.length-2].length; i++){
+			if(allDefinitions[docSlots.length-2][i][0].includes(hoveredWord)){
+				lastDocTerms.push([allDefinitions[docSlots.length-2][i][0], i])
+			}
+		}
+		//If there's no matches in either, we're done here
+		if(docTerms.length === 0 && lastDocTerms.length === 0){
+			console.log("No match found for " + hoveredWord)
+			return
+		}
+		//If there's only 1 match, we can use that
+		if(docTerms.length === 1 && lastDocTerms.length === 0){
+			console.log(hoveredWord + ": " + allDefinitions[docNumber][docTerms[0][1]][1])
+			return
+		}
+		else if(docTerms.length === 0 && lastDocTerms === 1){
+			console.log(hoveredWord + ": " + allDefinitions[docSlots.length-2][lastDocTerms[0][1]][1])
+			return
+		}
+		//If we reach here, both docs contain multiple matches for the definition
+		//Now find the shortest term containing the substring (We don't wanna return the definition of 'tax returns' when they hover 'tax')
+		let shortest = docTerms[0][0].length
+		let shortestIndex = 0
+		for(let i = 0; i < docTerms.length; i++){
+			if(docTerms[i][0].length < shortest){
+				shortest = docTerms[i][0].length
+				shortestIndex = i
+			}
+		}
+		let shortestLast = lastDocTerms[0][0].length
+		let shortestIndexLast = 0
+		for(let i = 0; i < lastDocTerms.length; i++){
+			if(lastDocTerms[i][0].length < shortestLast){
+				shortestLast = lastDocTerms[i][0].length
+				shortestIndexLast = i
+			}
+		}
+		//Now that we've found the shortest match, find it in the allDefinitions array and show that to the user
+		if(shortest <= shortestLast)
+			definition = allDefinitions[docNumber][docTerms[shortestIndex][1]]
+		else
+			definition = allDefinitions[docSlots.length-2][lastDocTerms[shortestIndexLast][1]]
+		console.log(definition[0] + ": " + definition[1])
+	},
 
 	//Populate the allDefinitions array with tuples of terms and their definitions
 	getDefs: function(docSlots){
@@ -52,7 +109,6 @@ module.exports ={
 			}
 			allDefinitions.push(docTermsAndDefs)
 		}
-		console.log(allDefinitions)
 		return allDefinitions
 	}
 }

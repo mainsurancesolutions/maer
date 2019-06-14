@@ -411,12 +411,11 @@ function wrapWords(hoveredElement, mousePos, docNumber){
 		case 'SPAN':
 			//This will happen if the paragraph has been hovered once before
 			//in which case it's already prepared to be sent off
-			//return popupScript.hover(allDefinitions, hoveredElement.innerText, docSlots, docNumber)
+			return popupScript.hover(allDefinitions, hoveredElement.innerText, mousePos, docSlots, docNumber)
 		default:
 			return
 	}
 	//Split the paragraph into words and wrap them in spans
-	console.log(paragraph.innerHTML)
 	let splitParagraph = paragraph.innerHTML.split(" ")
 	let reconstructed = ""
 	let inATag = null
@@ -451,13 +450,20 @@ function wrapWords(hoveredElement, mousePos, docNumber){
 			//Additionally, if the text is in quotations, keep the quote together
 			//This will make it possible to get the definitions of things like "Tax Returns", which is multiple words
 			if(splitParagraph[i][0] === '\"' && splitParagraph[i][splitParagraph[i].length-1] !== '\"' && i === 0){
-				reconstructed += '<span>' + splitParagraph[i] + " " + splitParagraph[i+1] + '</span>' + " "
-				i++
+				reconstructed += '<span>' + splitParagraph[i] + " "
+				let k = i+1
+				while(splitParagraph[k] !== undefined){
+					i++
+					reconstructed += splitParagraph[k] + " "
+					if(splitParagraph[k][splitParagraph[k].length-1] === "\"")
+						break
+					k++
+		
+				}
+				reconstructed += "</span> "
 			}
 			else
-				reconstructed += '<span>' + splitParagraph[i] + '</span>' + " "
-			
-
+				reconstructed += '<span>' + splitParagraph[i] + '</span> '
 		}
 		else
 			reconstructed += splitParagraph[i] + " "
@@ -466,6 +472,5 @@ function wrapWords(hoveredElement, mousePos, docNumber){
 	paragraph.innerHTML = reconstructed
 	//Now that we've split the paragraph, check the hover'd element once again
 	let hoveredWord = document.elementFromPoint(mousePos[0], mousePos[1]).innerText
-	console.log(hoveredWord)
-	//popupScript.hover(allDefinitions, mousePos, hoveredWord, docSlots, docNumber)
+	popupScript.hover(allDefinitions, hoveredWord, mousePos, docSlots, docNumber)
 }
