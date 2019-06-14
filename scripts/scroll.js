@@ -1,4 +1,4 @@
-let stringSimilarity = require('string-similarity')
+const stringSimilarity = require('string-similarity')
 
 module.exports ={
 	findSection: function(clickedSection, docSlots, docBlocks){

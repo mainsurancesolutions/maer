@@ -232,7 +232,7 @@ async function setUpScrollFunction(){
 					let hoveredElement = document.elementFromPoint(mouseEvent.screenX, mouseEvent.screenY)
 					let mousePos = [mouseEvent.screenX, mouseEvent.screenY]
 					//Prepare the element to have a hover box appear
-					wrapWords(hoveredElement, mousePos)
+					wrapWords(hoveredElement, mousePos, i)
 				}, 1500)
 			})
 			docSlots[i].addEventListener('mouseout', () =>{
@@ -395,7 +395,7 @@ function docsFull(force = false){
 
 //Now that we know what paragraph was hovered, split it into words
 //then find the exact word that was hover'd
-function wrapWords(hoveredElement, mousePos){
+function wrapWords(hoveredElement, mousePos, docNumber){
 	let paragraph
 	console.log(hoveredElement.tagName)
 	switch(hoveredElement.tagName){
@@ -411,7 +411,7 @@ function wrapWords(hoveredElement, mousePos){
 		case 'SPAN':
 			//This will happen if the paragraph has been hovered once before
 			//in which case it's already prepared to be sent off
-			return
+			//return popupScript.hover(allDefinitions, hoveredElement.innerText, docSlots, docNumber)
 		default:
 			return
 	}
@@ -421,7 +421,6 @@ function wrapWords(hoveredElement, mousePos){
 	let reconstructed = ""
 	let inATag = null
 	for(let i = 0; i < splitParagraph.length; i++){
-		console.log(splitParagraph[i])
 		//We don't wanna insert <span> tags in the middle of existing tags, so the following cases will ensure we're not in a tag
 		if(splitParagraph[i].includes('<') || splitParagraph[i].includes('>') || splitParagraph[i].length <= 1){
 			inATag = true
@@ -447,10 +446,19 @@ function wrapWords(hoveredElement, mousePos){
 				}
 			}
 		}
-		console.log(inATag)
 		//If we're not in a tag, wrap the current word in a span
-		if(inATag !== true)
-			reconstructed += '<span>' + splitParagraph[i] + '</span>' + " "
+		if(inATag !== true){
+			//Additionally, if the text is in quotations, keep the quote together
+			//This will make it possible to get the definitions of things like "Tax Returns", which is multiple words
+			if(splitParagraph[i][0] === '\"' && splitParagraph[i][splitParagraph[i].length-1] !== '\"' && i === 0){
+				reconstructed += '<span>' + splitParagraph[i] + " " + splitParagraph[i+1] + '</span>' + " "
+				i++
+			}
+			else
+				reconstructed += '<span>' + splitParagraph[i] + '</span>' + " "
+			
+
+		}
 		else
 			reconstructed += splitParagraph[i] + " "
 		inATag = null

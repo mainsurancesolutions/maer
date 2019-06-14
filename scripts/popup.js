@@ -1,14 +1,24 @@
-
-
 module.exports ={
 	/*
 	Triggered upon hovering over a term.
 	If you hover over long enough, the definition of that term will appear
 	along with buttons to scroll to it
+	allDefinitions: detailed by the getDefs function, where it is created
+	We want to give the user the definition as it is defined in the current document
+	If the definition is not present in the given document, see if it's in the others, starting with the most recent doc
 	*/
+	/*
 	hover: function(allDefinitions, hoveredWord, docSlots, docNumber){
+		//Remember that allDefinitions[docNumber] is the array of [term, definition] for the given doc
+		//We'll populate this with all of the terms from the current doc, then compare the hovered word to them
+		//to find the closest match
+		let docTerms = []
+		for(let i = ; i < allDefinitions[docNumber].length; i++){
+			docTerms.push(allDefinitions[docNumber][i])
+		}
+		bestMatch = stringSimilarity.findBestMatch(hoveredWord, docTerms)
 
-	},
+	},*/
 
 	//Populate the allDefinitions array with tuples of terms and their definitions
 	getDefs: function(docSlots){
