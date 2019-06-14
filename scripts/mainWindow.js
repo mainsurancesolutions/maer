@@ -397,8 +397,12 @@ function docsFull(force = false){
 //then find the exact word that was hover'd
 function wrapWords(hoveredElement, mousePos){
 	let paragraph
+	console.log(hoveredElement.tagName)
 	switch(hoveredElement.tagName){
-		case 'INS' || 'DEL':
+		case 'INS':
+			paragraph = hoveredElement.parentElement
+			break
+		case 'DEL':
 			paragraph = hoveredElement.parentElement
 			break
 		case 'P':
@@ -415,13 +419,41 @@ function wrapWords(hoveredElement, mousePos){
 	console.log(paragraph.innerHTML)
 	let splitParagraph = paragraph.innerHTML.split(" ")
 	let reconstructed = ""
+	let inATag = null
 	for(let i = 0; i < splitParagraph.length; i++){
-		//We don't wanna insert <span> tags in the middle of existing tags
-		if(splitParagraph[i].includes('<') || splitParagraph[i].includes('>') || splitParagraph.length < 1)
-			reconstructed += splitParagraph[i] + " "
-		else{
-			reconstructed += '<span>' + splitParagraph[i] + '</span>' + " "
+		console.log(splitParagraph[i])
+		//We don't wanna insert <span> tags in the middle of existing tags, so the following cases will ensure we're not in a tag
+		if(splitParagraph[i].includes('<') || splitParagraph[i].includes('>') || splitParagraph[i].length <= 1){
+			inATag = true
 		}
+		else{
+			if(splitParagraph[i+1] !== undefined){
+				//Iterate through the letters of the words to our right. If we find a > before we find a <, we know we're in a tag
+				for(let j = i+1; j < splitParagraph.length; j++){
+					for(let k = 0; k < splitParagraph[j].length; k++){
+						if(splitParagraph[j][k] === '<'){
+							inATag = false
+							break
+						}
+						else if(splitParagraph[j][k] === '>'){
+							inATag = true
+							break
+						}
+					}
+					//If we definitively know if we're in a tag or not, there's
+					//no need to keep checking words to our right
+					if(inATag !== null)
+						break
+				}
+			}
+		}
+		console.log(inATag)
+		//If we're not in a tag, wrap the current word in a span
+		if(inATag !== true)
+			reconstructed += '<span>' + splitParagraph[i] + '</span>' + " "
+		else
+			reconstructed += splitParagraph[i] + " "
+		inATag = null
 	}
 	paragraph.innerHTML = reconstructed
 	//Now that we've split the paragraph, check the hover'd element once again
