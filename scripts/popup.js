@@ -19,8 +19,8 @@ module.exports ={
 		*/
 		//First trim the end of the term if it's a period or comma
 		console.log(hoveredWord)
-		if(hoveredWord.substring(-1) === "," || hoveredWord.substring(-1) === "." || hoveredWord.substring(-1) === "\"")
-			hoveredWord = hoveredWord.slice(0, -1)
+		if(hoveredWord.substring(hoveredWord.length-1) === "," || hoveredWord.substring(hoveredWord.length-1) === "." || hoveredWord.substring(hoveredWord.length-1) === "\"" || hoveredWord.substring(hoveredWord.length-1) === ":")
+			hoveredWord = hoveredWord.trim().substring(0, hoveredWord.length-1)
 		if(hoveredWord[0] === "\"")
 			hoveredWord = hoveredWord.substring(1)
 		let docTerms = []
