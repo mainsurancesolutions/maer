@@ -397,7 +397,6 @@ function docsFull(force = false){
 //then find the exact word that was hover'd
 function wrapWords(hoveredElement, mousePos, docNumber){
 	let paragraph
-	console.log(hoveredElement.tagName)
 	switch(hoveredElement.tagName){
 		case 'INS':
 			paragraph = hoveredElement.parentElement

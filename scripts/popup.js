@@ -1,3 +1,9 @@
+let popupHTML = fs.readFileSync('definitionPopup.html')
+//Each pop-up will have a z index ensuring they appear above everything else
+//we increment that counter with each new popup so that if you have multiple popups,
+//the most recent will show up in front of all others
+let zCounter = 2
+
 module.exports ={
 	/*
 	Triggered upon hovering over a term.
@@ -18,13 +24,11 @@ module.exports ={
 		We will then take the longest substring, and get the definition from that
 		*/
 		//First trim the end of the term if it's a period or comma
-		console.log(hoveredWord)
 		if(hoveredWord.substring(hoveredWord.length-1) === "," || hoveredWord.substring(hoveredWord.length-1) === "." || hoveredWord.substring(hoveredWord.length-1) === "\"" || hoveredWord.substring(hoveredWord.length-1) === ":")
 			hoveredWord = hoveredWord.trim().substring(0, hoveredWord.length-1)
 		if(hoveredWord[0] === "\"")
 			hoveredWord = hoveredWord.substring(1)
 		let docTerms = []
-		console.log(hoveredWord)
 		for(let i = 0; i < allDefinitions[docNumber].length; i++){
 			if(allDefinitions[docNumber][i][0].includes(hoveredWord)){
 				docTerms.push([allDefinitions[docNumber][i][0], i])
@@ -39,19 +43,14 @@ module.exports ={
 		}
 		//If there's no matches in either, we're done here
 		if(docTerms.length === 0 && lastDocTerms.length === 0){
-			console.log("No match found for " + hoveredWord)
+			console.log("not found")
 			return
 		}
 		//If there's only 1 match, we can use that
-		if(docTerms.length === 1 && lastDocTerms.length === 0){
-			console.log(hoveredWord + ": " + allDefinitions[docNumber][docTerms[0][1]][1])
-			return
-		}
-		else if(docTerms.length === 0 && lastDocTerms === 1){
-			console.log(hoveredWord + ": " + allDefinitions[docSlots.length-2][lastDocTerms[0][1]][1])
-			return
-		}
-		//If we reach here, both docs contain multiple matches for the definition
+		if(docTerms.length === 1 && lastDocTerms.length === 0)
+			return popup(hoveredWord, allDefinitions[docNumber][docTerms[0][1]][1], mousePos, docSlots[0].ownerDocument)
+		else if(docTerms.length === 0 && lastDocTerms === 1)
+			return popup(hoveredWord, allDefinitions[docSlots.length-2][lastDocTerms[0][1]][1], mousePos, docSlots[0].ownerDocument)		//If we reach here, both docs contain multiple matches for the definition
 		//Now find the shortest term containing the substring (We don't wanna return the definition of 'tax returns' when they hover 'tax')
 		let shortest = docTerms[0][0].length
 		let shortestIndex = 0
@@ -74,7 +73,7 @@ module.exports ={
 			definition = allDefinitions[docNumber][docTerms[shortestIndex][1]]
 		else
 			definition = allDefinitions[docSlots.length-2][lastDocTerms[shortestIndexLast][1]]
-		console.log(definition[0] + ": " + definition[1])
+		popup(definition[0], definition[1], mousePos, docSlots[0].ownerDocument)
 	},
 
 	//Populate the allDefinitions array with tuples of terms and their definitions
@@ -111,4 +110,24 @@ module.exports ={
 		}
 		return allDefinitions
 	}
+}
+
+function popup(term, definition, mousePos, document){
+	let popupElement = document.createElement('div')
+	popupElement.innerHTML = popupHTML
+	console.log(document.getElementById('docs-and-console'))
+	document.getElementById('docs-and-console').appendChild(popupElement)
+	//Position the element where you hovered
+	popupElement.style.left = mousePos[0] + "px"
+	popupElement.style.bottom = "0px"
+
+	popupElement.classList.add("popup")
+	//The 1st element is the button to close the window
+	popupElement.childNodes[0].addEventListener('click', ()=>{
+		popupElement.parentElement.removeChild(popupElement)
+	})
+	popupElement.childNodes[1].textContent = term
+	popupElement.childNodes[2].textContent = definition
+	popupElement.style.zIndex = zCounter
+	zCounter++
 }
