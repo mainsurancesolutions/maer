@@ -119,7 +119,7 @@ function popup(term, definition, mousePos, document){
 	document.getElementById('docs-and-console').appendChild(popupElement)
 	//Position the element where you hovered
 	popupElement.style.left = mousePos[0] + "px"
-	popupElement.style.bottom = "0px"
+	popupElement.style.top = mousePos[1] + "px"
 
 	popupElement.classList.add("popup")
 	//The 1st element is the button to close the window

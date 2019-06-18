@@ -118,10 +118,12 @@ ins{
     overflow-y: auto;
     visibility: visible;
     -webkit-animation: fadeIn 1s;
+    transform: translate(0, -100%);
 }
 
 .close-popup-button{
-	display: inline;
+	display: inline-block;
+	position: fixed;
 	height: 24px;
 	width: 24px;
 	right: 2px;
@@ -129,12 +131,14 @@ ins{
 }
 
 .term{
-	display: inline;
+	margin-right: 24px;
 	top: 2px;
 }
 
 .definition{
-	display: inline-block;
+	margin-top: 4px;
+	text-align: left;
+
 }
 
 @-webkit-keyframes fadeIn{
