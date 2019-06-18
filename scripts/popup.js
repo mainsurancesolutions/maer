@@ -132,6 +132,7 @@ function popup(term, definition, mousePos, document, docNumber){
 	popupElement.innerHTML = popupHTML
 	document.getElementById('docs-and-console').appendChild(popupElement)
 	//Position the element where you hovered
+	//We set the top and right so we can easily detect if the element is offscreen
 	popupElement.style.left = mousePos[0] + "px"
 	popupElement.style.top = mousePos[1] + "px"
 
@@ -167,6 +168,23 @@ function popup(term, definition, mousePos, document, docNumber){
 		popupElement.style.zIndex = zCounter
 		zCounter++
 	})
+
+	/*
+	Make sure the window is onscreen fully
+	The style.top, style.bottom, etc. are stored as "180px" and such. So we must remove the px
+	We also don't want the popup to be on the title bar, which is 48px in height
+	It is worth noting that the origin point is the lower left of the popup, which is why we need the offset for 
+	setting the right and top boundaries
+	Another effect of the origin being the lower left is we never have to worry about the element going off the bottom or left
+	*/
+	if((popupElement.style.top.slice(0, -2))-popupElement.offsetHeight < 48)
+		popupElement.style.top = (popupElement.offsetHeight + 48) + "px"
+	//The location of the right side of the element
+	let elementRight = document.body.clientWidth - popupElement.style.left.slice(0, -2) - popupElement.offsetWidth
+	if(elementRight < 0){
+		popupElement.style.left = (document.body.clientWidth - popupElement.offsetWidth) + "px"
+		popupElement.style.right = popupElement.offsetWidth + "px"
+	}
 }
 
 /*

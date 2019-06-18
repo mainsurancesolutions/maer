@@ -1,7 +1,5 @@
 To-do list:
-Hover a term to have definitions pop out (recursive)
-	Make sure window is always onscreen fully
-	Click a window to bring it to the front
+Stop unwanted popups from appearing
 Hover a section to have a link pop out
 Page Numbers
 Scroll through one doc, it scrolls through all
