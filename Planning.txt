@@ -1,5 +1,7 @@
 To-do list:
 Hover a term to have definitions pop out (recursive)
+	Make sure window is always onscreen fully
+	Click a window to bring it to the front
 Hover a section to have a link pop out
 Page Numbers
 Scroll through one doc, it scrolls through all
@@ -13,47 +15,7 @@ Front-end clean-up:
 	Hiding docs
 	Empty slots when you load
 	Everything, really
-Security Verification	
-
-Hover a term to have definitions pop out ideas:
-/*
-In a new file, first we wrap all words in a doc in a span with a class 'word'
-We create an event listener in the mainWindow, then pass (allDefinitions, event.target, docs)
-*/
-Event listener:
-for(let i = 0; i < docs.length; i++){
-	let words = i.getElementsByClass('word')
-	for(let j = 0; j < words.length; j++){
-		words[j].addEventListener('mouseover', (e)=> {
-			popup.hover(allDefinitions, e.target, docs)
-		})
-	}
-}
-
-NOPE, THAT WON'T WORK
-New plans:
-1) Check mouse position every 1 second
-If your mouse was in the same spot for 2 intervals, wrap only the closest 
-element in <span>s then do what I gotta do
-
-
-//Run this somewhere to generate allDefinitions
-let allDefinitions = []
-/*
-Create an array of arrays of [term, definition] for each doc
-so [ [ [term, definition], [term, definition], [term, definition] ] , [ [term, definition], [term, definition], [term, definition] ], ...]
-*/
-for(let i = 0; i < docs.length; i++){
-	let docTermsAndDefs = []
-	Somehow get an array of all <p> tags in the definitions section in docs[i]
-	for(let j = 0; j < definitions.length; j++){
-		term = definitions[j].split()[0]
-		def = definitions[j].substring(term.length + 1)
-		docTermsAndDefs.push([term, def])
-	}
-	allDefinitions.push(docTermsAndDefs)
-}
-
+Security Verification
 
 
 Table of Contents goes layers deeper (Article 1, section 1.01, subsection a) notes:
