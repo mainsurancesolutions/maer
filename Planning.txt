@@ -1,5 +1,7 @@
 To-do list:
-Stop unwanted popups from appearing
+Article Numbers
+Fix loading 2 docs
+Store the filename
 Hover a section to have a link pop out
 Page Numbers
 Scroll through one doc, it scrolls through all
@@ -27,18 +29,14 @@ beyond the first will be numbered (i), (ii), (iii), ...
 
 
 Notes from reviews:
-//Don't show all slots from the start in case they just want 2
-//No moving contracts
 drag docs and drop them on the app to open them (like google docs importing)
-//Add new doc when open a save (button)
-//Scrollbar through docs (unlimited)
-//Hide console
 Make sure the clients feel secure
 Scroll through one doc, it scrolls through all
-//Show article numbers
 Go even deeper in terms of layering (article 1, section 1.01, a)
-//Make bottom buttons side-by-side to give more space to the docs.
-Indicate changed sections, mostly hide unchanged
-Should be able to open tearoff windows from an existing tearoff window, recursively if you like
-Tearoff appears if you hover for a bit (1 second maybe)
-Simplify buttons (change edit to Open latest document (clean), change load to Open a Project)
+Move buttons down
+Make add a version button bigger
+When you load, store the filename. When you save, if you have a filename stored, start with that filename written
+Change how you save/load. Folder structure? (avoid issues with deleting docs and then loading, as they might assume it saved the docs)
+Have all the section headers present, even those wihtout changes. Those have dropdowns
+Section numbers present in the docs themselves
+Fix bug with loading a project with only 2 docs (Need more than 2)

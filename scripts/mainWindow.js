@@ -91,7 +91,7 @@ ipc.on('loadFile', async (event, arg) =>{
 	let project = await saveScript.load(arg)
 	
 	//Wait for the files to be fetched first before reading them
-	await new Promise((resolve) => {setTimeout(resolve, 5)});
+	await new Promise((resolve) => {setTimeout(resolve, 10)});
 
 	//Force the creation of new doc slots if needed
 	for(let i = 2; i < project[0].length; i++){
@@ -126,7 +126,7 @@ document.getElementById('compare-button').addEventListener('click', () =>{
 	}
 	console.log(shownDocs)
 	//At LEAST the first 2 docs have to be filled
-	if(shownDocs.length <= 2){
+	if(shownDocs.length < 2){
 		alert("You must compare at least 2 documents")
 		return false
 	}
@@ -233,7 +233,7 @@ async function setUpScrollFunction(){
 					let mousePos = [mouseEvent.screenX, mouseEvent.screenY]
 					//Prepare the element to have a hover box appear
 					popupScript.wrapWords(hoveredElement, mousePos, i, document)
-				}, 2000)
+				}, 1700)
 			})
 			docSlots[i].addEventListener('mouseout', () =>{
 				clearTimeout(hoverTimer)

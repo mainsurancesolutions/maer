@@ -11,6 +11,7 @@ body{
 	width: 100%;
 	height: 48px;
 	background-color: #ff0000;
+
 }
 
 #left-title-buttons{
@@ -35,6 +36,7 @@ body{
 	font-family: Arial, sans-serif !important;
 	font-size: 18px;
 	transform: translate(-50%, 0);
+	color: white;
 }
 
 #right-title-buttons{
@@ -219,7 +221,7 @@ ol{
 	position: fixed;
 	display: block;
 	max-width: 149px;
-	bottom: 5%;
+	bottom: 2%;
 	left: 50%;
 	transform: translate(-50%, 0);
 }
@@ -228,7 +230,7 @@ ol{
 	position: fixed;
 	display: block;
 	max-width: 141px;
-	bottom: 5%;
+	bottom: 2%;
 	left: 70%;
 	transform: translate(-50%, 0);
 	display: none;
@@ -237,9 +239,9 @@ ol{
 #add-button{
 	position: fixed;
 	display: block;
-	max-width: 143px;
+	max-width: 280px;
 	bottom: 2%;
-	left: 1%;
+	left: 3%;
 	display: none;
 }
 
