@@ -60,7 +60,7 @@ module.exports ={
 			case 'SPAN':
 				//This will happen if the paragraph has been hovered once before
 				//in which case it's already prepared to be sent off
-				return hover(allDefinitions, hoveredElement.innerText, mousePos, docSlots, docNumber)
+				return hoverDef(allDefinitions, hoveredElement.innerText, mousePos, docSlots, docNumber)
 			default:
 				return
 		}
@@ -123,10 +123,11 @@ module.exports ={
 		let hoveredWord = document.elementFromPoint(mousePos[0], mousePos[1]).innerText
 		//Make sure we're not grabbing the entire paragraph
 		if(hoveredWord.length < 30)
-			hover(allDefinitions, hoveredWord, mousePos, docSlots, docNumber)
+			hoverDef(allDefinitions, hoveredWord, mousePos, docSlots, docNumber)
 	}
 }
 
+//Creates the popup after hovering a term/section name
 function popup(term, definition, mousePos, document, docNumber){
 	let popupElement = document.createElement('div')
 	popupElement.innerHTML = popupHTML
@@ -171,7 +172,7 @@ function popup(term, definition, mousePos, document, docNumber){
 
 	/*
 	Make sure the window is onscreen fully
-	The style.top, style.bottom, etc. are stored as "180px" and such. So we must remove the px
+	The style.top, style.bottom, etc. are stored as "#px". So we must remove the px
 	We also don't want the popup to be on the title bar, which is 48px in height
 	It is worth noting that the origin point is the lower left of the popup, which is why we need the offset for 
 	setting the right and top boundaries
@@ -195,7 +196,7 @@ allDefinitions: detailed by the getDefs function, where it is created
 We want to give the user the definition as it is defined in the current document
 If the definition is not present in the given document, see if it's in the others, starting with the most recent doc
 */
-function hover(allDefinitions, hoveredWord, mousePos, docSlots, docNumber){
+function hoverDef(allDefinitions, hoveredWord, mousePos, docSlots, docNumber){
 	//Remember that allDefinitions[docNumber] is the array of [term, definition] for the given doc
 	//We'll populate this with all of the terms from the current doc, then compare the hovered word to them
 	//to find the closest match
@@ -257,4 +258,3 @@ function hover(allDefinitions, hoveredWord, mousePos, docSlots, docNumber){
 		definition = allDefinitions[docSlots.length-2][lastDocTerms[shortestIndexLast][1]]
 	popup(definition[0], definition[1], mousePos, docSlots[0].ownerDocument, docNumber)
 }
-

@@ -46,7 +46,7 @@ module.exports ={
 				bestMatch = stringSimilarity.findBestMatch(clickedTextContent, allParagraphsText)
 				//Since each doc only shows paragraphs with differences, scrolling to a paragraph that's an
 				//exact match causes issues
-				if(bestMatch.ratings[bestMatch.bestMatchIndex].rating >= 1 || bestMatch.ratings[bestMatch.bestMatchIndex].rating <= 0.3)
+				if(bestMatch.ratings[bestMatch.bestMatchIndex].rating < 1 && bestMatch.ratings[bestMatch.bestMatchIndex].rating > 0.2)
 					scrollTo(docBlocks[i], allParagraphs[bestMatch.bestMatchIndex])
 			}
 	}

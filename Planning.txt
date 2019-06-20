@@ -1,8 +1,10 @@
 To-do list:
-Article Numbers
-Fix loading 2 docs
-Store the filename
+Stop unwanted popups
 Hover a section to have a link pop out
+Store the filename
+Section headers all always present, ones without changes collapsed
+Click a header (in the doc) to scroll all docs to it
+Article Numbers
 Page Numbers
 Scroll through one doc, it scrolls through all
 Table of Contents goes layers deeper (Article 1, section 1.01, subsection a)
@@ -39,4 +41,3 @@ When you load, store the filename. When you save, if you have a filename stored,
 Change how you save/load. Folder structure? (avoid issues with deleting docs and then loading, as they might assume it saved the docs)
 Have all the section headers present, even those wihtout changes. Those have dropdowns
 Section numbers present in the docs themselves
-Fix bug with loading a project with only 2 docs (Need more than 2)

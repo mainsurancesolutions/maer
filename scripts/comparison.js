@@ -53,7 +53,8 @@ async function readDocs(files, fields){
 			"p[style-name='Article_L2'] => h2:fresh",
 			"p[style-name='Heading 2'] => h2:fresh",
 			"p[style-name='Heading 3'] => p:fresh",
-			"p[style-name='Heading 4'] => p:fresh"
+			"p[style-name='Heading 4'] => p:fresh",
+			"p[style-name='u'] => em:fresh"
 		]
 	}
 	for(let i=0; i<numOfFiles; i++){
