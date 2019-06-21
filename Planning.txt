@@ -1,23 +1,36 @@
 To-do list:
-Stop unwanted popups
-Hover a section to have a link pop out
-Store the filename
 Section headers all always present, ones without changes collapsed
-Click a header (in the doc) to scroll all docs to it
 Article Numbers
+Hover a section to have a link pop out
+Stop unwanted popups
+Store the filename
+Click a header (in the doc) to scroll all docs to it
 Page Numbers
 Scroll through one doc, it scrolls through all
 Table of Contents goes layers deeper (Article 1, section 1.01, subsection a)
-Fix adding new version after comparing
+Fix issues with adding new version after comparing
 Fix issue where not all docs load sometimes
 Search bar
 Definitions page
 Front-end clean-up:
 	Add new version
 	Hiding docs
-	Empty slots when you load
 	Everything, really
 Security Verification
+
+In order to find sections, must do a few things first
+1. article numbers present in the doc viewer
+2. change article scroll function to scroll based on number
+
+Hovering a section
+Box should appear as
+
+Section x
+
+As much of it as possible
+
+Scroll this doc to section
+Scroll all docs to section
 
 
 Table of Contents goes layers deeper (Article 1, section 1.01, subsection a) notes:

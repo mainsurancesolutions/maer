@@ -1,4 +1,5 @@
 const popupHTML = fs.readFileSync('definitionPopup.html')
+const scrollScript = require('..\\scripts\\scroll.js')
 //Each pop-up will have a z index ensuring they appear above everything else
 //we increment that counter with each new popup so that if you have multiple popups,
 //the most recent will show up in front of all others
@@ -111,6 +112,11 @@ module.exports ={
 					}
 					reconstructed += "</span> "
 				}
+				//If the word is "Section", we wanna wrap it with the section number
+				else if(splitParagraph[i].trim() === "Section"){
+					reconstructed += '<span>' + splitParagraph[i] + " " + splitParagraph[i+1] + '</span> '
+					i++
+				}
 				else
 					reconstructed += '<span>' + splitParagraph[i] + '</span> '
 			}
@@ -123,7 +129,12 @@ module.exports ={
 		let hoveredWord = document.elementFromPoint(mousePos[0], mousePos[1]).innerText
 		//Make sure we're not grabbing the entire paragraph
 		if(hoveredWord.length < 30)
-			hoverDef(allDefinitions, hoveredWord, mousePos, docSlots, docNumber)
+			//Hovered a definition
+			if(hoveredWord.trim().split(' ')[0] !== "Section")
+				hoverDef(allDefinitions, hoveredWord, mousePos, docSlots, docNumber)
+			//Hovered a sectiony
+			else
+				hoverSection(hoveredWord.trim().split(' ')[1], mousePos, docSlots, docNumber)
 	}
 }
 
@@ -257,4 +268,14 @@ function hoverDef(allDefinitions, hoveredWord, mousePos, docSlots, docNumber){
 	else
 		definition = allDefinitions[docSlots.length-2][lastDocTerms[shortestIndexLast][1]]
 	popup(definition[0], definition[1], mousePos, docSlots[0].ownerDocument, docNumber)
+}
+
+
+//When you hover a section long enough, have a popup appear with a link to that section
+function hoverSection(section, mousePos, docSlots, docNumber){
+	let document = docSlots[0].ownerDocument
+	//Some section links will be written like "2.02(a)(ii)"
+	//We only want the 2.02 part
+	let trimmedSection = section.split("(")[0]
+	scrollScript.findSection(trimmedSection, docSlots, docBlocks)
 }

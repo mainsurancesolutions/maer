@@ -182,7 +182,8 @@ async function setUpScrollFunction(){
 				paragraphs[j].addEventListener('click', ()=>{findParagraphs(i, event.target.textContent)})
 			}
 		}
-		//then set up the drop-down part of the section in the ToC
+		//The following code sets up the feature to hide elements in the *table of contents*
+		//with the arrow buttons
 		let articles = document.getElementsByClassName("section")
 		let allSections = Array.from(consoleBlock.getElementsByTagName('LI'))
 		let articleHideButtons = document.getElementsByClassName("hide-section")

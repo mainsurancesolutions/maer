@@ -12,6 +12,7 @@ module.exports ={
 			//When we find it, scroll to it using scrollTo
 			for(let j = 0; j < (h1s.length + h2s.length); j++){
 				if(j < h1s.length){
+					//If we found the header and it's not hidden
 					if(h1s[j].textContent === clickedTextContent && h1s[j].style.display !== "none"){
 						scrollTo(docBlocks[i], h1s[j])
 						break

@@ -1,6 +1,7 @@
 const mammoth = require('mammoth')
 const diff = require('node-htmldiff')
-let hideSectionButton = fs.readFileSync('hideSectionButton.html')
+const hideSectionButton = fs.readFileSync('hideSectionButton.html')
+const hideArticleButton = fs.readFileSync('hideArticleButton.html')
 
 //HTML ripped from files as well as error/warning messages
 let rippedHtml
@@ -53,8 +54,7 @@ async function readDocs(files, fields){
 			"p[style-name='Article_L2'] => h2:fresh",
 			"p[style-name='Heading 2'] => h2:fresh",
 			"p[style-name='Heading 3'] => p:fresh",
-			"p[style-name='Heading 4'] => p:fresh",
-			"p[style-name='u'] => em:fresh"
+			"p[style-name='Heading 4'] => p:fresh"
 		]
 	}
 	for(let i=0; i<numOfFiles; i++){
@@ -80,7 +80,6 @@ function findDiffs(fields, tocBlock){
 	//Set first field to simply be the first doc
 	fields[0].innerHTML = rippedHtml[0]
 
-	let diffText
 	let docElements
 	//We will keep track of all sections that had changes
 	//That way when we populate the table of contents, we can mark which changed
@@ -112,9 +111,6 @@ function findDiffs(fields, tocBlock){
 						if(i === rippedHtml.length-1)
 							changedHeaders.push(docElements[j].textContent)
 					}
-					else
-						docElements[j].style.display = "none"
-					
 					break
 				case 'H2':
 					if(i === 1){
@@ -124,9 +120,7 @@ function findDiffs(fields, tocBlock){
 						showNextH2 = false
 						if(i === rippedHtml.length-1)
 							changedHeaders.push(docElements[j].textContent)
-					}
-					else
-						docElements[j].style.display = "none"					
+					}					
 					break
 				default:
 					//Check if its has insertions/deletions
@@ -163,11 +157,13 @@ function findDiffs(fields, tocBlock){
 			let hideSectionButtonElement = document.createElement('span')
 			hideSectionButtonElement.innerHTML = hideSectionButton
 			for(let i = 0; i < tableOfContents.length; i++){
+				//Create a new listItem with the 'section' class to add to the visible table of contents
 				newListItem = document.createElement("li")
 				newListItem.classList.add("section")
 				//If the section contained a change, add the 'changed' class to it
 				if(changedHeaders.includes(tableOfContents[i][0]))
 					newListItem.classList.add("changed")
+				//Add the section number and name to the listitem
 				newListItem.appendChild(document.createTextNode((i+1) + ". " + tableOfContents[i][0]))
 				tocBlock.appendChild(newListItem)
 				tocBlock.insertBefore(hideSectionButtonElement.cloneNode(true), newListItem)
@@ -185,6 +181,38 @@ function findDiffs(fields, tocBlock){
 					tocBlock.appendChild(newSubListItem)
 					newSubListItem.style.display = "none"
 				}
+			}
+		}
+	}
+	numberSections(fields)
+}
+//Add article/section numbers to documents as well as buttons to collapse them
+//Iterate through each doc
+function numberSections(docSlots){
+	for(let i = 0; i < docSlots.length; i++){
+		//Start counters for what article number and section number we're on
+		articleNumber = 0
+		sectionNumber = 1
+		//Now we iterate through all the children nodes of the doc for the headers
+		docElements = docSlots[i].childNodes
+		for(let j = 0; j < docElements.length; j++){
+			switch(docElements[j].tagName){
+				//If we a header, add the section or subsection number to the front
+				//We also add a button to each header to hide their text
+				case 'H1':
+					articleNumber++
+					docElements[j].innerText = "ARTICLE " + articleNumber + "\r\n" + docElements[j].innerText
+					sectionNumber = 1
+					docElements[j].insertAdjacentHTML('afterbegin', hideArticleButton)
+					break
+				case 'H2':
+					if(sectionNumber > 9)
+						docElements[j].innerText = articleNumber + "." + sectionNumber + " " + docElements[j].innerText
+					else
+						docElements[j].innerText = articleNumber + ".0" + sectionNumber + " " + docElements[j].innerText
+					
+					sectionNumber++
+					break
 			}
 		}
 	}
