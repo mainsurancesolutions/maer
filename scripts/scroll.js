@@ -7,22 +7,25 @@ module.exports ={
 		for(let i = 0; i < docSlots.length; i++){
 			h1s = docSlots[i].getElementsByTagName("H1")
 			h2s = docSlots[i].getElementsByTagName("H2")
+			console.log(h1s)
 			//Iterate through all of the h1s then all of the h2s
 			//to find the selected section
 			//When we find it, scroll to it using scrollTo
 			for(let j = 0; j < (h1s.length + h2s.length); j++){
 				if(j < h1s.length){
 					//If we found the header and it's not hidden
-					if(h1s[j].textContent === clickedTextContent && h1s[j].style.display !== "none"){
+					if(h1s[j].textContent.includes()){
 						scrollTo(docBlocks[i], h1s[j])
 						break
 					}
 				}
-				else
-					if(h2s[j-h1s.length].textContent === clickedTextContent && h2s[j-h1s.length].style.display !== "none"){
+				else{
+					//Since each h2 will start with a number (such as "2.02 "), we cut out the first 5 indices when comparing
+					if(h2s[j-h1s.length].textContent.substring(5) === clickedTextContent){
 						scrollTo(docBlocks[i], h2s[j-h1s.length])
 						break
 					}
+				}
 			}
 		}
 	},

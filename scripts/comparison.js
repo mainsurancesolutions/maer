@@ -2,6 +2,7 @@ const mammoth = require('mammoth')
 const diff = require('node-htmldiff')
 const hideSectionButton = fs.readFileSync('hideSectionButton.html')
 const hideArticleButton = fs.readFileSync('hideArticleButton.html')
+const hideParagraphsButton = fs.readFileSync('hideParagraphsButton.html')
 
 //HTML ripped from files as well as error/warning messages
 let rippedHtml
@@ -210,7 +211,7 @@ function numberSections(docSlots){
 						docElements[j].innerText = articleNumber + "." + sectionNumber + " " + docElements[j].innerText
 					else
 						docElements[j].innerText = articleNumber + ".0" + sectionNumber + " " + docElements[j].innerText
-					
+					docElements[j].insertAdjacentHTML('afterbegin', hideParagraphsButton)
 					sectionNumber++
 					break
 			}

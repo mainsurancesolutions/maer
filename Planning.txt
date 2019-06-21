@@ -1,6 +1,6 @@
 To-do list:
+Fix ToC scroll now that article numbers show
 Section headers all always present, ones without changes collapsed
-Article Numbers
 Hover a section to have a link pop out
 Stop unwanted popups
 Store the filename

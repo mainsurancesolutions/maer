@@ -21,7 +21,7 @@ module.exports ={
 			let definitionsHeader
 			//Definitions is usually at the end, so we can save time by starting there
 			for(let j = headers.length-1; j > 0; j--){
-				if(headers[j].textContent === "Definitions")
+				if(headers[j].textContent.includes("Definitions"))
 					definitionsHeader = headers[j]
 			}
 			//Now we find the header index in the nodes of the doc, and start gather definitions
@@ -132,7 +132,7 @@ module.exports ={
 			//Hovered a definition
 			if(hoveredWord.trim().split(' ')[0] !== "Section")
 				hoverDef(allDefinitions, hoveredWord, mousePos, docSlots, docNumber)
-			//Hovered a sectiony
+			//Hovered a section
 			else
 				hoverSection(hoveredWord.trim().split(' ')[1], mousePos, docSlots, docNumber)
 	}

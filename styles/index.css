@@ -201,6 +201,18 @@ ol{
 	display: inline;
 }
 
+.hide-article{
+	height: 24px;
+	width: 24px;
+	display: inline;
+}
+
+.hide-paragraphs{
+	height: 16px;
+	width: 16px;
+	display: inline;
+}
+
 .file-button{
 	width: 15vw;
 	height: auto;
