@@ -202,7 +202,7 @@ function numberSections(docSlots){
 				//We also add a button to each header to hide their text
 				case 'H1':
 					articleNumber++
-					docElements[j].innerText = "ARTICLE " + articleNumber + "\r\n" + docElements[j].innerText
+					docElements[j].innerText = "ARTICLE " + articleNumber + " \r\n" + docElements[j].innerText
 					sectionNumber = 1
 					docElements[j].insertAdjacentHTML('afterbegin', hideArticleButton)
 					break
