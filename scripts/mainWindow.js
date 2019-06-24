@@ -172,7 +172,7 @@ async function setUpScrollFunction(){
 		for(let i = 0; i < listItems.length; i++){
 			listItems[i].addEventListener('click', function(){findSection(i)})
 		}
-		//then set up seraching for matching paragraphs by clicking on a
+		//then set up searching for matching paragraphs by clicking on a
 		//paragraph in a doc
 		let paragraphs
 		for(let i = 0; i < docSlots.length; i++){

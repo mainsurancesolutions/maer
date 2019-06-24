@@ -12,8 +12,6 @@ module.exports ={
 			//When we find it, scroll to it using scrollTo
 			for(let j = 0; j < (h1s.length + h2s.length); j++){
 				if(j < h1s.length){
-					console.log(h1s[j].textContent.substring(h1s[j].textContent.split(" ")[0].length + h1s[j].textContent.split(" ")[1].length + 2))
-					console.log(clickedTextContent)
 					//If we found the header
 					//Keep in mind each header will be written as 'ARTICLE 3 Section', so we wanna cut that number out
 					if(h1s[j].textContent.substring(h1s[j].textContent.split(" ")[0].length + h1s[j].textContent.split(" ")[1].length + 2) === clickedTextContent){

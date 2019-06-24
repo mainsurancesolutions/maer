@@ -192,10 +192,10 @@ function findDiffs(fields, tocBlock){
 function numberSections(docSlots){
 	for(let i = 0; i < docSlots.length; i++){
 		//Start counters for what article number and section number we're on
-		articleNumber = 0
-		sectionNumber = 1
+		let articleNumber = 0
+		let sectionNumber = 1
 		//Now we iterate through all the children nodes of the doc for the headers
-		docElements = docSlots[i].childNodes
+		let docElements = docSlots[i].childNodes
 		for(let j = 0; j < docElements.length; j++){
 			switch(docElements[j].tagName){
 				//If we a header, add the section or subsection number to the front
@@ -215,6 +215,50 @@ function numberSections(docSlots){
 					sectionNumber++
 					break
 			}
+		}
+		//Adjust all article hide buttons to reflect if the articles are hidden on startup
+		//(articles without changes will start hidden, so their button must reflect that)
+		//Also add a listener to each 'hide article' button
+		let articleButtons = docSlots[i].getElementsByClassName('hide-article')
+		for(let j = 0; j < articleButtons.length; j++){
+			console.log(articleButtons[j].parentElement)
+			//Start the buttons in the right position
+			//if()
+			//	articleButtons[j].src = "images/hideSection.png"
+			articleButtons[j].addEventListener('click', ()=>{
+				/*
+					The 'hide article' buttons will work as follows
+					Obtain a list of each child node of a doc
+					Starting from the clicked article, go through the tags beneath it, hiding each one
+					Stop hiding once you reach the next section
+					If the article is already hidden, do the opposite (ie show every item until the next article)
+				*/
+				docElements = Array.from(docSlots[i].childNodes)
+				//If the items are hidden
+				if(articleButtons[j].src === "images/showSection.png"){
+					//Start with the element right after the article title
+					for(let k = docElements.indexOf(event.target.parentElement) + 1; k < docElements.length; k++){
+						//Stop once we reach the next article
+						if(docElements[k].tagName === "H1")
+							break
+						//Set the display style to the default
+						docElements[k].style.display = ""
+					}
+					articleButtons[j].src = "images/showSection.png"
+				}
+				//If the items are visible
+				else{
+					console.log(event.target)
+					console.log(docElements.indexOf(event.target.parentElement))
+					for(let k = docElements.indexOf(event.target.parentElement) + 1; k < docElements.length; k++){
+						if(docElements[k].tagName === "H1")
+							break
+						docElements[k].style.display = "none"
+					}
+					articleButtons[j].src = "images/hideSection.png"
+				}
+				
+			})
 		}
 	}
 }
