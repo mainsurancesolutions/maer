@@ -1,5 +1,6 @@
 To-do list:
-Section headers all always present, ones without changes collapsed
+Find out which sections start shown so we can determine the start position of the 
+show/hide article buttons
 Hover a section to have a link pop out
 Stop unwanted popups
 Store the filename

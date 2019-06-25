@@ -190,6 +190,7 @@ function findDiffs(fields, tocBlock){
 //Add article/section numbers to documents as well as buttons to collapse them
 //Iterate through each doc
 function numberSections(docSlots){
+	//Do the following operations on each document
 	for(let i = 0; i < docSlots.length; i++){
 		//Start counters for what article number and section number we're on
 		let articleNumber = 0
@@ -202,7 +203,7 @@ function numberSections(docSlots){
 				//We also add a button to each header to hide their text
 				case 'H1':
 					articleNumber++
-					docElements[j].innerText = "ARTICLE " + articleNumber + " \r\n" + docElements[j].innerText
+					docElements[j].innerText = "ARTICLE " + articleNumber + " " + docElements[j].innerText
 					sectionNumber = 1
 					docElements[j].insertAdjacentHTML('afterbegin', hideArticleButton)
 					break
@@ -216,15 +217,27 @@ function numberSections(docSlots){
 					break
 			}
 		}
-		//Adjust all article hide buttons to reflect if the articles are hidden on startup
-		//(articles without changes will start hidden, so their button must reflect that)
-		//Also add a listener to each 'hide article' button
+		//Add a listener to each 'hide article' button
+		//Articles will all be shown by default
 		let articleButtons = docSlots[i].getElementsByClassName('hide-article')
+		let hiddenArticle = false
 		for(let j = 0; j < articleButtons.length; j++){
-			console.log(articleButtons[j].parentElement)
-			//Start the buttons in the right position
-			//if()
-			//	articleButtons[j].src = "images/hideSection.png"
+			/*
+			Start the buttons in the correct position
+			We do this by iterating through the doc, starting from the article header
+			until we find either an unhidden paragraph or another article header
+			if we've made it to the next article, it means this article is hidden
+			if we find a paragraph first, it means this article is shown
+			*/
+			for(let k = Array.from(docElements).indexOf(articleButtons[j].parentElement) + 1; k < docElements.length; k++){
+				if(docElements[k].tagName === "H1"){
+					hiddenArticle = true
+					break
+				}
+				if(docElements[k].tagName !== "H2" && docElements[k].style.display !== "none"){
+					break
+				}
+			}
 			articleButtons[j].addEventListener('click', ()=>{
 				/*
 					The 'hide article' buttons will work as follows
@@ -234,7 +247,7 @@ function numberSections(docSlots){
 					If the article is already hidden, do the opposite (ie show every item until the next article)
 				*/
 				docElements = Array.from(docSlots[i].childNodes)
-				//If the items are hidden
+				//Show items
 				if(articleButtons[j].src === "images/showSection.png"){
 					//Start with the element right after the article title
 					for(let k = docElements.indexOf(event.target.parentElement) + 1; k < docElements.length; k++){
@@ -244,20 +257,56 @@ function numberSections(docSlots){
 						//Set the display style to the default
 						docElements[k].style.display = ""
 					}
-					articleButtons[j].src = "images/showSection.png"
+					articleButtons[j].src = "images/hideSection.png"
 				}
-				//If the items are visible
+				//Hide items
 				else{
-					console.log(event.target)
-					console.log(docElements.indexOf(event.target.parentElement))
 					for(let k = docElements.indexOf(event.target.parentElement) + 1; k < docElements.length; k++){
 						if(docElements[k].tagName === "H1")
 							break
 						docElements[k].style.display = "none"
 					}
-					articleButtons[j].src = "images/hideSection.png"
+					articleButtons[j].src = "images/showSection.png"
 				}
-				
+			})
+			//If the article starts hidden, hide all section headers in it
+			if(hiddenArticle)
+				articleButtons[j].click()
+			hiddenArticle = false
+		}
+
+		//Do the same for the 'hide paragraphs' buttons that will show for each subsection of an article
+		let sectionButtons = docSlots[i].getElementsByClassName('hide-paragraphs')
+		for(let j = 0; j < sectionButtons.length; j++){
+			for(let k = Array.from(docElements).indexOf(sectionButtons[j].parentElement) + 1; k < docElements.length; k++){
+				if(docElements[k].tagName === "H1" || docElements[k].tagName === "H2")
+					break
+				if(docElements[k].style.display !== "none"){
+					sectionButtons[j].src = "images/hideSection.png"
+					break
+				}
+			}
+			sectionButtons[j].addEventListener('click', ()=>{
+				docElements = Array.from(docSlots[i].childNodes)
+				//Show items
+				if(sectionButtons[j].src === "images/showSection.png"){
+					//Start with the element right after the section title
+					for(let k = docElements.indexOf(event.target.parentElement) + 1; k < docElements.length; k++){
+						if(docElements[k].tagName === "H1" || docElements[k].tagName === "H2")
+							break
+						docElements[k].style.display = ""
+					}
+					sectionButtons[j].src = "images/hideSection.png"
+				}
+				//Hide items
+				else{
+					for(let k = docElements.indexOf(event.target.parentElement) + 1; k < docElements.length; k++){
+						if(docElements[k].tagName === "H1" || docElements[k].tagName === "H2")
+							break
+						docElements[k].style.display = "none"
+					}
+					sectionButtons[j].src = "images/showSection.png"
+				}
 			})
 		}
 	}
