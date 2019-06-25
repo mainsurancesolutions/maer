@@ -22,7 +22,15 @@ module.exports ={
 				else{
 					//Since each h2 will start with a number (such as "2.02 "), we cut out the first 5 indices when comparing
 					if(h2s[j-h1s.length].textContent.substring(5) === clickedTextContent){
-						scrollTo(docBlocks[i], h2s[j-h1s.length])
+						//If the selected section is hidden (the article might be collapsed), 
+						//scroll to the article header
+						if(h2s[j-h1s.length].style.display === "none"){
+							//rip the article number from the clicked section
+							let articleNumber = clickedSection.textContent.substring(0, 1)
+							scrollTo(docBlocks[i], h1s[articleNumber-1])
+						}
+						else
+							scrollTo(docBlocks[i], h2s[j-h1s.length])
 						break
 					}
 				}

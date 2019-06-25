@@ -240,22 +240,26 @@ function numberSections(docSlots){
 			}
 			articleButtons[j].addEventListener('click', ()=>{
 				/*
-					The 'hide article' buttons will work as follows
-					Obtain a list of each child node of a doc
-					Starting from the clicked article, go through the tags beneath it, hiding each one
-					Stop hiding once you reach the next section
-					If the article is already hidden, do the opposite (ie show every item until the next article)
+				The 'hide article' buttons will work as follows
+				Obtain a list of each child node of a doc
+				Starting from the clicked article, go through the tags beneath it, hiding each one
+				Change the 'hide section' buttons on the sections to reflect being hidden
+				Stop hiding once you reach the next section
+				If the article is already hidden, do the following to show them:
+				Change the button, and then show *only* the section headers, allowing the user to click on
+				them if they so choose
 				*/
 				docElements = Array.from(docSlots[i].childNodes)
 				//Show items
-				if(articleButtons[j].src === "images/showSection.png"){
+				if(articleButtons[j].src.includes("images/showSection.png")){
 					//Start with the element right after the article title
 					for(let k = docElements.indexOf(event.target.parentElement) + 1; k < docElements.length; k++){
 						//Stop once we reach the next article
 						if(docElements[k].tagName === "H1")
 							break
-						//Set the display style to the default
-						docElements[k].style.display = ""
+						//Set the display style to the default if they're to be shown
+						if(docElements[k].tagName === "H2")
+							docElements[k].style.display = ""
 					}
 					articleButtons[j].src = "images/hideSection.png"
 				}
@@ -264,6 +268,9 @@ function numberSections(docSlots){
 					for(let k = docElements.indexOf(event.target.parentElement) + 1; k < docElements.length; k++){
 						if(docElements[k].tagName === "H1")
 							break
+						//change the button on the section headers to reflect being hidden
+						if(docElements[k].tagName === "H2")
+							docElements[k].childNodes[0].src = "images/showSection.png"
 						docElements[k].style.display = "none"
 					}
 					articleButtons[j].src = "images/showSection.png"
@@ -288,8 +295,9 @@ function numberSections(docSlots){
 			}
 			sectionButtons[j].addEventListener('click', ()=>{
 				docElements = Array.from(docSlots[i].childNodes)
+				console.log(sectionButtons[j].src.includes("images/showSection.png"))
 				//Show items
-				if(sectionButtons[j].src === "images/showSection.png"){
+				if(sectionButtons[j].src.includes("images/showSection.png")){
 					//Start with the element right after the section title
 					for(let k = docElements.indexOf(event.target.parentElement) + 1; k < docElements.length; k++){
 						if(docElements[k].tagName === "H1" || docElements[k].tagName === "H2")
