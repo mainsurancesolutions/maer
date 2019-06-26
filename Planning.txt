@@ -1,6 +1,4 @@
 To-do list:
-Find out which sections start shown so we can determine the start position of the 
-show/hide article buttons
 Hover a section to have a link pop out
 Stop unwanted popups
 Store the filename

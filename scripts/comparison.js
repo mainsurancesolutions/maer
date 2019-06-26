@@ -171,9 +171,9 @@ function findDiffs(fields, tocBlock){
 				for(let j = 0; j < tableOfContents[i][1].length; j++){
 					//Subsection number must be of the form 1.01, 1.02, 1.03, ..., 1.10, 1.11, ...
 					if(j < 9)
-						subsectionNumberString = (i + 1) + ".0" + (j + 1) + ". "
+						subsectionNumberString = (i + 1) + ".0" + (j + 1) + " "
 					else
-						subsectionNumberString = (i + 1) + "." + (j + 1) + ". "
+						subsectionNumberString = (i + 1) + "." + (j + 1) + " "
 					newSubListItem = document.createElement("li")
 					newSubListItem.classList.add("subsection")
 					if(changedHeaders.includes(tableOfContents[i][1][j]))
