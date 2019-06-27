@@ -48,6 +48,7 @@ module.exports ={
 	*/
 	wrapWords: function(hoveredElement, mousePos, docNumber, document){
 		let paragraph
+		console.log(hoveredElement)
 		switch(hoveredElement.tagName){
 			case 'INS':
 				paragraph = hoveredElement.parentElement
@@ -57,11 +58,24 @@ module.exports ={
 				break
 			case 'P':
 				paragraph = hoveredElement
+				//In case they hover a gap in the doc, and it attempts to wrap the *entire doc*
+				//We don't want it to do that!
+				if(hoveredElement.classList.contains('doc'))
+					return
 				break
 			case 'SPAN':
 				//This will happen if the paragraph has been hovered once before
 				//in which case it's already prepared to be sent off
-				return hoverDef(allDefinitions, hoveredElement.innerText, mousePos, docSlots, docNumber)
+				if(hoveredElement.innerText.length < 30){
+					//Hovered a definition
+					if(hoveredElement.innerText.trim().split(' ')[0] !== "Section")
+						return hoverDef(allDefinitions, hoveredElement.innerText, mousePos, docSlots, docNumber)
+					//Hovered a section
+					else
+						return hoverSection(hoveredElement.innerText.trim().split(' ')[1], mousePos, docSlots, docNumber)
+				}
+				else
+					return
 			default:
 				return
 		}
@@ -128,13 +142,14 @@ module.exports ={
 		//Now that we've split the paragraph, check the hover'd element once again
 		let hoveredWord = document.elementFromPoint(mousePos[0], mousePos[1]).innerText
 		//Make sure we're not grabbing the entire paragraph
-		if(hoveredWord.length < 30)
+		if(hoveredWord.length < 30){
 			//Hovered a definition
 			if(hoveredWord.trim().split(' ')[0] !== "Section")
 				hoverDef(allDefinitions, hoveredWord, mousePos, docSlots, docNumber)
 			//Hovered a section
 			else
 				hoverSection(hoveredWord.trim().split(' ')[1], mousePos, docSlots, docNumber)
+		}
 	}
 }
 

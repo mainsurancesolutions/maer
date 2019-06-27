@@ -44,10 +44,17 @@ module.exports ={
 	paragraph. This is done by finding the most similar paragraph
 	in each doc and scrolling to it, so there may be some inaccuracy
 	*/
-	findMatchingParagraphs: function(clickedTextContent, docNumber, docSlots, docBlocks){
+	findMatchingParagraphs: function(clickedParagraph, docNumber, docSlots, docBlocks){
 		let bestMatch
 		let allParagraphs
 		let allParagraphsText
+		let clickedTextContent
+		//If the paragraph we clicked was split into spans, then the clicked content will only be one word
+		//In such a case, we wanna go up a level to grab the *whole* paragraph
+		if(clickedParagraph.tagName === "SPAN")
+			clickedTextContent = clickedParagraph.parentElement.textContent
+		else
+			clickedTextContent = clickedParagraph.textContent
 		for(let i = 0; i < docSlots.length; i++)
 			if(i !== docNumber){
 				//First fetch all <p> tags from the doc

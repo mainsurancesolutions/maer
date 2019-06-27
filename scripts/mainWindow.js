@@ -179,7 +179,7 @@ async function setUpScrollFunction(){
 			paragraphs = docSlots[i].getElementsByTagName("P")
 			//Put a click event on each paragraph indicating which doc its from
 			for(let j = 0; j < paragraphs.length; j++){
-				paragraphs[j].addEventListener('click', ()=>{findParagraphs(i, event.target.textContent)})
+				paragraphs[j].addEventListener('click', ()=>{findParagraphs(i, event.target)})
 			}
 		}
 		//The following code sets up the feature to hide elements in the *table of contents*
@@ -251,8 +251,8 @@ function findSection(section){
 }
 
 //When you click a paragraph, scroll all docs to that paragraph
-function findParagraphs(whichDoc, paragraphText){
-	scrollScript.findMatchingParagraphs(paragraphText, whichDoc, docSlots, docBlocks)
+function findParagraphs(whichDoc, paragraph){
+	scrollScript.findMatchingParagraphs(paragraph, whichDoc, docSlots, docBlocks)
 }
 
 //Hide a doc
