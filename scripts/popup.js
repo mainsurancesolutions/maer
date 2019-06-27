@@ -127,7 +127,7 @@ module.exports ={
 					reconstructed += "</span> "
 				}
 				//If the word is "Section", we wanna wrap it with the section number
-				else if(splitParagraph[i].trim() === "Section"){
+				else if(splitParagraph[i].trim() === "Section" || splitParagraph[i].trim() === "Article"){
 					reconstructed += '<span>' + splitParagraph[i] + " " + splitParagraph[i+1] + '</span> '
 					i++
 				}
@@ -144,11 +144,11 @@ module.exports ={
 		//Make sure we're not grabbing the entire paragraph
 		if(hoveredWord.length < 30){
 			//Hovered a definition
-			if(hoveredWord.trim().split(' ')[0] !== "Section")
+			if(hoveredWord.trim().split(' ')[0] !== "Section" || hoveredWord.trim().split(' ')[0] !== "Article")
 				hoverDef(allDefinitions, hoveredWord, mousePos, docSlots, docNumber)
 			//Hovered a section
 			else
-				hoverSection(hoveredWord.trim().split(' ')[1], mousePos, docSlots, docNumber)
+				hoverSection(hoveredWord.trim(), mousePos, docSlots, docNumber)
 		}
 	}
 }
@@ -187,7 +187,7 @@ function popup(term, definition, mousePos, document, docNumber){
 			let mousePos = [mouseEvent.screenX, mouseEvent.screenY]
 			//Prepare the element to have a hover box appear
 			popupScript.wrapWords(hoveredElement, mousePos, docNumber, document)
-		}, 2000)
+		}, 1800)
 	})
 	popupElement.addEventListener('mouseout', () =>{
 		clearTimeout(hoverTimer)
@@ -288,13 +288,55 @@ function hoverDef(allDefinitions, hoveredWord, mousePos, docSlots, docNumber){
 }
 
 
-//When you hover a section long enough, have a popup appear with a link to that section
+//When you hover a section number long enough, have a popup appear with a link to that section
 function hoverSection(section, mousePos, docSlots, docNumber){
 	let document = docSlots[0].ownerDocument
-	//Some section links will be written like "2.02(a)(ii)"
-	//We only want the 2.02 part
-	console.log(section)
-	let trimmedSection = section.split("(")[0]
-	console.log(trimmedSection)
-	//scrollScript.findSection(trimmedSection, docSlots, docBlocks)
+	let docChildren = docSlots[docNumber].childNodes
+	//If we hovered a section
+	if(section.split(' ')[0] === "Section"){
+		console.log("Section")
+		//Some section links will be written like "2.02(a)(ii)"
+		//We only want the 2.02 part, which is what 'trimmedSection' will be
+		let sectionNum = section.split(' ')[1].split("(")[0]
+		let sectionIndex
+		//Now search each subsection to find the number
+		h2s = docSlots[docNumber].getElementsByTagName('H2')
+		for(let i = 0; i < h2s.length; i++){
+			if(h2s[i].textContent.includes(sectionNum)){
+				//Once we find the section, we wanna find the first paragraph of the section
+				sectionIndex = docChildren.indexOf(h2s[i])
+				return popup(section, docChildren[sectionIndex+1], mousePos, document, docNumber)
+			}
+		}
+	}
+	else if(section.split(' ')[0] === "Article"){
+		console.log("Article")
+		//Convert the article number to an integer
+		let articleNum = romanToArabic(section.split(' ')[1])
+		let articleIndex
+		h1s = docSlots[docNumber].getElementsByTagName('H1')
+		for(let i = 0; i < h1s.length; i++){
+			if(h1s[i].textContent.includes(" " + articleNum + " ")){
+				articleIndex = docChildren.indexOf(h2s[i])
+				return popup(section, docChildren[articleIndex+1], mousePos, document, docNumber)
+			}
+		}
+	}
+}
+
+//Helper function when finding an article by number, converts roman numerals to integers
+function romanToArabic(romanNumber){
+	romanNumber = romanNumber.toUpperCase();
+	const romanNumList = ["CM","M","CD","D","XC","C","XL","L","IX","X","IV","V","I"];
+	const corresp = [900,1000,400,500,90,100,40,50,9,10,4,5,1];
+	let index =  0, num = 0;
+	for(let rn in romanNumList){
+		index = romanNumber.indexOf(romanNumList[rn]);
+		while(index != -1){
+			num += parseInt(corresp[rn]);
+			romanNumber = romanNumber.replace(romanNumList[rn],"-");
+			index = romanNumber.indexOf(romanNumList[rn]);
+		}
+	}
+	return num;
 }

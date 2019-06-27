@@ -69,6 +69,14 @@ module.exports ={
 				if(bestMatch.ratings[bestMatch.bestMatchIndex].rating < 1 && bestMatch.ratings[bestMatch.bestMatchIndex].rating > 0.2)
 					scrollTo(docBlocks[i], allParagraphs[bestMatch.bestMatchIndex])
 			}
+	},
+
+	/*
+	Upon hovering over a section number, this is what will scroll you to that section
+	allDocsFlag is a boolean value. If it's true, we scroll *all* docs to the section
+	*/
+	findSectionByNumber: function(sectionNumber, docNumber, docSlots, docBlocks, allDocsFlag){
+
 	}
 }
 

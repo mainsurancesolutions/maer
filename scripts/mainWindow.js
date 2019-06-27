@@ -234,7 +234,7 @@ async function setUpScrollFunction(){
 					let mousePos = [mouseEvent.screenX, mouseEvent.screenY]
 					//Prepare the element to have a hover box appear
 					popupScript.wrapWords(hoveredElement, mousePos, i, document)
-				}, 1700)
+				}, 1600)
 			})
 			docSlots[i].addEventListener('mouseout', () =>{
 				clearTimeout(hoverTimer)

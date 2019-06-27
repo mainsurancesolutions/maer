@@ -1,6 +1,5 @@
 To-do list:
 Hover a section to have a link pop out
-Stop unwanted popups
 Store the filename
 Click a header (in the doc) to scroll all docs to it
 Page Numbers
