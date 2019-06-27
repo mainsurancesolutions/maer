@@ -167,6 +167,8 @@ function popup(term, definition, mousePos, document, docNumber){
 	//The 1st element is the button to close the window
 	popupElement.childNodes[0].addEventListener('click', ()=>{
 		popupElement.parentElement.removeChild(popupElement)
+		//We also want it to reset the 'hover' timer when you close a popup
+		clearTimeout(hoverTimer)
 	})
 	popupElement.childNodes[1].textContent = term
 	popupElement.childNodes[2].textContent = definition
@@ -291,6 +293,8 @@ function hoverSection(section, mousePos, docSlots, docNumber){
 	let document = docSlots[0].ownerDocument
 	//Some section links will be written like "2.02(a)(ii)"
 	//We only want the 2.02 part
+	console.log(section)
 	let trimmedSection = section.split("(")[0]
-	scrollScript.findSection(trimmedSection, docSlots, docBlocks)
+	console.log(trimmedSection)
+	//scrollScript.findSection(trimmedSection, docSlots, docBlocks)
 }
