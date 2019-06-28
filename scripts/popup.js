@@ -48,7 +48,6 @@ module.exports ={
 	*/
 	wrapWords: function(hoveredElement, mousePos, docNumber, document){
 		let paragraph
-		console.log(hoveredElement)
 		switch(hoveredElement.tagName){
 			case 'INS':
 				paragraph = hoveredElement.parentElement
@@ -68,11 +67,11 @@ module.exports ={
 				//in which case it's already prepared to be sent off
 				if(hoveredElement.innerText.length < 30){
 					//Hovered a definition
-					if(hoveredElement.innerText.trim().split(' ')[0] !== "Section")
+					if(hoveredElement.innerText.trim().split(' ')[0] !== "Section" && hoveredElement.innerText.trim().split(' ')[0] !== "Article")
 						return hoverDef(allDefinitions, hoveredElement.innerText, mousePos, docSlots, docNumber)
-					//Hovered a section
+					//Hovered an article or section
 					else
-						return hoverSection(hoveredElement.innerText.trim().split(' ')[1], mousePos, docSlots, docNumber)
+						return hoverSection(hoveredElement.innerText.trim(), mousePos, docSlots, docNumber)
 				}
 				else
 					return
@@ -144,9 +143,9 @@ module.exports ={
 		//Make sure we're not grabbing the entire paragraph
 		if(hoveredWord.length < 30){
 			//Hovered a definition
-			if(hoveredWord.trim().split(' ')[0] !== "Section" || hoveredWord.trim().split(' ')[0] !== "Article")
+			if(hoveredWord.trim().split(' ')[0] !== "Section" && hoveredWord.trim().split(' ')[0] !== "Article")
 				hoverDef(allDefinitions, hoveredWord, mousePos, docSlots, docNumber)
-			//Hovered a section
+			//Hovered an article or section
 			else
 				hoverSection(hoveredWord.trim(), mousePos, docSlots, docNumber)
 		}
@@ -235,7 +234,7 @@ function hoverDef(allDefinitions, hoveredWord, mousePos, docSlots, docNumber){
 	We will then take the longest substring, and get the definition from that
 	*/
 	//First trim the end of the term if it's a period or comma
-	if(hoveredWord.substring(hoveredWord.length-1) === "," || hoveredWord.substring(hoveredWord.length-1) === "." || hoveredWord.substring(hoveredWord.length-1) === "\"" || hoveredWord.substring(hoveredWord.length-1) === ":")
+	if(hoveredWord.substring(hoveredWord.length-1) === "," || hoveredWord.substring(hoveredWord.length-1) === "." || hoveredWord.substring(hoveredWord.length-1) === "\"" || hoveredWord.substring(hoveredWord.length-1) === ":" || hoveredWord.substring(hoveredWord.length-1) === ";")
 		hoveredWord = hoveredWord.trim().substring(0, hoveredWord.length-1)
 	if(hoveredWord[0] === "\"")
 		hoveredWord = hoveredWord.substring(1)
@@ -292,6 +291,7 @@ function hoverDef(allDefinitions, hoveredWord, mousePos, docSlots, docNumber){
 function hoverSection(section, mousePos, docSlots, docNumber){
 	let document = docSlots[0].ownerDocument
 	let docChildren = docSlots[docNumber].childNodes
+	console.log(section)
 	//If we hovered a section
 	if(section.split(' ')[0] === "Section"){
 		console.log("Section")
@@ -299,13 +299,20 @@ function hoverSection(section, mousePos, docSlots, docNumber){
 		//We only want the 2.02 part, which is what 'trimmedSection' will be
 		let sectionNum = section.split(' ')[1].split("(")[0]
 		let sectionIndex
+		let sectionText = ""
 		//Now search each subsection to find the number
 		h2s = docSlots[docNumber].getElementsByTagName('H2')
 		for(let i = 0; i < h2s.length; i++){
 			if(h2s[i].textContent.includes(sectionNum)){
-				//Once we find the section, we wanna find the first paragraph of the section
-				sectionIndex = docChildren.indexOf(h2s[i])
-				return popup(section, docChildren[sectionIndex+1], mousePos, document, docNumber)
+				//Once we find the section, we wanna fetch the paragraphs from that section
+				sectionIndex = Array.from(docChildren).indexOf(h2s[i])
+				for(let j = sectionIndex+1; j < docChildren.length; j++){
+					if(docChildren[j].tagName === "H1" || docChildren[j].tagName === "H2")
+						break
+					else
+						sectionText += docChildren[j].innerHTML
+				}
+				return popup(section, docChildren[sectionIndex+1].innerHTML, mousePos, document, docNumber)
 			}
 		}
 	}
