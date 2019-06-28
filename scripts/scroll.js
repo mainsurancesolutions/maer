@@ -1,6 +1,13 @@
 const stringSimilarity = require('string-similarity')
 
 module.exports ={
+	//The function that actually adjusts where the doc is scrolled to
+	scrollTo: function(scrollingDoc, targetP){
+		scrollTarget = targetP.offsetTop - (scrollingDoc.offsetHeight/2)
+		scrollingDoc.scrollTop = scrollTarget
+	},
+
+
 	findSection: function(clickedSection, docSlots, docBlocks){
 		//remove the section number
 		let clickedTextContent = clickedSection.textContent.substring(clickedSection.textContent.indexOf(clickedSection.textContent.split(" ")[1]))
@@ -15,7 +22,7 @@ module.exports ={
 					//If we found the header
 					//Keep in mind each header will be written as 'ARTICLE 3 Section', so we wanna cut that number out
 					if(h1s[j].textContent.substring(h1s[j].textContent.split(" ")[0].length + h1s[j].textContent.split(" ")[1].length + 2) === clickedTextContent){
-						scrollTo(docBlocks[i], h1s[j])
+						module.exports.scrollTo(docBlocks[i], h1s[j])
 						break
 					}
 				}
@@ -28,10 +35,10 @@ module.exports ={
 						if(h2s[j-h1s.length].style.display === "none"){
 							//rip the article number from the clicked section
 							let articleNumber = clickedSection.textContent.substring(0, 1)
-							scrollTo(docBlocks[i], h1s[articleNumber-1])
+							module.exports.scrollTo(docBlocks[i], h1s[articleNumber-1])
 						}
 						else
-							scrollTo(docBlocks[i], h2s[j-h1s.length])
+							module.exports.scrollTo(docBlocks[i], h2s[j-h1s.length])
 						break
 					}
 				}
@@ -67,21 +74,7 @@ module.exports ={
 				//Since each doc only shows paragraphs with differences, scrolling to a paragraph that's an
 				//exact match causes issues
 				if(bestMatch.ratings[bestMatch.bestMatchIndex].rating < 1 && bestMatch.ratings[bestMatch.bestMatchIndex].rating > 0.2)
-					scrollTo(docBlocks[i], allParagraphs[bestMatch.bestMatchIndex])
+					module.exports.scrollTo(docBlocks[i], allParagraphs[bestMatch.bestMatchIndex])
 			}
-	},
-
-	/*
-	Upon hovering over a section number, this is what will scroll you to that section
-	allDocsFlag is a boolean value. If it's true, we scroll *all* docs to the section
-	*/
-	findSectionByNumber: function(sectionNumber, docNumber, docSlots, docBlocks, allDocsFlag){
-
 	}
-}
-
-
-function scrollTo(scrollingDoc, targetP){
-	scrollTarget = targetP.offsetTop - (scrollingDoc.offsetHeight/2)
-	scrollingDoc.scrollTop = scrollTarget
 }

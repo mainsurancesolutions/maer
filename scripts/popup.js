@@ -156,7 +156,8 @@ module.exports ={
 }
 
 //Creates the popup after hovering a term/section name
-function popup(term, definition, mousePos, document, docNumber){
+//section is the header of the found section, for use when scrolling to it
+function popup(term, definition, mousePos, document, docNumber, section){
 	let popupElement = document.createElement('div')
 	popupElement.innerHTML = popupHTML
 	document.getElementById('docs-and-console').appendChild(popupElement)
@@ -198,6 +199,13 @@ function popup(term, definition, mousePos, document, docNumber){
 		popupElement.style.zIndex = zCounter
 		zCounter++
 	})
+	//Zoom the doc to that section upon clicking the arrow button
+	popupElement.getElementsByClassName('zoom-button')[0].addEventListener('click', () =>{
+		scrollScript.scrollTo(document.getElementsByClassName('doc-block')[docNumber], section)
+	})
+	//Remove the 'zoom to section' button if this is a definition
+	if(term.split(" ")[0] !== "Section" && term.split(" ")[0] !== "Article")
+		popupElement.removeChild(popupElement.getElementsByClassName('zoom-button')[0])
 
 	/*
 	Make sure the window is onscreen fully
@@ -293,13 +301,14 @@ function hoverSection(section, mousePos, docSlots, docNumber){
 	let document = docSlots[0].ownerDocument
 	let docChildren = docSlots[docNumber].childNodes
 	let sectionText = ""
+	let sectionNum
+	let sectionIndex
 	console.log(section)
 	//If we hovered a section
 	if(section.split(' ')[0] === "Section"){
 		//Some section links will be written like "2.02(a)(ii)"
 		//We only want the 2.02 part, which is what 'trimmedSection' will be
-		let sectionNum = section.split(' ')[1].split("(")[0]
-		let sectionIndex
+		sectionNum = section.split(' ')[1].split("(")[0]
 		//Now search each subsection to find the number
 		h2s = docSlots[docNumber].getElementsByTagName('H2')
 		for(let i = 0; i < h2s.length; i++){
@@ -312,33 +321,33 @@ function hoverSection(section, mousePos, docSlots, docNumber){
 					else
 						sectionText += docChildren[j].innerHTML
 				}
+				sectionNum = "Section " + sectionNum
 				break
 			}
 		}
 	}
 	//Works pretty much the same as when fetching a section
 	else if(section.split(' ')[0] === "Article"){
-		console.log("Article")
 		//Convert the article number to an integer
-		let articleNum = romanToArabic(section.split(' ')[1])
-		let articleIndex
+		sectionNum = romanToArabic(section.split(' ')[1])
 		h1s = docSlots[docNumber].getElementsByTagName('H1')
 		for(let i = 0; i < h1s.length; i++){
-			if(h1s[i].textContent.includes(" " + articleNum + " ")){
-				articleIndex = docChildren.indexOf(h2s[i])
+			if(h1s[i].textContent.includes(" " + sectionNum + " ")){
+				sectionIndex = docChildren.indexOf(h2s[i])
 				for(let j = sectionIndex+1; j < docChildren.length; j++){
 					if(docChildren[j].tagName === "H1")
 						break
 					else
 						sectionText += docChildren[j].innerHTML
 				}
+				sectionNum = "Article " + sectionNum 
 				break
 			}
 		}
 	}
 	//Now that we've fetched the section/article text, we should reveal any items that are hidden
 	sectionText = sectionText.replace("display: none", "display: block")
-	return popup(section, sectionText, mousePos, document, docNumber)
+	return popup(sectionNum, sectionText, mousePos, document, docNumber, docChildren[sectionIndex])
 }
 
 //Helper function when finding an article by number, converts roman numerals to integers
