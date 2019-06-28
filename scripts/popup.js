@@ -83,8 +83,9 @@ module.exports ={
 		let reconstructed = ""
 		let inATag = null
 		for(let i = 0; i < splitParagraph.length; i++){
+			console.log(splitParagraph[i])
 			//We don't wanna insert <span> tags in the middle of existing tags, so the following cases will ensure we're not in a tag
-			if(splitParagraph[i].includes('<') || splitParagraph[i].includes('>') || splitParagraph[i].length <= 1){
+			if(splitParagraph[i].includes('<') || splitParagraph[i].includes('>')){
 				inATag = true
 			}
 			else{
@@ -135,6 +136,8 @@ module.exports ={
 			}
 			else
 				reconstructed += splitParagraph[i] + " "
+			console.log(inATag)
+			console.log(reconstructed)
 			inATag = null
 		}
 		paragraph.innerHTML = reconstructed
@@ -163,14 +166,13 @@ function popup(term, definition, mousePos, document, docNumber){
 	popupElement.style.top = mousePos[1] + "px"
 
 	popupElement.classList.add("popup")
-	//The 1st element is the button to close the window
-	popupElement.childNodes[0].addEventListener('click', ()=>{
+	popupElement.getElementsByClassName('close-popup-button')[0].addEventListener('click', ()=>{
 		popupElement.parentElement.removeChild(popupElement)
 		//We also want it to reset the 'hover' timer when you close a popup
 		clearTimeout(hoverTimer)
 	})
-	popupElement.childNodes[1].textContent = term
-	popupElement.childNodes[2].textContent = definition
+	popupElement.getElementsByClassName('term')[0].innerHTML = term
+	popupElement.getElementsByClassName('definition')[0].innerHTML = definition
 	popupElement.style.zIndex = zCounter
 	zCounter++
 
@@ -254,7 +256,6 @@ function hoverDef(allDefinitions, hoveredWord, mousePos, docSlots, docNumber){
 	//If there's no matches in either, we're done here
 	if(docTerms.length === 0 && lastDocTerms.length === 0){
 		return popup(hoveredWord, "No match found", mousePos, docSlots[0].ownerDocument, docNumber)
-		return
 	}
 	//If there's only 1 match, we can use that
 	if(docTerms.length === 1 && lastDocTerms.length === 0)
@@ -291,15 +292,14 @@ function hoverDef(allDefinitions, hoveredWord, mousePos, docSlots, docNumber){
 function hoverSection(section, mousePos, docSlots, docNumber){
 	let document = docSlots[0].ownerDocument
 	let docChildren = docSlots[docNumber].childNodes
+	let sectionText = ""
 	console.log(section)
 	//If we hovered a section
 	if(section.split(' ')[0] === "Section"){
-		console.log("Section")
 		//Some section links will be written like "2.02(a)(ii)"
 		//We only want the 2.02 part, which is what 'trimmedSection' will be
 		let sectionNum = section.split(' ')[1].split("(")[0]
 		let sectionIndex
-		let sectionText = ""
 		//Now search each subsection to find the number
 		h2s = docSlots[docNumber].getElementsByTagName('H2')
 		for(let i = 0; i < h2s.length; i++){
@@ -312,10 +312,11 @@ function hoverSection(section, mousePos, docSlots, docNumber){
 					else
 						sectionText += docChildren[j].innerHTML
 				}
-				return popup(section, docChildren[sectionIndex+1].innerHTML, mousePos, document, docNumber)
+				break
 			}
 		}
 	}
+	//Works pretty much the same as when fetching a section
 	else if(section.split(' ')[0] === "Article"){
 		console.log("Article")
 		//Convert the article number to an integer
@@ -325,10 +326,19 @@ function hoverSection(section, mousePos, docSlots, docNumber){
 		for(let i = 0; i < h1s.length; i++){
 			if(h1s[i].textContent.includes(" " + articleNum + " ")){
 				articleIndex = docChildren.indexOf(h2s[i])
-				return popup(section, docChildren[articleIndex+1], mousePos, document, docNumber)
+				for(let j = sectionIndex+1; j < docChildren.length; j++){
+					if(docChildren[j].tagName === "H1")
+						break
+					else
+						sectionText += docChildren[j].innerHTML
+				}
+				break
 			}
 		}
 	}
+	//Now that we've fetched the section/article text, we should reveal any items that are hidden
+	sectionText = sectionText.replace("display: none", "display: block")
+	return popup(section, sectionText, mousePos, document, docNumber)
 }
 
 //Helper function when finding an article by number, converts roman numerals to integers
