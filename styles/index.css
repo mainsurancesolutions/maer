@@ -110,6 +110,7 @@ ins{
     background-color: white;
     margin: 0px;
     padding: 4px;
+    padding-top: 2px;
     position: absolute;
     display: inline-block;
     min-height: 5%;
@@ -123,18 +124,28 @@ ins{
     transform: translate(0, -100%);
 }
 
+.zoom-button{
+	color: #0645AD;
+	text-decoration: underline;
+	margin-top: 4px;
+	margin-bottom: 4px;
+}
+
 .close-popup-button{
 	display: inline-block;
 	position: fixed;
-	height: 24px;
-	width: 24px;
+	height: 28px;
+	width: 28px;
 	right: 2px;
 	top: 2px;
 }
 
 .term{
 	margin-right: 24px;
+	margin-top: 4px;
+	margin-bottom: 4px;
 	top: 2px;
+	font-size: 18px;
 }
 
 .definition{
