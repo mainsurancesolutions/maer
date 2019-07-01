@@ -83,7 +83,6 @@ module.exports ={
 		let reconstructed = ""
 		let inATag = null
 		for(let i = 0; i < splitParagraph.length; i++){
-			console.log(splitParagraph[i])
 			//We don't wanna insert <span> tags in the middle of existing tags, so the following cases will ensure we're not in a tag
 			if(splitParagraph[i].includes('<') || splitParagraph[i].includes('>')){
 				inATag = true
@@ -136,8 +135,6 @@ module.exports ={
 			}
 			else
 				reconstructed += splitParagraph[i] + " "
-			console.log(inATag)
-			console.log(reconstructed)
 			inATag = null
 		}
 		paragraph.innerHTML = reconstructed
@@ -204,8 +201,21 @@ function popup(term, definition, mousePos, document, docNumber, section){
 		scrollScript.scrollTo(document.getElementsByClassName('doc-block')[docNumber], section)
 	})
 	//Remove the 'zoom to section' button if this is a definition
+	//if it's a section/article, we wanna remove the "collapse section" buttons
 	if(term.split(" ")[0] !== "Section" && term.split(" ")[0] !== "Article")
 		popupElement.removeChild(popupElement.getElementsByClassName('zoom-button')[0])
+	else{
+		let lineBreak = document.createElement("br")
+		//replace each "collapse section" button with a simple linebreak
+		let sectionTextChildren = popupElement.getElementsByClassName('definition')[0].getElementsByTagName('INPUT')
+		console.log(sectionTextChildren.length)
+		//We have to start from the last button and work backwards, as when we remove a button it will shift
+		//the positions of all others in the list. Removing from behind avoids this issue
+		for(let i = sectionTextChildren.length - 1; i >= 0; i--){
+			popupElement.getElementsByClassName('definition')[0].replaceChild(lineBreak.cloneNode(true), sectionTextChildren[i])
+		}
+	}
+
 
 	/*
 	Make sure the window is onscreen fully
@@ -304,7 +314,6 @@ function hoverSection(section, mousePos, docSlots, docNumber){
 	let sectionNum
 	let sectionIndex
 	let sectionHeader
-	console.log(section)
 	//If we hovered a section
 	if(section.split(' ')[0] === "Section"){
 		//Some section links will be written like "2.02(a)(ii)"
