@@ -303,6 +303,7 @@ function hoverSection(section, mousePos, docSlots, docNumber){
 	let sectionText = ""
 	let sectionNum
 	let sectionIndex
+	let sectionHeader
 	console.log(section)
 	//If we hovered a section
 	if(section.split(' ')[0] === "Section"){
@@ -313,6 +314,7 @@ function hoverSection(section, mousePos, docSlots, docNumber){
 		h2s = docSlots[docNumber].getElementsByTagName('H2')
 		for(let i = 0; i < h2s.length; i++){
 			if(h2s[i].textContent.includes(sectionNum)){
+				sectionHeader = h2s[i]
 				//Once we find the section, we wanna fetch the paragraphs from that section
 				sectionIndex = Array.from(docChildren).indexOf(h2s[i])
 				for(let j = sectionIndex+1; j < docChildren.length; j++){
@@ -333,11 +335,12 @@ function hoverSection(section, mousePos, docSlots, docNumber){
 		h1s = docSlots[docNumber].getElementsByTagName('H1')
 		for(let i = 0; i < h1s.length; i++){
 			if(h1s[i].textContent.includes(" " + sectionNum + " ")){
-				sectionIndex = docChildren.indexOf(h2s[i])
+				sectionHeader = h1s[i]
+				sectionIndex = Array.from(docChildren).indexOf(h1s[i])
 				for(let j = sectionIndex+1; j < docChildren.length; j++){
 					if(docChildren[j].tagName === "H1")
 						break
-					else
+					else if(docChildren[j].tagName !== "INPUT")
 						sectionText += docChildren[j].innerHTML
 				}
 				sectionNum = "Article " + sectionNum 
@@ -347,7 +350,7 @@ function hoverSection(section, mousePos, docSlots, docNumber){
 	}
 	//Now that we've fetched the section/article text, we should reveal any items that are hidden
 	sectionText = sectionText.replace("display: none", "display: block")
-	return popup(sectionNum, sectionText, mousePos, document, docNumber, docChildren[sectionIndex])
+	return popup(sectionNum, sectionText, mousePos, document, docNumber, sectionHeader)
 }
 
 //Helper function when finding an article by number, converts roman numerals to integers

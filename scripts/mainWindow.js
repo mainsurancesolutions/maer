@@ -161,7 +161,7 @@ async function setUpScrollFunction(){
 	    return new Promise(function (resolve, reject) {
 	        (function waitForListItems(){
 	            if (document.getElementsByTagName('LI')[1] !== undefined) return resolve()
-	            setTimeout(waitForListItems, 5000)
+	            setTimeout(waitForListItems, 110)
 	        })()
 	    })
 	}

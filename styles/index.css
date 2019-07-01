@@ -113,10 +113,10 @@ ins{
     padding-top: 2px;
     position: absolute;
     display: inline-block;
-    min-height: 5%;
-    min-width: 5%;
+    min-height: 15%;
+    min-width: 15%;
     max-height: 40%;
-    max-width: 20%;
+    max-width: 25%;
     overflow-x: hidden;
     overflow-y: auto;
     visibility: visible;

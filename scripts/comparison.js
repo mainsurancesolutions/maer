@@ -20,7 +20,7 @@ module.exports ={
 		    return new Promise(function (resolve, reject) {
 		        (function waitForHtml(){
 		            if (rippedHtml[rippedHtml.length-1]) return resolve();
-		            setTimeout(waitForHtml, 5000);
+		            setTimeout(waitForHtml, 2000);
 		        })();
 		    });
 		}
