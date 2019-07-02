@@ -2,6 +2,7 @@ const {app, BrowserWindow, BrowserView, dialog, shell} = require('electron')
 const path = require('path')
 const ipc = require('electron').ipcMain
 let mainWindow
+let loadedName = ""
 
 app.on('ready', createMainWindow);
 
@@ -55,6 +56,7 @@ ipc.on('restart', (event, arg) =>{
 
 ipc.on('save', (event, arg) =>{
 	dialog.showSaveDialog(mainWindow, {
+		defaultPath: loadedName,
 		filters:{extensions: 'maer'}
 	}, (path) =>{
 		if(path !== undefined){
@@ -71,8 +73,11 @@ ipc.on('load', (event, arg) =>{
 		filters:{extension: 'maer'},
 		properties: ['openfile']
 	}, (file) =>{
-		if(file !== undefined)
+		if(file !== undefined){
 			mainWindow.webContents.send('loadFile', file[0])
+			//Store the filename of the loaded file
+			loadedName = file[0]
+		}
 	})
 })
 

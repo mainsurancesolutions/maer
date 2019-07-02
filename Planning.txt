@@ -1,5 +1,4 @@
 To-do list:
-Store the filename
 Page Numbers
 Scroll through one doc, it scrolls through all
 Table of Contents goes layers deeper (Article 1, section 1.01, subsection a)
