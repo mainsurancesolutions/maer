@@ -19,8 +19,15 @@ module.exports ={
 		function ensureHtmlIsSet() {
 		    return new Promise(function (resolve, reject) {
 		        (function waitForHtml(){
-		            if (rippedHtml[rippedHtml.length-1]) return resolve();
-		            setTimeout(waitForHtml, 2000);
+		        	//Make sure all docs have been loaded in
+		        	for(let i = 0; i < files.length - 1; i++){
+		        		//if we made it through all docs without finding a null or undefined, we're good
+		        		if(i === files.length-2 && rippedHtml[i] !== null && rippedHtml[i] !== undefined)
+		        			return resolve()
+		        		if(rippedHtml[i] === null || rippedHtml[i] === undefined)
+		        			break
+		        	}
+		            setTimeout(waitForHtml, 125);
 		        })();
 		    });
 		}

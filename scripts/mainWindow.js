@@ -160,8 +160,9 @@ async function setUpScrollFunction(){
 	function ensureListIsGenerated() {
 	    return new Promise(function (resolve, reject) {
 	        (function waitForListItems(){
-	            if (document.getElementsByTagName('LI')[1] !== undefined) return resolve()
-	            setTimeout(waitForListItems, 110)
+	            if (document.getElementsByTagName('LI')[1] !== undefined && document.getElementsByTagName('LI')[1] !== null)
+	            	return resolve()
+	            setTimeout(waitForListItems, 130)
 	        })()
 	    })
 	}

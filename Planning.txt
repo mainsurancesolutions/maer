@@ -1,11 +1,9 @@
 To-do list:
 Store the filename
-Click a header (in the doc) to scroll all docs to it
 Page Numbers
 Scroll through one doc, it scrolls through all
 Table of Contents goes layers deeper (Article 1, section 1.01, subsection a)
 Fix issues with adding new version after comparing
-Fix issue where not all docs load sometimes
 Search bar
 Definitions page
 Front-end clean-up:
