@@ -295,7 +295,6 @@ function numberSections(docSlots){
 			}
 			sectionButtons[j].addEventListener('click', ()=>{
 				docElements = Array.from(docSlots[i].childNodes)
-				console.log(sectionButtons[j].src.includes("images/showSection.png"))
 				//Show items
 				if(sectionButtons[j].src.includes("images/showSection.png")){
 					//Start with the element right after the section title

@@ -207,12 +207,11 @@ function popup(term, definition, mousePos, document, docNumber, section){
 	else{
 		let lineBreak = document.createElement("br")
 		//replace each "collapse section" button with a simple linebreak
-		let sectionTextChildren = popupElement.getElementsByClassName('definition')[0].getElementsByTagName('INPUT')
-		console.log(sectionTextChildren.length)
+		let inputTags = popupElement.getElementsByClassName('definition')[0].getElementsByTagName('INPUT')
 		//We have to start from the last button and work backwards, as when we remove a button it will shift
 		//the positions of all others in the list. Removing from behind avoids this issue
-		for(let i = sectionTextChildren.length - 1; i >= 0; i--){
-			popupElement.getElementsByClassName('definition')[0].replaceChild(lineBreak.cloneNode(true), sectionTextChildren[i])
+		for(let i = inputTags.length - 1; i >= 0; i--){
+			popupElement.getElementsByClassName('definition')[0].replaceChild(lineBreak.cloneNode(true), inputTags[i])
 		}
 	}
 

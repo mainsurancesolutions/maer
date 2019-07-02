@@ -170,16 +170,25 @@ async function setUpScrollFunction(){
 		//First set up section searching from table of contents
 		let listItems = document.getElementsByTagName('LI')
 		for(let i = 0; i < listItems.length; i++){
-			listItems[i].addEventListener('click', function(){findSection(i)})
+			listItems[i].addEventListener('click', ()=>{findSection(listItems[i])})
 		}
 		//then set up searching for matching paragraphs by clicking on a
 		//paragraph in a doc
 		let paragraphs
 		for(let i = 0; i < docSlots.length; i++){
-			paragraphs = docSlots[i].getElementsByTagName("P")
+			paragraphs = docSlots[i].getElementsByTagName('P')
 			//Put a click event on each paragraph indicating which doc its from
 			for(let j = 0; j < paragraphs.length; j++){
 				paragraphs[j].addEventListener('click', ()=>{findParagraphs(i, event.target)})
+			}
+			//Also create an event on each header to scroll to it in others when clicked
+			h1s = docSlots[i].getElementsByTagName('H1')
+			h2s = docSlots[i].getElementsByTagName('H2')
+			for(let j = 0; j < h1s.length; j++){
+				h1s[j].addEventListener('click', ()=>{findSection(event.target)})
+			}
+			for(let j = 0; j < h2s.length; j++){
+				h2s[j].addEventListener('click', ()=>{findSection(event.target)})
 			}
 		}
 		//The following code sets up the feature to hide elements in the *table of contents*
@@ -246,8 +255,7 @@ async function setUpScrollFunction(){
 //When you click on a section in the table of contents,
 //scroll all docs to that section
 function findSection(section){
-	let listItems = document.getElementsByTagName('LI')
-	scrollScript.findSection(listItems[section], docSlots, docBlocks)
+	scrollScript.findSection(section, docSlots, docBlocks)
 }
 
 //When you click a paragraph, scroll all docs to that paragraph
