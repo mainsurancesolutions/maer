@@ -126,9 +126,15 @@ module.exports ={
 					reconstructed += "</span> "
 				}
 				//If the word is "Section", we wanna wrap it with the section number
+				//BUT make sure the word directly after the section isnt a tag
+				//ie watch out for cases like "Section <a id="DocXTextRef67"></a> 210"
 				else if(splitParagraph[i].trim() === "Section" || splitParagraph[i].trim() === "Article"){
-					reconstructed += '<span>' + splitParagraph[i] + " " + splitParagraph[i+1] + '</span> '
-					i++
+					if(!splitParagraph[i+1].includes('<')){
+						reconstructed += '<span>' + splitParagraph[i] + " " + splitParagraph[i+1] + '</span> '
+						i++
+					}
+					else
+						reconstructed += '<span>' + splitParagraph[i] + '</span> '
 				}
 				else
 					reconstructed += '<span>' + splitParagraph[i] + '</span> '
@@ -186,7 +192,7 @@ function popup(term, definition, mousePos, document, docNumber, section){
 			let mousePos = [mouseEvent.screenX, mouseEvent.screenY]
 			//Prepare the element to have a hover box appear
 			popupScript.wrapWords(hoveredElement, mousePos, docNumber, document)
-		}, 1800)
+		}, 1400)
 	})
 	popupElement.addEventListener('mouseout', () =>{
 		clearTimeout(hoverTimer)

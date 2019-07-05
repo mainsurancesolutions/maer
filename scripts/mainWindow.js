@@ -232,7 +232,15 @@ async function setUpScrollFunction(){
 		}
 		//Also generate the definitions
 		allDefinitions = popupScript.getDefs(docSlots)
-		//Start watching for mouse hovers
+		/*
+		Start watching for mouse hovers
+		The way this works is, when you move your mouse in a doc, it starts counting down a timer
+		Moving your mouse again will reset the timer
+		If the timer reaches zero (so if you move your mouse into a doc and then dont move again),
+		it will call the popupScript to generate a popup
+		If you move your mouse off of the doc, it will cancel the timer
+		This is also set up in the popups themselves, allowing you to hover terms in them
+		*/
 		for(let i = 0; i < docSlots.length-1; i++){
 			docSlots[i].addEventListener('mousemove', () =>{
 				clearTimeout(hoverTimer)
@@ -244,7 +252,7 @@ async function setUpScrollFunction(){
 					let mousePos = [mouseEvent.screenX, mouseEvent.screenY]
 					//Prepare the element to have a hover box appear
 					popupScript.wrapWords(hoveredElement, mousePos, i, document)
-				}, 1600)
+				}, 1250)
 			})
 			docSlots[i].addEventListener('mouseout', () =>{
 				clearTimeout(hoverTimer)

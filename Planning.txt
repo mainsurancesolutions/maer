@@ -1,7 +1,7 @@
 To-do list:
 Page Numbers
-Scroll through one doc, it scrolls through all
 Table of Contents goes layers deeper (Article 1, section 1.01, subsection a)
+Scroll through one doc, it scrolls through all
 Fix issues with adding new version after comparing
 Search bar
 Definitions page
@@ -10,20 +10,6 @@ Front-end clean-up:
 	Hiding docs
 	Everything, really
 Security Verification
-
-In order to find sections, must do a few things first
-1. article numbers present in the doc viewer
-2. change article scroll function to scroll based on number
-
-Hovering a section
-Box should appear as
-
-Section x
-
-As much of it as possible
-
-Scroll this doc to section
-Scroll all docs to section
 
 
 Table of Contents goes layers deeper (Article 1, section 1.01, subsection a) notes:
@@ -41,9 +27,5 @@ drag docs and drop them on the app to open them (like google docs importing)
 Make sure the clients feel secure
 Scroll through one doc, it scrolls through all
 Go even deeper in terms of layering (article 1, section 1.01, a)
-Move buttons down
 Make add a version button bigger
-When you load, store the filename. When you save, if you have a filename stored, start with that filename written
 Change how you save/load. Folder structure? (avoid issues with deleting docs and then loading, as they might assume it saved the docs)
-Have all the section headers present, even those wihtout changes. Those have dropdowns
-Section numbers present in the docs themselves
