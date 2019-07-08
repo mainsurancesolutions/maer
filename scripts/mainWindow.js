@@ -160,7 +160,7 @@ async function setUpScrollFunction(){
 	function ensureListIsGenerated() {
 	    return new Promise(function (resolve, reject) {
 	        (function waitForListItems(){
-	            if (document.getElementsByTagName('LI')[1] !== undefined && document.getElementsByTagName('LI')[1] !== null)
+	            if (document.getElementsByTagName('LI')[1] && docSlots[0].textContent !== "Processing...")
 	            	return resolve()
 	            setTimeout(waitForListItems, 130)
 	        })()
@@ -170,6 +170,7 @@ async function setUpScrollFunction(){
 	ensureListIsGenerated().then(function(){
 		//First set up section searching from table of contents
 		let listItems = document.getElementsByTagName('LI')
+		console.log(listItems)
 		for(let i = 0; i < listItems.length; i++){
 			listItems[i].addEventListener('click', ()=>{findSection(listItems[i])})
 		}

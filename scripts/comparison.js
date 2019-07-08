@@ -27,7 +27,7 @@ module.exports ={
 		        		if(rippedHtml[i] === null || rippedHtml[i] === undefined)
 		        			break
 		        	}
-		            setTimeout(waitForHtml, 125);
+		            setTimeout(waitForHtml, 125)
 		        })();
 		    });
 		}
@@ -84,7 +84,7 @@ diffs pointed out. Insertions in <ins>, deletions in <del>
 Updating the text fields for the 2nd parameter as it goes
 It will also generate the table of contents as it goes
 */
-function findDiffs(fields, tocBlock){
+async function findDiffs(fields, tocBlock){
 	//Set first field to simply be the first doc
 	fields[0].innerHTML = rippedHtml[0]
 
@@ -94,105 +94,124 @@ function findDiffs(fields, tocBlock){
 	let changedHeaders = []
 	let showNextH1 = false
 	let showNextH2 = false
-	//Iterate through all docs
-	for(let i = 1; i < rippedHtml.length; i++){
-		fields[i].innerHTML = diff(rippedHtml[i-1], rippedHtml[i])
 
-		//See section comments at the top. We will push subsections to this then
-		//push this + the section title to the tableOfContents
-		subSections = []
+	//Clear the table of contents in case it was already populated
+	//Helper function to ensure it's cleared before proceeding
+	let tableOfContentsElement = fields[0].ownerDocument.getElementById('table-of-contents')
+	function clearTable(table){
+		return new Promise(function(resolve, reject){
+			(function clear(){
+				while(table.firstChild !== null){
+					table.removeChild(table.firstChild)
+				}
+				return resolve()
+			})()
+		})
+	}
+	tableOfContents = []
+	clearTable(tableOfContentsElement).then(()=>{
+		//Iterate through all docs
+		for(let i = 1; i < rippedHtml.length; i++){
+			fields[i].innerHTML = diff(rippedHtml[i-1], rippedHtml[i])
 
-		//Iterate through all elements in a doc backwards
-		docElements = fields[i].childNodes
-		for(let j = docElements.length-1; j >= 0; j--){
-			switch(docElements[j].tagName){
-				//If we found a tag with changes, we wanna show the category/subcategory before it
-				case 'H1':
-					//We only wanna catalogue the table of contents once
-					if(i === 1){
-						tableOfContents.push([docElements[j].textContent, subSections.reverse()])
-						subSections = []
-					}
-					if(showNextH1){
-						showNextH1 = false
-						//We only care if the last version has changes
-						if(i === rippedHtml.length-1)
-							changedHeaders.push(docElements[j].textContent)
-					}
-					break
-				case 'H2':
-					if(i === 1){
-						subSections.push(docElements[j].textContent)
-					}
-					if(showNextH2){
-						showNextH2 = false
-						if(i === rippedHtml.length-1)
-							changedHeaders.push(docElements[j].textContent)
-					}					
-					break
-				default:
-					//Check if its has insertions/deletions
-					for(let k = 0; k < docElements[j].childNodes.length; k++){
-						//If we find a change, we leave it visible and make sure the next h2/h3 tags are shown
-						if(docElements[j].childNodes[k].tagName === 'INS' || docElements[j].childNodes[k].tagName === 'DEL'){
-							showNextH2 = true
-							showNextH1 = true
-							break
+			//See section comments at the top. We will push subsections to this then
+			//push this + the section title to the tableOfContents
+			subSections = []
+
+			//Iterate through all elements in a doc backwards
+			docElements = fields[i].childNodes
+			for(let j = docElements.length-1; j >= 0; j--){
+				switch(docElements[j].tagName){
+					//If we found a tag with changes, we wanna show the category/subcategory before it
+					case 'H1':
+						//We only wanna catalogue the table of contents once
+						if(i === 1){
+							tableOfContents.push([docElements[j].textContent, subSections.reverse()])
+							subSections = []
 						}
-						//If we haven't found an ins or del tag, remove the paragraph
-						if(k === docElements[j].childNodes.length-1 && !(docElements[j].childNodes[k].tagName === 'INS' || docElements[j].childNodes[k].tagName === 'DEL')){
-							docElements[j].style.display = "none"
-							break
+						if(showNextH1){
+							showNextH1 = false
+							//We only care if the last version has changes
+							if(i === rippedHtml.length-1)
+								changedHeaders.push(docElements[j].textContent)
 						}
-					}
-					break
+						break
+					case 'H2':
+						if(i === 1){
+							subSections.push(docElements[j].textContent)
+						}
+						if(showNextH2){
+							showNextH2 = false
+							if(i === rippedHtml.length-1)
+								changedHeaders.push(docElements[j].textContent)
+						}					
+						break
+					default:
+						//Check if its has insertions/deletions
+						for(let k = 0; k < docElements[j].childNodes.length; k++){
+							//If we find a change, we leave it visible and make sure the next h2/h3 tags are shown
+							if(docElements[j].childNodes[k].tagName === 'INS' || docElements[j].childNodes[k].tagName === 'DEL'){
+								showNextH2 = true
+								showNextH1 = true
+								break
+							}
+							//If we haven't found an ins or del tag, remove the paragraph
+							if(k === docElements[j].childNodes.length-1 && !(docElements[j].childNodes[k].tagName === 'INS' || docElements[j].childNodes[k].tagName === 'DEL')){
+								docElements[j].style.display = "none"
+								break
+							}
+						}
+						break
+				}
 			}
-		}
-		
-		if(i === rippedHtml.length-1){
-			tableOfContents.reverse()
-			/*
-			Fill the table of contents
-			The contents will be of the form
-			[[section, [subsections]], [section, [subsections]], ...]
-			So we will iterate through the array to each [section, [subsections]]
-			Then create a new listitem for each section with a sub-list and listitems for each subsection
-			Use a counter to determine subsection numbers
-			*/
-			let newListItem
-			let subsectionNumberString = ""
-			let document = tocBlock.ownerDocument
-			let hideSectionButtonElement = document.createElement('span')
-			hideSectionButtonElement.innerHTML = hideSectionButton
-			for(let i = 0; i < tableOfContents.length; i++){
-				//Create a new listItem with the 'section' class to add to the visible table of contents
-				newListItem = document.createElement("li")
-				newListItem.classList.add("section")
-				//If the section contained a change, add the 'changed' class to it
-				if(changedHeaders.includes(tableOfContents[i][0]))
-					newListItem.classList.add("changed")
-				//Add the section number and name to the listitem
-				newListItem.appendChild(document.createTextNode((i+1) + ". " + tableOfContents[i][0]))
-				tocBlock.appendChild(newListItem)
-				tocBlock.insertBefore(hideSectionButtonElement.cloneNode(true), newListItem)
-				for(let j = 0; j < tableOfContents[i][1].length; j++){
-					//Subsection number must be of the form 1.01, 1.02, 1.03, ..., 1.10, 1.11, ...
-					if(j < 9)
-						subsectionNumberString = (i + 1) + ".0" + (j + 1) + " "
-					else
-						subsectionNumberString = (i + 1) + "." + (j + 1) + " "
-					newSubListItem = document.createElement("li")
-					newSubListItem.classList.add("subsection")
-					if(changedHeaders.includes(tableOfContents[i][1][j]))
-						newSubListItem.classList.add("changed")
-					newSubListItem.appendChild(document.createTextNode(subsectionNumberString + tableOfContents[i][1][j]))
-					tocBlock.appendChild(newSubListItem)
-					newSubListItem.style.display = "none"
+			
+			if(i === rippedHtml.length-1){
+				tableOfContents.reverse()
+				/*
+				Fill the table of contents
+				The contents will be of the form
+				[[section, [subsections]], [section, [subsections]], ...]
+				So we will iterate through the array to each [section, [subsections]]
+				Then create a new listitem for each section with a sub-list and listitems for each subsection
+				Use a counter to determine subsection numbers
+				*/
+				let newListItem
+				let subsectionNumberString = ""
+				let document = tocBlock.ownerDocument
+				let hideSectionButtonElement = document.createElement('span')
+				hideSectionButtonElement.innerHTML = hideSectionButton
+				for(let i = 0; i < tableOfContents.length; i++){
+					//Create a new listItem with the 'section' class to add to the visible table of contents
+					newListItem = document.createElement("li")
+					newListItem.classList.add("section")
+					//If the section contained a change, add the 'changed' class to it
+					if(changedHeaders.includes(tableOfContents[i][0]))
+						newListItem.classList.add("changed")
+					//Add the section number and name to the listitem
+					newListItem.appendChild(document.createTextNode((i+1) + ". " + tableOfContents[i][0]))
+					tocBlock.appendChild(newListItem)
+					tocBlock.insertBefore(hideSectionButtonElement.cloneNode(true), newListItem)
+					for(let j = 0; j < tableOfContents[i][1].length; j++){
+						//Subsection number must be of the form 1.01, 1.02, 1.03, ..., 1.10, 1.11, ...
+						if(j < 9)
+							subsectionNumberString = (i + 1) + ".0" + (j + 1) + " "
+						else
+							subsectionNumberString = (i + 1) + "." + (j + 1) + " "
+						newSubListItem = document.createElement("li")
+						newSubListItem.classList.add("subsection")
+						if(changedHeaders.includes(tableOfContents[i][1][j]))
+							newSubListItem.classList.add("changed")
+						newSubListItem.appendChild(document.createTextNode(subsectionNumberString + tableOfContents[i][1][j]))
+						tocBlock.appendChild(newSubListItem)
+						newSubListItem.style.display = "none"
+					}
 				}
 			}
 		}
-	}
-	numberSections(fields)
+		numberSections(fields)
+	})
+
+		
 }
 //Add article/section numbers to documents as well as buttons to collapse them
 //Iterate through each doc
@@ -325,3 +344,4 @@ function numberSections(docSlots){
 		}
 	}
 }
+
