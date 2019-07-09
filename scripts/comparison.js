@@ -11,6 +11,12 @@ let rippedHtml
 //[section, [subsections]]
 let tableOfContents = []
 
+//Create an alphabetical array for labelling subsections
+let alphabet = ["a", "b", "c", "d", "e", "f", "g", "h",
+				"i", "j", "k", "l", "m", "n", "o", "p", 
+				"q", "r", "s", "t", "u", "v", "w", "x", 
+				"y", "z"]
+
 module.exports ={
 	//Main function, calls readDocs to rip the text, 
 	//waits until that's done, then finds and renders differences
@@ -61,8 +67,8 @@ async function readDocs(files, fields){
 			"p[style-name='MTGen2 L2'] => h2:fresh",
 			"p[style-name='Article_L2'] => h2:fresh",
 			"p[style-name='Heading 2'] => h2:fresh",
-			"p[style-name='Heading 3'] => p:fresh",
-			"p[style-name='Heading 4'] => p:fresh"
+			"p[style-name='Heading 3'] => p.subsection-bullet:fresh",
+			"p[style-name='Heading 4'] => p.subsection-sub-bullet:fresh"
 		]
 	}
 	for(let i=0; i<numOfFiles; i++){
@@ -208,12 +214,18 @@ async function findDiffs(fields, tocBlock){
 				}
 			}
 		}
+		//Remove all supertext, which can cause some issues
+		let superText = tocBlock.ownerDocument.getElementsByTagName('SUP')
+		for(let i = superText.length-1; i >= 0; i--){
+			superText[i].parentElement.removeChild(superText[i])
+		}
 		numberSections(fields)
 	})
 
 		
 }
 //Add article/section numbers to documents as well as buttons to collapse them
+//We will also add the (a), (b), (c), etc. bullet points to sections here
 //Iterate through each doc
 function numberSections(docSlots){
 	//Do the following operations on each document
@@ -221,6 +233,8 @@ function numberSections(docSlots){
 		//Start counters for what article number and section number we're on
 		let articleNumber = 0
 		let sectionNumber = 1
+		let subsectionNumber = 0
+		let subsubsectionNumber = 1
 		//Now we iterate through all the children nodes of the doc for the headers
 		let docElements = docSlots[i].childNodes
 		for(let j = 0; j < docElements.length; j++){
@@ -240,7 +254,30 @@ function numberSections(docSlots){
 						docElements[j].innerText = articleNumber + ".0" + sectionNumber + " " + docElements[j].innerText
 					docElements[j].insertAdjacentHTML('afterbegin', hideParagraphsButton)
 					sectionNumber++
+					subsectionNumber = 0
 					break
+				//Determine if the paragraph is a bullet point in a section/subsection
+				case 'P':
+					if(docElements[j].classList.contains('subsection-bullet')){
+						subsubsectionNumber = 1
+						//Start numbering like (aa), (ab), (ac), etc if we've gone past (z)
+						if(subsectionNumber <= 25)
+							docElements[j].innerHTML = "(" + alphabet[subsectionNumber] + ") " + docElements[j].innerHTML
+						else{
+							docElements[j].innerHTML = "(" + alphabet[Math.trunc(subsectionNumber/26) - 1] + alphabet[subsectionNumber % 26] + ") " + docElements[j].innerHTML
+						}
+						subsectionNumber++
+						break
+					}
+					else if(docElements[j].classList.contains('subsection-sub-bullet')){
+						docElements[j].innerHTML = "     (" + romanize(subsubsectionNumber) + ") " + docElements[j].innerHTML
+						//Also indent the paragraph
+						docElements[j].style.textIndent = "50px"
+						subsubsectionNumber++
+						break
+					}
+					else
+						break
 			}
 		}
 		//Add a listener to each 'hide article' button
@@ -345,3 +382,17 @@ function numberSections(docSlots){
 	}
 }
 
+//Converts an integer to a roman numeral
+function romanize (num) {
+    if (isNaN(num))
+        return NaN;
+    var digits = String(+num).split(""),
+        key = ["","c","cc","ccc","cd","d","dc","dcc","dccc","cm",
+               "","x","xx","xxx","xl","l","lx","lxx","lxxx","xc",
+               "","i","ii","iii","iv","v","vi","vii","viii","ix"],
+        roman = "",
+        i = 3;
+    while (i--)
+        roman = (key[+digits.pop() + (i * 10)] || "") + roman;
+    return Array(+digits.join("") + 1).join("M") + roman;
+}

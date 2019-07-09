@@ -170,7 +170,6 @@ async function setUpScrollFunction(){
 	ensureListIsGenerated().then(function(){
 		//First set up section searching from table of contents
 		let listItems = document.getElementsByTagName('LI')
-		console.log(listItems)
 		for(let i = 0; i < listItems.length; i++){
 			listItems[i].addEventListener('click', ()=>{findSection(listItems[i])})
 		}
