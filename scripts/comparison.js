@@ -264,7 +264,7 @@ function numberSections(docSlots){
 						if(subsectionNumber <= 25)
 							docElements[j].innerHTML = "(" + alphabet[subsectionNumber] + ") " + docElements[j].innerHTML
 						else{
-							docElements[j].innerHTML = "(" + alphabet[Math.trunc(subsectionNumber/26) - 1] + alphabet[subsectionNumber % 26] + ") " + docElements[j].innerHTML
+							docElements[j].innerHTML = "(" + alphabet[subsectionNumber % 26] + alphabet[subsectionNumber % 26] + ") " + docElements[j].innerHTML
 						}
 						subsectionNumber++
 						break

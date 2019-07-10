@@ -82,7 +82,6 @@ module.exports ={
 		let splitParagraph = paragraph.innerHTML.split(" ")
 		let reconstructed = ""
 		let inATag = null
-		console.log(splitParagraph)
 		for(let i = 0; i < splitParagraph.length; i++){
 			//We don't wanna insert <span> tags in the middle of existing tags
 			if(splitParagraph[i].includes('<') || splitParagraph[i].includes('>')){
@@ -353,7 +352,6 @@ function hoverSection(section, mousePos, docSlots, docNumber){
 	let sectionNum
 	let sectionIndex
 	let sectionHeader
-	console.log(section)
 	//If we hovered a section
 	if(section.split(' ')[0] === "Section"){
 		//Some section links will be written like "2.02(a)(ii)"

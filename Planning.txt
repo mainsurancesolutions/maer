@@ -1,7 +1,7 @@
 To-do list:
+Fix clicking on a paragraph to scroll to hidden paragraphs
 Address parts of changed docs in which (a) is hidden but (a)(i) isn't
-	Show (a) if it contains a changed section maybe?
-	or just write (a)(i) if it's changed
+	Show (a) if it contains a changed section
 Section hover goes to deepest layer
 Scroll through one doc, it scrolls through all
 Fix issues with adding new version after comparing
@@ -34,3 +34,5 @@ Make sure the clients feel secure
 Scroll through one doc, it scrolls through all
 Go even deeper in terms of layering (article 1, section 1.01, a)
 Change how you save/load. Folder structure? (avoid issues with deleting docs and then loading, as they might assume it saved the docs)
+Button to show hidden parts of an already opened section (opened by default with changes)
+	Clicking the section head does what the arrow does, then text next to it to do above

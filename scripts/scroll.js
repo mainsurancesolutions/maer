@@ -71,10 +71,21 @@ module.exports ={
 				//Now rip the textContent from each one so we have an array of strings
 				allParagraphsText = Array.from(allParagraphs).map(x => x.textContent)
 				bestMatch = stringSimilarity.findBestMatch(clickedTextContent, allParagraphsText)
-				//Since each doc only shows paragraphs with differences, scrolling to a paragraph that's an
-				//exact match causes issues
-				if(bestMatch.ratings[bestMatch.bestMatchIndex].rating < 1 && bestMatch.ratings[bestMatch.bestMatchIndex].rating > 0.2)
-					module.exports.scrollTo(docBlocks[i], allParagraphs[bestMatch.bestMatchIndex])
+				//Now scroll to the best match
+				if(bestMatch.ratings[bestMatch.bestMatchIndex].rating > 0.2){
+					//If it's hidden, work our way up to the nearest visible header to scroll to
+					if(allParagraphs[bestMatch.bestMatchIndex].style.display === "none"){
+						let allTags = docSlots[i].childNodes
+						for(let j = Array.from(allTags).indexOf(allParagraphs[bestMatch.bestMatchIndex]); j >= 0; j--){
+							if(allTags[j].style.display !== "none"){
+								module.exports.scrollTo(docBlocks[i], allTags[j])
+								break
+							}
+						}
+					}
+					else
+						module.exports.scrollTo(docBlocks[i], allParagraphs[bestMatch.bestMatchIndex])
+				}
 			}
 	}
 }
