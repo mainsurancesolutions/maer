@@ -270,9 +270,7 @@ function numberSections(docSlots){
 						break
 					}
 					else if(docElements[j].classList.contains('subsection-sub-bullet')){
-						docElements[j].innerHTML = "     (" + romanize(subsubsectionNumber) + ") " + docElements[j].innerHTML
-						//Also indent the paragraph
-						docElements[j].style.textIndent = "50px"
+						docElements[j].innerHTML = "(" + romanize(subsubsectionNumber) + ") " + docElements[j].innerHTML
 						subsubsectionNumber++
 						break
 					}

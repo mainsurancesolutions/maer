@@ -1,4 +1,7 @@
 To-do list:
+Address parts of changed docs in which (a) is hidden but (a)(i) isn't
+	Show (a) if it contains a changed section maybe?
+	or just write (a)(i) if it's changed
 Section hover goes to deepest layer
 Scroll through one doc, it scrolls through all
 Fix issues with adding new version after comparing

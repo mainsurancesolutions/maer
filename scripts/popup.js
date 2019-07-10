@@ -82,13 +82,47 @@ module.exports ={
 		let splitParagraph = paragraph.innerHTML.split(" ")
 		let reconstructed = ""
 		let inATag = null
+		console.log(splitParagraph)
 		for(let i = 0; i < splitParagraph.length; i++){
-			//We don't wanna insert <span> tags in the middle of existing tags, so the following cases will ensure we're not in a tag
+			//We don't wanna insert <span> tags in the middle of existing tags
 			if(splitParagraph[i].includes('<') || splitParagraph[i].includes('>')){
 				inATag = true
 			}
+			/*
+			if(splitParagraph[i].includes('<') && splitParagraph[i].includes('>')){
+				//Catches cases like 'ins>3.06<ins'
+				if(splitParagraph.indexOf('<') > splitParagraph.indexOf('>')){
+					splitParagraph[i] = splitParagraph[i].substring(0, splitParagraph[i].indexOf('>')+1) 
+										+ "<span>"
+										+ splitParagraph[i].substring(splitParagraph[i].indexOf('>')+1, splitParagraph[i].indexOf('<'))
+										+ "</span>"
+										+ splitParagraph[i].substring(splitParagraph[i].indexOf('<'))
+					reconstructed += splitParagraph[i] + " "
+					inATag = true
+				}
+			}
+			else if(!splitParagraph[i].includes('<') && splitParagraph[i].includes('>')){
+				//Catches cases like 'ins>Tax'
+				splitParagraph[i] = splitParagraph[i].substring(0, splitParagraph[i].indexOf('>')+1) 
+									+ "<span>"
+									+ splitParagraph[i].substring(splitParagraph[i].indexOf('>')+1)
+									+ "</span>"
+				reconstructed += splitParagraph[i] + " "
+				inATag = true
+			}
+			else if(splitParagraph[i].includes('<') && !splitParagraph[i].includes('>')){
+				//Catches cases like 'Tax<ins'
+				splitParagraph[i] = "<span>"
+									+ splitParagraph[i].substring(0, splitParagraph[i].indexOf('<')) 
+									+ "</span>"
+									+ splitParagraph[i].substring(splitParagraph[i].indexOf('<')+1)
+				reconstructed += splitParagraph[i] + " "
+				inATag = true
+			}
+			*/
 			else{
 				if(splitParagraph[i+1] !== undefined){
+					//This catches cases like if we're looking at the word 'hidden' in <ins hidden class="changed">
 					//Iterate through the letters of the words to our right. If we find a > before we find a <, we know we're in a tag
 					for(let j = i+1; j < splitParagraph.length; j++){
 						for(let k = 0; k < splitParagraph[j].length; k++){
@@ -192,7 +226,7 @@ function popup(term, definition, mousePos, document, docNumber, section){
 			let mousePos = [mouseEvent.screenX, mouseEvent.screenY]
 			//Prepare the element to have a hover box appear
 			popupScript.wrapWords(hoveredElement, mousePos, docNumber, document)
-		}, 1400)
+		}, 1000)
 	})
 	popupElement.addEventListener('mouseout', () =>{
 		clearTimeout(hoverTimer)
@@ -319,6 +353,7 @@ function hoverSection(section, mousePos, docSlots, docNumber){
 	let sectionNum
 	let sectionIndex
 	let sectionHeader
+	console.log(section)
 	//If we hovered a section
 	if(section.split(' ')[0] === "Section"){
 		//Some section links will be written like "2.02(a)(ii)"
