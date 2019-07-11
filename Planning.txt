@@ -1,7 +1,4 @@
 To-do list:
-Fix clicking on a paragraph to scroll to hidden paragraphs
-Address parts of changed docs in which (a) is hidden but (a)(i) isn't
-	Show (a) if it contains a changed section
 Section hover goes to deepest layer
 Scroll through one doc, it scrolls through all
 Fix issues with adding new version after comparing
@@ -12,20 +9,6 @@ Front-end clean-up:
 	Hiding docs
 	Everything, really
 Security Verification
-
-
-Table of Contents goes layers deeper (Article 1, section 1.01, subsection a) notes:
-Sections are formatted as such:
-This would be the first paragraph v
-3.05 __Financial Statements__ text here
-If there is more than one paragraph in the section, those beyond the first
-will be given letters (a), (b), (c), ...
-Then in *those* sections, if there is more than one paragraph, any paragraphs
-beyond the first will be numbered (i), (ii), (iii), ...
-
-BREAKTHROUGH:
-(a), (b), (c) get converted to h3 tags
-the further in (i), (ii), (iii) get converted to h4 tags
 
 
 Notes from reviews:

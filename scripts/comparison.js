@@ -100,6 +100,7 @@ async function findDiffs(fields, tocBlock){
 	let changedHeaders = []
 	let showNextH1 = false
 	let showNextH2 = false
+	let showNextSubsection = false
 
 	//Clear the table of contents in case it was already populated
 	//Helper function to ensure it's cleared before proceeding
@@ -159,9 +160,16 @@ async function findDiffs(fields, tocBlock){
 							if(docElements[j].childNodes[k].tagName === 'INS' || docElements[j].childNodes[k].tagName === 'DEL'){
 								showNextH2 = true
 								showNextH1 = true
+								//If the changed paragraph is a sub-subsection, we want to show the subsection it's under
+								if(docElements[j].classList.contains('subsection-sub-bullet'))
+									showNextSubsection = true
 								break
 							}
 							//If we haven't found an ins or del tag, remove the paragraph
+							if(docElements[j].classList.contains('subsection-bullet') && showNextSubsection){
+								showNextSubsection = false
+								break
+							}
 							if(k === docElements[j].childNodes.length-1 && !(docElements[j].childNodes[k].tagName === 'INS' || docElements[j].childNodes[k].tagName === 'DEL')){
 								docElements[j].style.display = "none"
 								break

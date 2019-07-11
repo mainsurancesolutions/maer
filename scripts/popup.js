@@ -87,38 +87,6 @@ module.exports ={
 			if(splitParagraph[i].includes('<') || splitParagraph[i].includes('>')){
 				inATag = true
 			}
-			/*
-			if(splitParagraph[i].includes('<') && splitParagraph[i].includes('>')){
-				//Catches cases like 'ins>3.06<ins'
-				if(splitParagraph.indexOf('<') > splitParagraph.indexOf('>')){
-					splitParagraph[i] = splitParagraph[i].substring(0, splitParagraph[i].indexOf('>')+1) 
-										+ "<span>"
-										+ splitParagraph[i].substring(splitParagraph[i].indexOf('>')+1, splitParagraph[i].indexOf('<'))
-										+ "</span>"
-										+ splitParagraph[i].substring(splitParagraph[i].indexOf('<'))
-					reconstructed += splitParagraph[i] + " "
-					inATag = true
-				}
-			}
-			else if(!splitParagraph[i].includes('<') && splitParagraph[i].includes('>')){
-				//Catches cases like 'ins>Tax'
-				splitParagraph[i] = splitParagraph[i].substring(0, splitParagraph[i].indexOf('>')+1) 
-									+ "<span>"
-									+ splitParagraph[i].substring(splitParagraph[i].indexOf('>')+1)
-									+ "</span>"
-				reconstructed += splitParagraph[i] + " "
-				inATag = true
-			}
-			else if(splitParagraph[i].includes('<') && !splitParagraph[i].includes('>')){
-				//Catches cases like 'Tax<ins'
-				splitParagraph[i] = "<span>"
-									+ splitParagraph[i].substring(0, splitParagraph[i].indexOf('<')) 
-									+ "</span>"
-									+ splitParagraph[i].substring(splitParagraph[i].indexOf('<')+1)
-				reconstructed += splitParagraph[i] + " "
-				inATag = true
-			}
-			*/
 			else{
 				if(splitParagraph[i+1] !== undefined){
 					//This catches cases like if we're looking at the word 'hidden' in <ins hidden class="changed">
