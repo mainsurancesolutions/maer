@@ -376,6 +376,10 @@ function numberSections(docSlots){
 						if(docElements[k].tagName === "H1" || docElements[k].tagName === "H2")
 							break
 						docElements[k].style.display = ""
+						//If the section contains changes, it will have a 'Show hidden text' button
+						//If so, we wanna change that to 'Hide unchanged text' when we re-open a section
+						if(docElements[k].tagName === 'BUTTON')
+							docElements[k].innerText = "Hide unchanged text"
 					}
 					sectionButtons[j].src = "images/hideSection.png"
 				}

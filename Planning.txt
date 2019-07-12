@@ -1,5 +1,4 @@
 To-do list:
-Button to show hidden parts of an already opened section
 Section hover goes to deepest layer
 Scroll through one doc, it scrolls through all
 Fix issues with adding new version after comparing
@@ -16,7 +15,4 @@ Notes from reviews:
 drag docs and drop them on the app to open them (like google docs importing)
 Make sure the clients feel secure
 Scroll through one doc, it scrolls through all
-Go even deeper in terms of layering (article 1, section 1.01, a)
 Change how you save/load. Folder structure? (avoid issues with deleting docs and then loading, as they might assume it saved the docs)
-Button to show hidden parts of an already opened section (opened by default with changes)
-	Clicking the section head does what the arrow does, then text next to it to do above
