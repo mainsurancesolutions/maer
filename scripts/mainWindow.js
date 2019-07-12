@@ -275,35 +275,46 @@ function findParagraphs(whichDoc, paragraph){
 //Hide a doc
 for(let i = 0; i < 2; i++){
 	hideButtons[i].addEventListener('click', () =>{
-		//If it's not hidden, hide it. Otherwise, display it
-		if(docSlots[i].style.display !== "none"){
-			docSlots[i].style.display = "none"
-			docBlocks[i].style.minWidth = "80px"
-			docBlocks[i].style.maxWidth = "80px"
-			//Move title to the left so it can be seen while hidden
-			document.getElementsByClassName('doc-title')[i].style.textAlign = "left"
-		}
-		else{
+		//Show
+		if(docSlots[i].style.display === "none"){
 			docSlots[i].style.display = "inline-block"
 			docBlocks[i].style.minWidth = "20vw"
 			docBlocks[i].style.maxWidth = "45vw"
-			document.getElementsByClassName('doc-title')[i].style.textAlign = "center"
+			docBlocks[i].style.overflowY = "auto"
+		}
+		//Hide
+		else{
+			docSlots[i].style.display = "none"
+			docBlocks[i].style.minWidth = "80px"
+			docBlocks[i].style.maxWidth = "80px"
+			docBlocks[i].style.overflowY = "visible"
+			
 		}
 	})
 }
 
-//Hide console
+//Show/hide console
 document.getElementById('hide-console').addEventListener('click', () =>{
 	tableOfContents = document.getElementById('table-of-contents')
+	//Show
 	if(tableOfContents.style.display === "none"){
 		tableOfContents.style.display = "inline-block"
 		consoleBlock.style.minWidth = "15vw"
 		consoleBlock.style.maxWidth = "20vw"
+		consoleBlock.style.minHeight = "40vh"
+		consoleBlock.style.maxHeight = "81vh"
+		consoleBlock.style.overflowY = "auto"
+		consoleBlock.style.borderStyle = "solid"
 	}
+	//Hide
 	else{
 		tableOfContents.style.display = "none"
 		consoleBlock.style.minWidth = "84px"
 		consoleBlock.style.maxWidth = "84px"
+		consoleBlock.style.minHeight = "30px"
+		consoleBlock.style.maxHeight = "30px"
+		consoleBlock.style.overflow = "visible"
+		consoleBlock.style.borderStyle = "none"
 	}
 })
 

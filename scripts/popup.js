@@ -28,13 +28,16 @@ module.exports ={
 			//in that section
 			let textNodes = Array.from(docSlots[i].childNodes)
 			//To be populated as [term, definition]
-			for(let j = textNodes.indexOf(definitionsHeader)+2; j < textNodes.length; j++){
+			for(let j = textNodes.indexOf(definitionsHeader)+1; j < textNodes.length; j++){
 				let termAndDef = [null, null]
-				if(textNodes[j].tagName !== "P")
-					break
-				termAndDef[0] = textNodes[j].textContent.split("\"")[1]
-				termAndDef[1] = textNodes[j].textContent.substring(termAndDef[0].length+3)
-				docTermsAndDefs.push(termAndDef)
+				//Skip the paragraph if it doesn't begin with a term in quotations
+				if(textNodes[j].textContent[0] === "\""){
+					if(textNodes[j].tagName !== "P")
+						break
+					termAndDef[0] = textNodes[j].textContent.split("\"")[1]
+					termAndDef[1] = textNodes[j].textContent.substring(termAndDef[0].length+3)
+					docTermsAndDefs.push(termAndDef)
+				}
 			}
 			allDefinitions.push(docTermsAndDefs)
 		}
