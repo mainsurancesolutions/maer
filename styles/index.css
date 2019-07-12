@@ -94,6 +94,17 @@ ins{
 	text-indent: 50px;
 }
 
+.reveal-text{
+	color: #0645AD;
+	padding: 0;
+	border: none;
+	background: none;
+}
+
+.reveal-text:hover{
+	text-decoration: underline;
+}
+
 /*div containing a document and related items (title and hide button for example)*/
 .doc-block{
 	max-width: 45vw;

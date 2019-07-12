@@ -1,4 +1,5 @@
 To-do list:
+Button to show hidden parts of an already opened section
 Section hover goes to deepest layer
 Scroll through one doc, it scrolls through all
 Fix issues with adding new version after comparing

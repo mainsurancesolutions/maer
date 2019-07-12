@@ -122,7 +122,6 @@ module.exports ={
 						if(splitParagraph[k][splitParagraph[k].length-1] === "\"")
 							break
 						k++
-			
 					}
 					reconstructed += "</span> "
 				}

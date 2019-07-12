@@ -3,6 +3,7 @@ const diff = require('node-htmldiff')
 const hideSectionButton = fs.readFileSync('hideSectionButton.html')
 const hideArticleButton = fs.readFileSync('hideArticleButton.html')
 const hideParagraphsButton = fs.readFileSync('hideParagraphsButton.html')
+const revealText = fs.readFileSync('revealText.html')
 
 //HTML ripped from files as well as error/warning messages
 let rippedHtml
@@ -149,6 +150,7 @@ async function findDiffs(fields, tocBlock){
 						}
 						if(showNextH2){
 							showNextH2 = false
+							docElements[j].insertAdjacentHTML('afterend', revealText)
 							if(i === rippedHtml.length-1)
 								changedHeaders.push(docElements[j].textContent)
 						}					
@@ -158,6 +160,7 @@ async function findDiffs(fields, tocBlock){
 						for(let k = 0; k < docElements[j].childNodes.length; k++){
 							//If we find a change, we leave it visible and make sure the next h2/h3 tags are shown
 							if(docElements[j].childNodes[k].tagName === 'INS' || docElements[j].childNodes[k].tagName === 'DEL'){
+								docElements[j].classList.add('changed-paragraph')
 								showNextH2 = true
 								showNextH1 = true
 								//If the changed paragraph is a sub-subsection, we want to show the subsection it's under
@@ -166,7 +169,9 @@ async function findDiffs(fields, tocBlock){
 								break
 							}
 							//If we haven't found an ins or del tag, remove the paragraph
+							//UNLESS it's a subsection header containing a changed sub-subsection
 							if(docElements[j].classList.contains('subsection-bullet') && showNextSubsection){
+								docElements[j].classList.add('changed-paragraph')
 								showNextSubsection = false
 								break
 							}
@@ -268,7 +273,7 @@ function numberSections(docSlots){
 				case 'P':
 					if(docElements[j].classList.contains('subsection-bullet')){
 						subsubsectionNumber = 1
-						//Start numbering like (aa), (ab), (ac), etc if we've gone past (z)
+						//Start numbering like (aa), (bb), (cc), etc if we've gone past (z)
 						if(subsectionNumber <= 25)
 							docElements[j].innerHTML = "(" + alphabet[subsectionNumber] + ") " + docElements[j].innerHTML
 						else{
@@ -384,6 +389,35 @@ function numberSections(docSlots){
 					sectionButtons[j].src = "images/showSection.png"
 				}
 			})
+		}
+		//Set up listeners for the "Show hidden text" buttons
+		if(i > 0){
+			let revealTextButtons = docSlots[i].getElementsByClassName('reveal-text')
+			for(let j = 0; j < revealTextButtons.length; j++){
+				revealTextButtons[j].addEventListener('click', () =>{
+					docElements = Array.from(docSlots[i].childNodes)
+					//If the button is set to reveal, show all 
+					if(revealTextButtons[j].innerText !== "Hide unchanged text"){
+						for(let k = docElements.indexOf(revealTextButtons[j]) + 1; k < docElements.length; k++){
+							if(docElements[k].tagName === 'H1' || docElements[k].tagName === 'H2')
+								break
+							docElements[k].style.display = ""
+						}
+						revealTextButtons[j].innerText = "Hide unchanged text"
+					}
+					//If the button is set to hide unchanged, do just that
+					else{
+						for(let k = docElements.indexOf(revealTextButtons[j]) + 1; k < docElements.length; k++){
+							if(docElements[k].tagName === 'H1' || docElements[k].tagName === 'H2')
+								break
+							if(!docElements[k].classList.contains('changed-paragraph'))
+								docElements[k].style.display = "none"
+						}
+						revealTextButtons[j].innerText = "Show all text"
+					}
+					
+				})
+			}
 		}
 	}
 }
