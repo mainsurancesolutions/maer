@@ -280,15 +280,17 @@ for(let i = 0; i < 2; i++){
 			docSlots[i].style.display = "inline-block"
 			docBlocks[i].style.minWidth = "20vw"
 			docBlocks[i].style.maxWidth = "45vw"
+			docBlocks[i].style.overflowX = "hidden"
 			docBlocks[i].style.overflowY = "auto"
+			docBlocks[i].style.borderStyle = "solid"
 		}
 		//Hide
 		else{
 			docSlots[i].style.display = "none"
-			docBlocks[i].style.minWidth = "80px"
-			docBlocks[i].style.maxWidth = "80px"
+			docBlocks[i].style.minWidth = docTitleSlots[i].clientWidth + "px"
+			docBlocks[i].style.overflowX = "visible"
 			docBlocks[i].style.overflowY = "visible"
-			
+			docBlocks[i].style.borderStyle = "none"			
 		}
 	})
 }
@@ -405,19 +407,22 @@ function docsFull(force = false){
 
 	let hideButtons = document.getElementsByClassName('hide-button')
 	hideButtons[docNumber-1].addEventListener('click', () => {
-		//If it's not hidden, hide it. Otherwise, display it
-		if(docSlots[docNumber-1].style.display !== "none"){
-			docBlocks[docNumber-1].style.minWidth = "80px"
-			docBlocks[docNumber-1].style.maxWidth = "80px"
-			docSlots[docNumber-1].style.display = "none"
-			//Move title to the left so it can be seen while hidden
-			document.getElementsByClassName('doc-title')[docNumber-1].style.textAlign = "left"
-		}
-		else{
+		//Show
+		if(docSlots[docNumber-1].style.display === "none"){
 			docSlots[docNumber-1].style.display = "inline-block"
 			docBlocks[docNumber-1].style.minWidth = "20vw"
 			docBlocks[docNumber-1].style.maxWidth = "45vw"
-			document.getElementsByClassName('doc-title')[docNumber-1].style.textAlign = "center"
+			docBlocks[docNumber-1].style.overflowX = "hidden"
+			docBlocks[docNumber-1].style.overflowY = "auto"
+			docBlocks[docNumber-1].style.borderStyle = "solid"
+		}
+		//Hide
+		else{
+			docSlots[docNumber-1].style.display = "none"
+			docBlocks[docNumber-1].style.minWidth = docTitleSlots[docNumber-1].clientWidth + "px"
+			docBlocks[docNumber-1].style.overflowX = "visible"
+			docBlocks[docNumber-1].style.overflowY = "visible"
+			docBlocks[docNumber-1].style.borderStyle = "none"
 		}
 	})
 }
