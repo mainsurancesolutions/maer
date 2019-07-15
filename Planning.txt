@@ -1,9 +1,9 @@
 To-do list:
+Definitions page
 Section hover goes to deepest layer
-Scroll through one doc, it scrolls through all
 Fix issues with adding new version after comparing
 Search bar
-Definitions page
+Scroll through one doc, it scrolls through all
 Front-end clean-up:
 	Add new version
 	Hiding docs

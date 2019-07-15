@@ -41,6 +41,8 @@ module.exports ={
 			}
 			allDefinitions.push(docTermsAndDefs)
 		}
+		//Reveal the 'Definitions' button
+		docSlots[0].ownerDocument.getElementById('def-button').style.display = "block"
 		return allDefinitions
 	},
 

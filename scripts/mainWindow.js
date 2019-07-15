@@ -49,6 +49,15 @@ document.getElementById('restart-button').addEventListener('click', () =>{
 	ipc.send('restart')
 })
 
+document.getElementById('def-button').addEventListener('click', () =>{
+	ipc.send('definitions')
+})
+
+//Populate the definitions page with definitions when requested
+ipc.on('loadDefinitions', (event, arg) =>{
+	console.log(arg.getElementById('definition-list'))
+})
+
 //To add a new file after loading, simply un-hide the last one
 //If there is no last one, add a new one
 document.getElementById('add-button').addEventListener('click', () =>{
@@ -61,7 +70,7 @@ document.getElementById('add-button').addEventListener('click', () =>{
 })
 
 //The save project button
-document.getElementById('save-button').addEventListener('click', () => {
+document.getElementById('save-button').addEventListener('click', () =>{
 	//Pass the save request to the main process to get the path
 	ipc.send('save')
 })
@@ -80,7 +89,7 @@ ipc.on('savePath', (event, arg) =>{
 	saveScript.save(arg, docs, docNicknames)
 })
 
-document.getElementById('load-button').addEventListener('click', () => {
+document.getElementById('load-button').addEventListener('click', () =>{
 	ipc.send('load')
 })
 

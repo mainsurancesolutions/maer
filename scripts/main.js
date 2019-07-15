@@ -84,3 +84,18 @@ ipc.on('load', (event, arg) =>{
 ipc.on('edit', (event, arg) =>{
 	shell.openItem(arg)
 })
+
+//Open definitions window
+ipc.on('definitions', (event, arg) =>{
+	let defPage = new BrowserWindow({
+		parent: mainWindow,
+		backgroundColor: '#d9d9d9',
+		webPreferences: {
+        	nodeIntegration: true
+        }
+	})
+	defPage.loadFile('definitions.html')
+	defPage.removeMenu()
+	mainWindow.webContents.send('loadDefinitions', defPage)
+	defPage.show()
+})

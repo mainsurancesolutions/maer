@@ -268,23 +268,30 @@ ol{
 	transform: translate(-50%, 0);
 }
 
+#def-button{
+	position: fixed;
+	display: none;
+	max-width: 141px;
+	bottom: 2%;
+	left: 35%;
+	transform: translate(-50%, 0);
+}
+
 #edit-button{
 	position: fixed;
-	display: block;
+	display: none;
 	max-width: 141px;
 	bottom: 2%;
 	left: 70%;
 	transform: translate(-50%, 0);
-	display: none;
 }
 
 #add-button{
 	position: fixed;
-	display: block;
+	display: none;
 	max-width: 280px;
 	bottom: 2%;
 	left: 3%;
-	display: none;
 }
 
 #logo{
