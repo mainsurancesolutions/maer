@@ -49,13 +49,10 @@ document.getElementById('restart-button').addEventListener('click', () =>{
 	ipc.send('restart')
 })
 
+//When the definitions button is pressed, send a message to the main file
+//to create a definitions window and populate it with allDefinitions
 document.getElementById('def-button').addEventListener('click', () =>{
-	ipc.send('definitions')
-})
-
-//Populate the definitions page with definitions when requested
-ipc.on('loadDefinitions', (event, arg) =>{
-	console.log(arg.getElementById('definition-list'))
+	ipc.send('definitions', allDefinitions)
 })
 
 //To add a new file after loading, simply un-hide the last one

@@ -2,6 +2,7 @@ const {app, BrowserWindow, BrowserView, dialog, shell} = require('electron')
 const path = require('path')
 const ipc = require('electron').ipcMain
 let mainWindow
+let defPage
 let loadedName = ""
 
 app.on('ready', createMainWindow);
@@ -87,15 +88,17 @@ ipc.on('edit', (event, arg) =>{
 
 //Open definitions window
 ipc.on('definitions', (event, arg) =>{
-	let defPage = new BrowserWindow({
+	defPage = new BrowserWindow({
 		parent: mainWindow,
-		backgroundColor: '#d9d9d9',
 		webPreferences: {
         	nodeIntegration: true
-        }
+        },
+        show: false
 	})
 	defPage.loadFile('definitions.html')
 	defPage.removeMenu()
-	mainWindow.webContents.send('loadDefinitions', defPage)
-	defPage.show()
+	defPage.once('ready-to-show', () =>{
+		defPage.send('loadDefinitions', arg)
+		defPage.show()
+	})
 })
