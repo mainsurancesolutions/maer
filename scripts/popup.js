@@ -168,7 +168,7 @@ module.exports ={
 function popup(term, definition, mousePos, document, docNumber, section){
 	let popupElement = document.createElement('div')
 	popupElement.innerHTML = popupHTML
-	document.getElementById('docs-and-console').appendChild(popupElement)
+	document.appendChild(popupElement)
 	//Position the element where you hovered
 	//We set the top and right so we can easily detect if the element is offscreen
 	popupElement.style.left = mousePos[0] + "px"

@@ -10,6 +10,7 @@ When displaying definitions, we will be showing the definitions from the most re
 */
 
 let allDefinitions
+let hoverTimer
 
 //When initialized and passed 
 ipc.on('loadDefinitions', (event, arg) =>{
@@ -24,4 +25,21 @@ ipc.on('loadDefinitions', (event, arg) =>{
 		listItemNode.appendChild(document.createTextNode(listItemText))
 		defList.appendChild(listItemNode)
 	}
+	/*
+	defList.addEventListener('mousemove', () =>{
+		clearTimeout(hoverTimer)
+	})
+	defList.addEventListener('mousemove', (mouseEvent) =>{
+		hoverTimer = setTimeout(() =>{
+			//Get the element that was hover'd
+			let hoveredElement = document.elementFromPoint(mouseEvent.screenX, mouseEvent.screenY)
+			let mousePos = [mouseEvent.screenX, mouseEvent.screenY]
+			//Prepare the element to have a hover box appear
+			ipc.send('wrapWords', [hoveredElement, mousePos, arg[arg.length-1], document])
+		}, 1000)
+	})
+	defList.addEventListener('mouseout', () =>{
+		clearTimeout(hoverTimer)
+	})*/
 })
+
