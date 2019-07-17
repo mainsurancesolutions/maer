@@ -87,6 +87,7 @@ ipc.on('edit', (event, arg) =>{
 })
 
 //Open definitions window
+//arg is the allDefinitions array from mainWindow.js
 ipc.on('definitions', (event, arg) =>{
 	defPage = new BrowserWindow({
 		parent: mainWindow,
@@ -97,8 +98,15 @@ ipc.on('definitions', (event, arg) =>{
 	})
 	defPage.loadFile('definitions.html')
 	defPage.removeMenu()
+	defPage.openDevTools()
 	defPage.once('ready-to-show', () =>{
 		defPage.send('loadDefinitions', arg)
 		defPage.show()
 	})
+})
+
+//When an element is hovered in the definitions window, pass that message on to the main window
+ipc.on('wrapWords', (event, arg) =>{
+	console.log(arg[0])
+	mainWindow.webContents.send('wrapWords', arg)
 })

@@ -1,8 +1,6 @@
 const ipc = require('electron').ipcRenderer
 
 //The unordered list element in the page
-let defList = document.getElementById('definition-list')
-
 /*
 An array of arrays of [term, definition] for each doc
 so [ [ [term, definition], [term, definition], [term, definition] ] , [ [term, definition], [term, definition], [term, definition] ], ...]
@@ -14,32 +12,32 @@ let hoverTimer
 
 //When initialized and passed 
 ipc.on('loadDefinitions', (event, arg) =>{
-	console.log(arg)
 	let listItemText
 	let listItemNode
 	for(let i = 0; i < arg[arg.length-1].length; i++){
 		//Create the actual listitem element
-		listItemNode = document.createElement("li")
+		listItemNode = document.createElement("p")
 		//Add the text to the element
 		listItemText = "\"" + arg[arg.length-1][i][0] + "\" " + arg[arg.length-1][i][1]
 		listItemNode.appendChild(document.createTextNode(listItemText))
-		defList.appendChild(listItemNode)
+		document.body.appendChild(listItemNode)
 	}
-	/*
-	defList.addEventListener('mousemove', () =>{
+	
+	document.body.addEventListener('mousemove', () =>{
 		clearTimeout(hoverTimer)
 	})
-	defList.addEventListener('mousemove', (mouseEvent) =>{
-		hoverTimer = setTimeout(() =>{
+	document.body.addEventListener('mousemove', (mouseEvent) =>{
+		hoverTimer = setTimeout(async () =>{
 			//Get the element that was hover'd
-			let hoveredElement = document.elementFromPoint(mouseEvent.screenX, mouseEvent.screenY)
-			let mousePos = [mouseEvent.screenX, mouseEvent.screenY]
+			let hoveredElement = await document.elementFromPoint(mouseEvent.pageX, mouseEvent.pageY)
+			let mousePos = [mouseEvent.pageX, mouseEvent.pageY]
+			console.log(hoveredElement)
 			//Prepare the element to have a hover box appear
-			ipc.send('wrapWords', [hoveredElement, mousePos, arg[arg.length-1], document])
+			ipc.send('wrapWords', [hoveredElement, mousePos, arg.length-1, document])
 		}, 1000)
 	})
-	defList.addEventListener('mouseout', () =>{
+	document.body.addEventListener('mouseout', () =>{
 		clearTimeout(hoverTimer)
-	})*/
+	})
 })
 

@@ -55,6 +55,14 @@ document.getElementById('def-button').addEventListener('click', () =>{
 	ipc.send('definitions', allDefinitions)
 })
 
+//When the definitions page hovers a word, pass it off to the popupScript
+//args are
+//[hoveredElement, mousePos, index of last contract, definitions window document]
+ipc.on('wrapWords', (event, arg) =>{
+	console.log(arg)
+	popupScript.wrapWords(arg[0], arg[1], arg[2], arg[3])
+})
+
 //To add a new file after loading, simply un-hide the last one
 //If there is no last one, add a new one
 document.getElementById('add-button').addEventListener('click', () =>{
