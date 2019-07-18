@@ -10,6 +10,18 @@ let allDefinitions
 let position
 let hoverTimer
 
+document.getElementById('minimize-button').addEventListener('click', () =>{
+	ipc.send('minimizeDef')
+})
+
+document.getElementById('maximize-button').addEventListener('click', () =>{
+	ipc.send('maximizeDef')
+})
+
+document.getElementById('close-button').addEventListener('click', () =>{
+	ipc.send('closeDef')
+})
+
 //When initialized, populate the page with p tags containing terms and their definitions
 ipc.on('loadDefinitions', (event, arg) =>{
 	let defText

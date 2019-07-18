@@ -35,7 +35,7 @@ function createMainWindow(){
 	mainWindow.on('unmaximize', (event, arg) =>{
 		mainWindow.webContents.send('position', mainWindow.getPosition())
 	})
-	mainWindow.on('unmaximize', (event, arg) =>{
+	mainWindow.on('resize', (event, arg) =>{
 		mainWindow.webContents.send('position', mainWindow.getPosition())
 	})
 	mainWindow.maximize()
@@ -111,9 +111,19 @@ ipc.on('definitions', (event, arg) =>{
         	nodeIntegration: true
         },
         show: false,
-        useContentSize: true
+        frame: false
 	})
+	defPage.webContents.send('position', defPage.getPosition())
 	defPage.on('move', (event, arg) =>{
+		defPage.webContents.send('position', defPage.getPosition())
+	})
+	defPage.on('maximize', (event, arg) =>{
+		defPage.webContents.send('position', defPage.getPosition())
+	})
+	defPage.on('unmaximize', (event, arg) =>{
+		defPage.webContents.send('position', defPage.getPosition())
+	})
+	defPage.on('resize', (event, arg) =>{
 		defPage.webContents.send('position', defPage.getPosition())
 	})
 	defPage.loadFile('definitions.html')
@@ -123,6 +133,20 @@ ipc.on('definitions', (event, arg) =>{
 		defPage.send('loadDefinitions', arg)
 		defPage.show()
 	})
-	
 })
 
+ipc.on('closeDef', (event, arg) =>{
+	defPage.close()
+})
+
+ipc.on('maximizeDef', (event, arg) =>{
+	if(defPage.isMaximized()){
+		defPage.unmaximize()
+	} else{
+		defPage.maximize()
+	}
+})
+
+ipc.on('minimizeDef', (event, arg) =>{
+	defPage.minimize()
+})

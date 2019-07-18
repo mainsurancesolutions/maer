@@ -3,7 +3,7 @@ body{
 	overflow: hidden;
 }
 
-.title-bar{
+#title-bar{
 	-webkit-app-region: drag;
 	position: fixed;
 	overflow: hidden;
@@ -11,7 +11,6 @@ body{
 	width: 100%;
 	height: 48px;
 	background-color: #ff0000;
-
 }
 
 #left-title-buttons{
