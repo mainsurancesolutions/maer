@@ -8,7 +8,7 @@ const popupScript = require('.\\scripts\\popup.js')
 let docBlockHTML = fs.readFileSync('docBlock.html')
 
 //Position of the window relative to the screen as a whole
-let position
+let position = [0, 0]
 
 //Console block div
 let consoleBlock = document.getElementById('console-block')

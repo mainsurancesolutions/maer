@@ -28,12 +28,22 @@ function createMainWindow(){
 	});
 	mainWindow.loadFile('index.html')
 	//mainWindow.openDevTools()
+	//Account for any case which could change the position
+	mainWindow.on('maximize', (event, arg) =>{
+		mainWindow.webContents.send('position', mainWindow.getPosition())
+	})
+	mainWindow.on('unmaximize', (event, arg) =>{
+		mainWindow.webContents.send('position', mainWindow.getPosition())
+	})
+	mainWindow.on('unmaximize', (event, arg) =>{
+		mainWindow.webContents.send('position', mainWindow.getPosition())
+	})
 	mainWindow.maximize()
 	//When the main window is moved, send a signal to let it know its position changed
 	mainWindow.on('move', (event, arg) =>{
 		mainWindow.webContents.send('position', mainWindow.getPosition())
 	})
-	mainWindow.webContents.send('position', mainWindow.getPosition())
+	
 }
 
 ipc.on('close', (event, arg) =>{
@@ -100,7 +110,11 @@ ipc.on('definitions', (event, arg) =>{
 		webPreferences: {
         	nodeIntegration: true
         },
-        show: false
+        show: false,
+        useContentSize: true
+	})
+	defPage.on('move', (event, arg) =>{
+		defPage.webContents.send('position', defPage.getPosition())
 	})
 	defPage.loadFile('definitions.html')
 	defPage.removeMenu()
@@ -109,5 +123,6 @@ ipc.on('definitions', (event, arg) =>{
 		defPage.send('loadDefinitions', arg)
 		defPage.show()
 	})
+	
 })
 
