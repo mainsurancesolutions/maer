@@ -29,11 +29,11 @@ ipc.on('loadDefinitions', (event, arg) =>{
 	document.body.addEventListener('mousemove', (mouseEvent) =>{
 		hoverTimer = setTimeout(async () =>{
 			//Get the element that was hover'd
-			let hoveredElement = await document.elementFromPoint(mouseEvent.pageX, mouseEvent.pageY)
-			let mousePos = [mouseEvent.pageX, mouseEvent.pageY]
+			let hoveredElement = await document.elementFromPoint(mouseEvent.screenX, mouseEvent.screenY)
+			let mousePos = [mouseEvent.screenX, mouseEvent.screenY]
 			console.log(hoveredElement)
 			//Prepare the element to have a hover box appear
-			ipc.send('wrapWords', [hoveredElement, mousePos, arg.length-1, document])
+			//ipc.send('wrapWords', [hoveredElement, mousePos, arg.length-1, document])
 		}, 1000)
 	})
 	document.body.addEventListener('mouseout', () =>{

@@ -7,6 +7,9 @@ const popupScript = require('.\\scripts\\popup.js')
 
 let docBlockHTML = fs.readFileSync('docBlock.html')
 
+//Position of the window relative to the screen as a whole
+let position
+
 //Console block div
 let consoleBlock = document.getElementById('console-block')
 
@@ -55,13 +58,13 @@ document.getElementById('def-button').addEventListener('click', () =>{
 	ipc.send('definitions', allDefinitions)
 })
 
-//When the definitions page hovers a word, pass it off to the popupScript
-//args are
-//[hoveredElement, mousePos, index of last contract, definitions window document]
-ipc.on('wrapWords', (event, arg) =>{
+//When the position of the window changes, update the position array
+ipc.on('position', (event, arg) =>{
 	console.log(arg)
-	popupScript.wrapWords(arg[0], arg[1], arg[2], arg[3])
+	position = [arg[0], arg[1]]
+	popupScript.setPosition(position)
 })
+
 
 //To add a new file after loading, simply un-hide the last one
 //If there is no last one, add a new one
@@ -262,8 +265,9 @@ async function setUpScrollFunction(){
 			docSlots[i].addEventListener('mousemove', (mouseEvent) =>{
 				hoverTimer = setTimeout(() =>{
 					//Get the element that was hover'd
-					let hoveredElement = document.elementFromPoint(mouseEvent.screenX, mouseEvent.screenY)
-					let mousePos = [mouseEvent.screenX, mouseEvent.screenY]
+					let mousePos = [mouseEvent.screenX - position[0], mouseEvent.screenY - position[1]]
+					let hoveredElement = document.elementFromPoint(mousePos[0], mousePos[1])
+					
 					//Prepare the element to have a hover box appear
 					popupScript.wrapWords(hoveredElement, mousePos, i, document)
 				}, 1000)

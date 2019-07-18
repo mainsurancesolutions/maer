@@ -4,8 +4,14 @@ const scrollScript = require('..\\scripts\\scroll.js')
 //we increment that counter with each new popup so that if you have multiple popups,
 //the most recent will show up in front of all others
 let zCounter = 2
+let position
 
 module.exports ={
+
+	setPosition: function(pos){
+		position = pos
+	},
+	
 	//Populate the allDefinitions array with tuples of terms and their definitions
 	getDefs: function(docSlots){
 		let allDefinitions = []
@@ -198,10 +204,14 @@ function popup(term, definition, mousePos, document, docNumber, section){
 	popupElement.addEventListener('mousemove', (mouseEvent) =>{
 		hoverTimer = setTimeout(() =>{
 			//Get the element that was hover'd
-			let hoveredElement = document.elementFromPoint(mouseEvent.screenX, mouseEvent.screenY)
-			let mousePos = [mouseEvent.screenX, mouseEvent.screenY]
+			//Note that screenX is the coordinates on the entire screen, so we need to take into account the
+			//case in which the window is not fullscreened
+			//We cannot simply use pageX instead of screenX, as that messes up when you scroll the window
+			let mousePosNew = [mouseEvent.screenX - position[0], mouseEvent.screenY - position[1]]
+			let hoveredElement = document.elementFromPoint(mousePosNew[0], mousePosNew[1])
+			
 			//Prepare the element to have a hover box appear
-			popupScript.wrapWords(hoveredElement, mousePos, docNumber, document)
+			popupScript.wrapWords(hoveredElement, mousePosNew, docNumber, document)
 		}, 1000)
 	})
 	popupElement.addEventListener('mouseout', () =>{

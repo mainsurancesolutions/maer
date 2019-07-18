@@ -1,4 +1,5 @@
-const {app, BrowserWindow, BrowserView, dialog, shell} = require('electron')
+const electron = require('electron')
+const {app, BrowserWindow, BrowserView, dialog, shell} = electron
 const path = require('path')
 const ipc = require('electron').ipcMain
 let mainWindow
@@ -28,6 +29,11 @@ function createMainWindow(){
 	mainWindow.loadFile('index.html')
 	//mainWindow.openDevTools()
 	mainWindow.maximize()
+	//When the main window is moved, send a signal to let it know its position changed
+	mainWindow.on('move', (event, arg) =>{
+		mainWindow.webContents.send('position', mainWindow.getPosition())
+	})
+	mainWindow.webContents.send('position', mainWindow.getPosition())
 }
 
 ipc.on('close', (event, arg) =>{
@@ -105,8 +111,3 @@ ipc.on('definitions', (event, arg) =>{
 	})
 })
 
-//When an element is hovered in the definitions window, pass that message on to the main window
-ipc.on('wrapWords', (event, arg) =>{
-	console.log(arg[0])
-	mainWindow.webContents.send('wrapWords', arg)
-})
