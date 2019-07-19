@@ -19,6 +19,15 @@ let docBlocks = document.getElementsByClassName('doc-block')
 //The documents themselves, populated with input
 let docs = [null, null]
 
+/*
+Array detailing which docs are shown. Used to know when re-comparing docs would change the results
+Basically, when you compare, lastShown[] will show which docs were revealed last time you compared
+currentlyShown[] is updated whenever a new doc is added or hidden. So if they differ, we know re-comparing would change things
+The index for a given doc will be true if it was shown, false if it was hidden
+*/
+let lastShown = []
+let currentlyShown = []
+
 //The empty <p> tags where the documents will be rendered
 let docSlots = document.getElementsByClassName('doc')
 
@@ -120,11 +129,15 @@ ipc.on('loadFile', async (event, arg) =>{
 	//Basically do the processes as if we just uploaded the files
 	let fileButtons = document.getElementsByClassName('file-button')
 	for(let j = 0; j < project[0].length; j++){
+		lastShown[j] = true
+		currentlyShown[j] = true
 		//First hide the file upload buttons
 		fileButtons[j].style.display= "none"
 		//Then show doc titles
 		docTitleSlots[j].innerHTML = docNicknames[j]
 	}
+	console.log(lastShown)
+	console.log(currentlyShown)
 
 	//Now compare
 	document.getElementById('compare-button').click()
@@ -141,9 +154,8 @@ document.getElementById('compare-button').addEventListener('click', async () =>{
 			shownSlots.push(docSlots[i])
 		}
 	}
-	console.log(shownDocs)
-	//At LEAST the first 2 docs have to be filled
-	if(shownDocs.length < 2){
+	//At LEAST 2 docs have to be filled
+	if(shownDocs.length < 3){
 		alert("You must compare at least 2 documents")
 		return false
 	}
@@ -170,6 +182,12 @@ document.getElementById('compare-button').addEventListener('click', async () =>{
 	}
 	//Reveal add button
 	document.getElementById('add-button').style.display= "inline-block"
+	console.log(lastShown)
+	console.log(currentlyShown)
+	lastShown = currentlyShown
+	console.log(lastShown)
+	console.log(currentlyShown)
+	updateCompareButton()
 	//Implement the ability to click on a section and have all docs scroll to it
 	setUpScrollFunction()
 })
@@ -297,6 +315,7 @@ for(let i = 0; i < 2; i++){
 	hideButtons[i].addEventListener('click', () =>{
 		//Show
 		if(docSlots[i].style.display === "none"){
+			currentlyShown[i] = true
 			docSlots[i].style.display = "inline-block"
 			docBlocks[i].style.minWidth = "20vw"
 			docBlocks[i].style.maxWidth = "45vw"
@@ -306,12 +325,14 @@ for(let i = 0; i < 2; i++){
 		}
 		//Hide
 		else{
+			currentlyShown[i] = false
 			docSlots[i].style.display = "none"
 			docBlocks[i].style.minWidth = docTitleSlots[i].clientWidth + "px"
 			docBlocks[i].style.overflowX = "visible"
 			docBlocks[i].style.overflowY = "visible"
 			docBlocks[i].style.borderStyle = "none"			
 		}
+		updateCompareButton()
 	})
 }
 
@@ -392,6 +413,8 @@ function fileAdded(){
 			children[i].style.display = "none"
 		}
 	}
+	currentlyShown[whichDoc] = true
+	updateCompareButton()
 	//Check if all docs are full
 	docsFull()
 }
@@ -429,6 +452,7 @@ function docsFull(force = false){
 	hideButtons[docNumber-1].addEventListener('click', () => {
 		//Show
 		if(docSlots[docNumber-1].style.display === "none"){
+			currentlyShown[docNumber-1] = true
 			docSlots[docNumber-1].style.display = "inline-block"
 			docBlocks[docNumber-1].style.minWidth = "20vw"
 			docBlocks[docNumber-1].style.maxWidth = "45vw"
@@ -438,11 +462,36 @@ function docsFull(force = false){
 		}
 		//Hide
 		else{
+			currentlyShown[docNumber-1] = false
 			docSlots[docNumber-1].style.display = "none"
 			docBlocks[docNumber-1].style.minWidth = docTitleSlots[docNumber-1].clientWidth + "px"
 			docBlocks[docNumber-1].style.overflowX = "visible"
 			docBlocks[docNumber-1].style.overflowY = "visible"
 			docBlocks[docNumber-1].style.borderStyle = "none"
 		}
+		console.log(currentlyShown)
+		updateCompareButton()
 	})
 }
+
+//Whenever we show, hide, or add a doc, we want to update the compare button 
+//to reflect if a re-comparison would change things
+function updateCompareButton(){
+	console.log(lastShown)
+	console.log(currentlyShown)
+	compareButton = document.getElementById('compare-button')
+	recompareButton = document.getElementById('re-compare-button')
+	if(lastShown === currentlyShown){
+		compareButton.style.display = "block"
+		recompareButton.style.display = "none"
+	}
+	else{
+		compareButton.style.display = "none"
+		recompareButton.style.display = "block"
+	}
+}
+
+//The re-compare button simply clicks the main compare button
+document.getElementById('re-compare-button').addEventListener('click', () =>{
+	document.getElementById('compare-button').click()
+})

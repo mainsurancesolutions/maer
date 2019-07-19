@@ -11,7 +11,7 @@ module.exports ={
 	setPosition: function(pos){
 		position = pos
 	},
-	
+
 	//Populate the allDefinitions array with tuples of terms and their definitions
 	getDefs: function(docSlots){
 		let allDefinitions = []
@@ -174,8 +174,6 @@ module.exports ={
 function popup(term, definition, mousePos, document, docNumber, section){
 	let popupElement = document.createElement('div')
 	popupElement.innerHTML = popupHTML
-	console.log(popupElement)
-	console.log(document.getElementById('docs-and-console'))
 	if(document.getElementById('docs-and-console'))
 		document.getElementById('docs-and-console').appendChild(popupElement)
 	else

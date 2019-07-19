@@ -1,5 +1,4 @@
 To-do list:
-Fix issues with trying to load moved documents/documents that do not exist
 Allow hovering in the definitions page
 Section hover goes to deepest layer
 Fix issues with adding new version after comparing

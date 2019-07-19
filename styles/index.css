@@ -267,6 +267,14 @@ ol{
 	transform: translate(-50%, 0);
 }
 
+#re-compare-button{
+	position: fixed;
+	max-width: 149px;
+	bottom: 2%;
+	left: 50%;
+	transform: translate(-50%, 0);
+}
+
 #def-button{
 	position: fixed;
 	display: none;

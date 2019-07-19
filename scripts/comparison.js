@@ -23,6 +23,7 @@ module.exports ={
 	//Main function, calls readDocs to rip the text, 
 	//waits until that's done, then finds and renders differences
 	render: async function(files, fields, tocBlock){
+		//Will return false if it fails to read the files
 		if(await readDocs(files, fields) === false)
 			return false
 		function ensureHtmlIsSet() {
@@ -77,6 +78,7 @@ async function readDocs(files, fields){
 	for(let i=0; i<numOfFiles; i++){
 		fields[i].innerHTML = "Processing..."
 		try{
+			//Most common reason it will fail to read a file is if the user moved or deleted one of the files to be read
 			if(fs.existsSync(files[i].path)){
 				await mammoth.convertToHtml({path: files[i].path}, options)
 				.then(function(result){
