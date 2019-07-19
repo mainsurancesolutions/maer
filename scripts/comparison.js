@@ -1,5 +1,6 @@
 const mammoth = require('mammoth')
 const diff = require('node-htmldiff')
+const fs = require('fs')
 const hideSectionButton = fs.readFileSync('hideSectionButton.html')
 const hideArticleButton = fs.readFileSync('hideArticleButton.html')
 const hideParagraphsButton = fs.readFileSync('hideParagraphsButton.html')
@@ -22,7 +23,8 @@ module.exports ={
 	//Main function, calls readDocs to rip the text, 
 	//waits until that's done, then finds and renders differences
 	render: async function(files, fields, tocBlock){
-		readDocs(files, fields)
+		if(await readDocs(files, fields) === false)
+			return false
 		function ensureHtmlIsSet() {
 		    return new Promise(function (resolve, reject) {
 		        (function waitForHtml(){
@@ -74,12 +76,21 @@ async function readDocs(files, fields){
 	}
 	for(let i=0; i<numOfFiles; i++){
 		fields[i].innerHTML = "Processing..."
-		await mammoth.convertToHtml({path: files[i].path}, options)
-		.then(function(result){
-			if(rippedHtml[i] !== "")
-				rippedHtml[i] = result.value //Html generated from docx
-		})
-		.done()
+		try{
+			if(fs.existsSync(files[i].path)){
+				await mammoth.convertToHtml({path: files[i].path}, options)
+				.then(function(result){
+					if(rippedHtml[i] !== "")
+						rippedHtml[i] = result.value //Html generated from docx
+				})
+				.done()
+			}
+			else
+				return false			
+		}catch (e){
+			return false
+		}
+		
 	}
 	return true
 }

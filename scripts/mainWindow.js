@@ -131,7 +131,7 @@ ipc.on('loadFile', async (event, arg) =>{
 })
 
 //Read and render all non-hidden documents
-document.getElementById('compare-button').addEventListener('click', () =>{
+document.getElementById('compare-button').addEventListener('click', async () =>{
 	let shownDocs = []
 	let shownSlots = []
 	//Find out which docs are hidden
@@ -147,7 +147,9 @@ document.getElementById('compare-button').addEventListener('click', () =>{
 		alert("You must compare at least 2 documents")
 		return false
 	}
-	compareScript.render(shownDocs, shownSlots, document.getElementById('table-of-contents'))
+	if(await compareScript.render(shownDocs, shownSlots, document.getElementById('table-of-contents')) === false){
+		alert("Upload failed. If you moved the documents since last time you opened them, you'll have to start a new project.")
+	}
 	//Hide the last unused slot
 	if(docs[docBlocks.length-1] === null)
 		docBlocks[docBlocks.length-1].style.display= "none"
