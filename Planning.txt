@@ -17,4 +17,3 @@ drag docs and drop them on the app to open them (like google docs importing)
 Make sure the clients feel secure
 Scroll through one doc, it scrolls through all
 Change how you save/load. Folder structure? (avoid issues with deleting docs and then loading, as they might assume it saved the docs)
-When you hide docs, change the 'Compare' button to indicate that you can re-compare

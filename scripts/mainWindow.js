@@ -69,7 +69,6 @@ document.getElementById('def-button').addEventListener('click', () =>{
 
 //When the position of the window changes, update the position array
 ipc.on('position', (event, arg) =>{
-	console.log(arg)
 	position = [arg[0], arg[1]]
 	popupScript.setPosition(position)
 })
@@ -129,15 +128,14 @@ ipc.on('loadFile', async (event, arg) =>{
 	//Basically do the processes as if we just uploaded the files
 	let fileButtons = document.getElementsByClassName('file-button')
 	for(let j = 0; j < project[0].length; j++){
-		lastShown[j] = true
+		//lastShown[j] = true
 		currentlyShown[j] = true
 		//First hide the file upload buttons
 		fileButtons[j].style.display= "none"
 		//Then show doc titles
 		docTitleSlots[j].innerHTML = docNicknames[j]
 	}
-	console.log(lastShown)
-	console.log(currentlyShown)
+	lastShown = currentlyShown.slice(0)
 
 	//Now compare
 	document.getElementById('compare-button').click()
@@ -182,11 +180,8 @@ document.getElementById('compare-button').addEventListener('click', async () =>{
 	}
 	//Reveal add button
 	document.getElementById('add-button').style.display= "inline-block"
-	console.log(lastShown)
-	console.log(currentlyShown)
-	lastShown = currentlyShown
-	console.log(lastShown)
-	console.log(currentlyShown)
+
+	lastShown = currentlyShown.slice(0)
 	updateCompareButton()
 	//Implement the ability to click on a section and have all docs scroll to it
 	setUpScrollFunction()
@@ -469,7 +464,6 @@ function docsFull(force = false){
 			docBlocks[docNumber-1].style.overflowY = "visible"
 			docBlocks[docNumber-1].style.borderStyle = "none"
 		}
-		console.log(currentlyShown)
 		updateCompareButton()
 	})
 }
@@ -477,11 +471,9 @@ function docsFull(force = false){
 //Whenever we show, hide, or add a doc, we want to update the compare button 
 //to reflect if a re-comparison would change things
 function updateCompareButton(){
-	console.log(lastShown)
-	console.log(currentlyShown)
 	compareButton = document.getElementById('compare-button')
 	recompareButton = document.getElementById('re-compare-button')
-	if(lastShown === currentlyShown){
+	if(arraysEqual(lastShown, currentlyShown) || lastShown.length === 0){
 		compareButton.style.display = "block"
 		recompareButton.style.display = "none"
 	}
@@ -495,3 +487,14 @@ function updateCompareButton(){
 document.getElementById('re-compare-button').addEventListener('click', () =>{
 	document.getElementById('compare-button').click()
 })
+
+//Checks the equivalence of two arrays
+function arraysEqual(arr1, arr2) {
+    if(arr1.length !== arr2.length)
+        return false;
+    for(let i = arr1.length; i--;) {
+        if(arr1[i] !== arr2[i])
+            return false;
+    }
+    return true;
+}
