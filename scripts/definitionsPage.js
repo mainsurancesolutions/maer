@@ -7,6 +7,8 @@ When displaying definitions, we will be showing the definitions from the most re
 */
 let allDefinitions
 
+let mainDoc
+
 let position
 let hoverTimer
 
@@ -43,9 +45,8 @@ ipc.on('loadDefinitions', (event, arg) =>{
 			//Get the element that was hover'd
 			let mousePos = [mouseEvent.screenX - position[0], mouseEvent.screenY - position[1]]
 			let hoveredElement = document.elementFromPoint(mousePos[0], mousePos[1])
-			console.log(hoveredElement)
-			//Prepare the element to have a hover box appear
-			//ipc.send('wrapWords', [hoveredElement, mousePos, arg.length-1, document])
+			//Send hovered text to mainWindow.js in order to get the section text from there
+			ipc.send('getSection', [hoveredElement, mousePos])
 		}, 1000)
 	})
 	document.body.addEventListener('mouseout', () =>{
@@ -58,3 +59,8 @@ ipc.on('position', (event, arg) =>{
 	position = [arg[0], arg[1]]
 })
 
+//When a definition is received
+//The args received will be [position to put the popup, section number, section text]
+ipc.on('sendSection', (event, arg) =>{
+	console.log(arg)
+})

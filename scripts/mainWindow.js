@@ -73,6 +73,19 @@ ipc.on('position', (event, arg) =>{
 	popupScript.setPosition(position)
 })
 
+//When a word is hovered in the definitions window, search for the hovered section, then return the popup text
+//arg will be [hoveredElement, mousePos]
+ipc.on('getSection', (event, arg) =>{
+	//We want to fetch the section from the last doc, so we must find the index of the last doc
+	let lastDocIndex
+	if(docs[docs.length-1] !== null)
+		lastDocIndex = docs.length-1
+	else
+		lastDocIndex = docs.length-2
+	//sent data will be in the form [mousePos, section number, section text]
+	ipc.send('sendSection', [popupScript.wrapWords(arg[0], arg[1], lastDocIndex, document, true)])
+
+})
 
 //To add a new file after loading, simply un-hide the last one
 //If there is no last one, add a new one
@@ -284,7 +297,7 @@ async function setUpScrollFunction(){
 					let hoveredElement = document.elementFromPoint(mousePos[0], mousePos[1])
 					
 					//Prepare the element to have a hover box appear
-					popupScript.wrapWords(hoveredElement, mousePos, i, document)
+					popupScript.wrapWords(hoveredElement, mousePos, i, document, false)
 				}, 1000)
 			})
 			docSlots[i].addEventListener('mouseout', () =>{

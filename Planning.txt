@@ -2,7 +2,6 @@ To-do list:
 Allow hovering in the definitions page
 Section hover goes to deepest layer
 Fix issues with adding new version after comparing
-Search bar
 Scroll through one doc, it scrolls through all
 Front-end clean-up:
 	Add new version
@@ -10,6 +9,11 @@ Front-end clean-up:
 	Everything, really
 Licensing
 Security Verification
+
+
+How we're gonna get hovering on definition page working:
+Pass just the section number and text, have the definition page script
+create the actual popup
 
 
 Notes from reviews:

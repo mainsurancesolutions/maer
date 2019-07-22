@@ -4,7 +4,7 @@ const scrollScript = require('..\\scripts\\scroll.js')
 //we increment that counter with each new popup so that if you have multiple popups,
 //the most recent will show up in front of all others
 let zCounter = 2
-let position
+let position = [0, 0]
 
 module.exports ={
 
@@ -13,7 +13,7 @@ module.exports ={
 	},
 
 	//Populate the allDefinitions array with tuples of terms and their definitions
-	getDefs: function(docSlots){
+	getDefs: function(){
 		let allDefinitions = []
 		/*
 		Create an array of arrays of [term, definition] for each doc
@@ -56,8 +56,9 @@ module.exports ={
 	Triggered upon hovering a word
 	Splits the paragraph into 'words', wrapping each term in a <span>
 	then find the exact span that was hover'd in order to find the word we want
+	defPage is a boolean value. If true, it means we're hovering something in the definitions window
 	*/
-	wrapWords: function(hoveredElement, mousePos, docNumber, document){
+	wrapWords: function(hoveredElement, mousePos, docNumber, document, defPage){
 		let paragraph
 		switch(hoveredElement.tagName){
 			case 'INS':
@@ -79,10 +80,10 @@ module.exports ={
 				if(hoveredElement.innerText.length < 30){
 					//Hovered a definition
 					if(hoveredElement.innerText.trim().split(' ')[0] !== "Section" && hoveredElement.innerText.trim().split(' ')[0] !== "Article")
-						return hoverDef(allDefinitions, hoveredElement.innerText, mousePos, docSlots, docNumber)
+						return hoverDef(allDefinitions, hoveredElement.innerText, mousePos, docNumber, defPage)
 					//Hovered an article or section
 					else
-						return hoverSection(hoveredElement.innerText.trim(), mousePos, docSlots, docNumber)
+						return hoverSection(hoveredElement.innerText.trim(), mousePos, docNumber, defPage)
 				}
 				else
 					return
@@ -156,22 +157,28 @@ module.exports ={
 		}
 		paragraph.innerHTML = reconstructed
 		//Now that we've split the paragraph, check the hover'd element once again
+		//If we hovered something in the definitions page, we'll need to request they get the element again
+		console.log(reconstructed)
+		console.log(defPage)
+		if(defPage)
+			return 're-hover'
+
 		let hoveredWord = document.elementFromPoint(mousePos[0], mousePos[1]).innerText
 		//Make sure we're not grabbing the entire paragraph
 		if(hoveredWord.length < 30){
 			//Hovered a definition
 			if(hoveredWord.trim().split(' ')[0] !== "Section" && hoveredWord.trim().split(' ')[0] !== "Article")
-				hoverDef(allDefinitions, hoveredWord, mousePos, docSlots, docNumber)
+				hoverDef(allDefinitions, hoveredWord, mousePos, docNumber, defPage)
 			//Hovered an article or section
 			else
-				hoverSection(hoveredWord.trim(), mousePos, docSlots, docNumber)
+				hoverSection(hoveredWord.trim(), mousePos, docNumber, defPage)
 		}
 	}
 }
 
 //Creates the popup after hovering a term/section name
 //section is the header of the found section, for use when scrolling to it
-function popup(term, definition, mousePos, document, docNumber, section){
+function popup(term, definition, mousePos, document, docNumber, section, defPage){
 	let popupElement = document.createElement('div')
 	popupElement.innerHTML = popupHTML
 	if(document.getElementById('docs-and-console'))
@@ -199,6 +206,7 @@ function popup(term, definition, mousePos, document, docNumber, section){
 	popupElement.addEventListener('mousemove', () =>{
 		clearTimeout(hoverTimer)
 	})
+	console.log(position)
 	popupElement.addEventListener('mousemove', (mouseEvent) =>{
 		hoverTimer = setTimeout(() =>{
 			//Get the element that was hover'd
@@ -207,9 +215,9 @@ function popup(term, definition, mousePos, document, docNumber, section){
 			//We cannot simply use pageX instead of screenX, as that messes up when you scroll the window
 			let mousePosNew = [mouseEvent.screenX - position[0], mouseEvent.screenY - position[1]]
 			let hoveredElement = document.elementFromPoint(mousePosNew[0], mousePosNew[1])
-			
+			console.log([hoveredElement, mousePosNew, docNumber, document, false])
 			//Prepare the element to have a hover box appear
-			popupScript.wrapWords(hoveredElement, mousePosNew, docNumber, document)
+			popupScript.wrapWords(hoveredElement, mousePosNew, docNumber, document, false)
 		}, 1000)
 	})
 	popupElement.addEventListener('mouseout', () =>{
@@ -266,7 +274,7 @@ allDefinitions: detailed by the getDefs function, where it is created
 We want to give the user the definition as it is defined in the current document
 If the definition is not present in the given document, see if it's in the others, starting with the most recent doc
 */
-function hoverDef(allDefinitions, hoveredWord, mousePos, docSlots, docNumber){
+function hoverDef(allDefinitions, hoveredWord, mousePos, docNumber, defPage){
 	//Remember that allDefinitions[docNumber] is the array of [term, definition] for the given doc
 	//We'll populate this with all of the terms from the current doc, then compare the hovered word to them
 	//to find the closest match
@@ -325,12 +333,12 @@ function hoverDef(allDefinitions, hoveredWord, mousePos, docSlots, docNumber){
 		definition = allDefinitions[docNumber][docTerms[shortestIndex][1]]
 	else
 		definition = allDefinitions[docSlots.length-2][lastDocTerms[shortestIndexLast][1]]
-	popup(definition[0], definition[1], mousePos, docSlots[0].ownerDocument, docNumber)
+	popup(definition[0], definition[1], mousePos, docSlots[0].ownerDocument, docNumber, defPage)
 }
 
 
 //When you hover a section number long enough, have a popup appear with a link to that section
-function hoverSection(section, mousePos, docSlots, docNumber){
+function hoverSection(section, mousePos, docNumber, defPage){
 	let document = docSlots[0].ownerDocument
 	let docChildren = docSlots[docNumber].childNodes
 	let sectionText = ""
@@ -382,7 +390,7 @@ function hoverSection(section, mousePos, docSlots, docNumber){
 	}
 	//Now that we've fetched the section/article text, we should reveal any items that are hidden
 	sectionText = sectionText.replace("display: none", "display: block")
-	return popup(sectionNum, sectionText, mousePos, document, docNumber, sectionHeader)
+	return popup(sectionNum, sectionText, mousePos, document, docNumber, sectionHeader, defPage)
 }
 
 //Helper function when finding an article by number, converts roman numerals to integers

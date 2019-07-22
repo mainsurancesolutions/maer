@@ -46,6 +46,10 @@ function createMainWindow(){
 	
 }
 
+ipc.on('getPos', (event, arg) =>{
+	mainWindow.webContents.send('position', mainWindow.getPosition())
+})
+
 ipc.on('close', (event, arg) =>{
 	if(process.platform !== 'darwin'){
 		app.quit()
@@ -149,4 +153,14 @@ ipc.on('maximizeDef', (event, arg) =>{
 
 ipc.on('minimizeDef', (event, arg) =>{
 	defPage.minimize()
+})
+
+//When a section number is hovered in the definitions doc, send that to the main page
+//to get the text in the section, then send that text back to the definitions page to render
+ipc.on('getSection', (event, arg) =>{
+	mainWindow.send('getSection')
+})
+ipc.on('sendSection', (event, arg) =>{
+	console.log(arg)
+	defPage.webContents.send('sendSection', arg)
 })
