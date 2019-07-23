@@ -158,9 +158,11 @@ ipc.on('minimizeDef', (event, arg) =>{
 //When a section number is hovered in the definitions doc, send that to the main page
 //to get the text in the section, then send that text back to the definitions page to render
 ipc.on('getSection', (event, arg) =>{
-	mainWindow.send('getSection')
+	mainWindow.send('getSection', arg)
 })
 ipc.on('sendSection', (event, arg) =>{
-	console.log(arg)
 	defPage.webContents.send('sendSection', arg)
+})
+ipc.on('re-hover', (event, arg) =>{
+	defPage.webContents.send('re-hover', arg)
 })

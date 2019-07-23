@@ -11,6 +11,8 @@ let mainDoc
 
 let position
 let hoverTimer
+let lastMousePos
+let lastElement
 
 document.getElementById('minimize-button').addEventListener('click', () =>{
 	ipc.send('minimizeDef')
@@ -34,7 +36,8 @@ ipc.on('loadDefinitions', (event, arg) =>{
 		//Add the text to the element
 		defText = "\"" + arg[arg.length-1][i][0] + "\" " + arg[arg.length-1][i][1]
 		defNode.appendChild(document.createTextNode(defText))
-		document.body.appendChild(defNode)
+		defNode.classList.add('definition')
+		document.getElementById('definition-div').appendChild(defNode)
 	}
 	
 	document.body.addEventListener('mousemove', () =>{
@@ -44,9 +47,15 @@ ipc.on('loadDefinitions', (event, arg) =>{
 		hoverTimer = setTimeout(() =>{
 			//Get the element that was hover'd
 			let mousePos = [mouseEvent.screenX - position[0], mouseEvent.screenY - position[1]]
+			lastMousePos = mousePos
 			let hoveredElement = document.elementFromPoint(mousePos[0], mousePos[1])
+			console.log(hoveredElement.classList)
+			console.log(hoveredElement.tagName)
 			//Send hovered text to mainWindow.js in order to get the section text from there
-			ipc.send('getSection', [hoveredElement, mousePos])
+			if(hoveredElement.classList.contains('definition') || hoveredElement.tagName === 'SPAN'){
+				lastElement = hoveredElement
+				ipc.send('getSection', [hoveredElement.innerText, mousePos, hoveredElement.tagName])
+			}
 		}, 1000)
 	})
 	document.body.addEventListener('mouseout', () =>{
@@ -57,6 +66,20 @@ ipc.on('loadDefinitions', (event, arg) =>{
 //Update the position variable when the window moves
 ipc.on('position', (event, arg) =>{
 	position = [arg[0], arg[1]]
+})
+
+//Once we've wrapped a paragraph in spans by hovering it, replace it with the wrapped version
+ipc.on('re-hover', (event, arg) =>{
+	console.log(arg)
+	lastElement.innerHTML = arg
+	let hoveredElement = document.elementFromPoint(lastMousePos[0], lastMousePos[1])
+	console.log(hoveredElement.classList)
+	console.log(hoveredElement.tagName)
+	console.log(hoveredElement.innerText)
+	//Now that we've wrapped it in spans, we should be hovering a span
+	//So now we can actually tell which exact term we're hovering
+	if(hoveredElement.classList.contains('definition') || hoveredElement.tagName === 'SPAN')
+		ipc.send('getSection', [hoveredElement.innerText, lastMousePos, hoveredElement.tagName])
 })
 
 //When a definition is received

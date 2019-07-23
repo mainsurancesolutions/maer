@@ -58,7 +58,7 @@ module.exports ={
 	then find the exact span that was hover'd in order to find the word we want
 	defPage is a boolean value. If true, it means we're hovering something in the definitions window
 	*/
-	wrapWords: function(hoveredElement, mousePos, docNumber, document, defPage){
+	wrapWords: function(hoveredElement, mousePos, docNumber, document){
 		let paragraph
 		switch(hoveredElement.tagName){
 			case 'INS':
@@ -80,10 +80,10 @@ module.exports ={
 				if(hoveredElement.innerText.length < 30){
 					//Hovered a definition
 					if(hoveredElement.innerText.trim().split(' ')[0] !== "Section" && hoveredElement.innerText.trim().split(' ')[0] !== "Article")
-						return hoverDef(allDefinitions, hoveredElement.innerText, mousePos, docNumber, defPage)
+						return hoverDef(allDefinitions, hoveredElement.innerText, mousePos, docNumber, false)
 					//Hovered an article or section
 					else
-						return hoverSection(hoveredElement.innerText.trim(), mousePos, docNumber, defPage)
+						return hoverSection(hoveredElement.innerText.trim(), mousePos, docNumber, false)
 				}
 				else
 					return
@@ -156,29 +156,67 @@ module.exports ={
 			inATag = null
 		}
 		paragraph.innerHTML = reconstructed
-		//Now that we've split the paragraph, check the hover'd element once again
-		//If we hovered something in the definitions page, we'll need to request they get the element again
-		console.log(reconstructed)
-		console.log(defPage)
-		if(defPage)
-			return 're-hover'
-
 		let hoveredWord = document.elementFromPoint(mousePos[0], mousePos[1]).innerText
 		//Make sure we're not grabbing the entire paragraph
 		if(hoveredWord.length < 30){
 			//Hovered a definition
 			if(hoveredWord.trim().split(' ')[0] !== "Section" && hoveredWord.trim().split(' ')[0] !== "Article")
-				hoverDef(allDefinitions, hoveredWord, mousePos, docNumber, defPage)
+				hoverDef(allDefinitions, hoveredWord, mousePos, docNumber, false)
 			//Hovered an article or section
 			else
-				hoverSection(hoveredWord.trim(), mousePos, docNumber, defPage)
+				hoverSection(hoveredWord.trim(), mousePos, docNumber, false)
 		}
+	},
+
+	//Altered version of the above function for hovering text in the definitions page
+	wrapWordsDef: function(hoveredText, mousePos, docNumber, document, tag){
+		let paragraph
+		console.log(hoveredText)
+		console.log(tag)
+		switch(tag){
+			case 'P':
+				paragraph = hoveredText
+				break
+			case 'SPAN':
+				//This will happen if the paragraph has been hovered once before
+				//in which case it's already prepared to be sent off
+				if(hoveredText.length < 30){
+					//Hovered a definition
+					if(hoveredText.trim().split(' ')[0] !== "Section" && hoveredText.trim().split(' ')[0] !== "Article")
+						return hoverDef(allDefinitions, hoveredText, mousePos, docNumber, true)
+					//Hovered an article or section
+					else
+						return hoverSection(hoveredText.trim(), mousePos, docNumber, true)
+				}
+				else
+					return
+			default:
+				return
+		}
+		//Split the paragraph into words and wrap them in spans
+		let splitParagraph = paragraph.split(" ")
+		let reconstructed = ""
+		//When in the definitions window, there's no risk of the text being in a tag,
+		//so we can skip the process of checking for it
+		for(let i = 0; i < splitParagraph.length; i++){
+			//If the word is "Section", we wanna wrap it with the section number
+			if(splitParagraph[i].trim() === "Section" || splitParagraph[i].trim() === "Article"){
+				reconstructed += '<span>' + splitParagraph[i] + " " + splitParagraph[i+1] + '</span> '
+				i++
+			}
+			else
+				reconstructed += '<span>' + splitParagraph[i] + '</span> '
+		}
+		//Now that we've split the paragraph, check the hover'd element once again
+		return ['re-hover', reconstructed]
 	}
 }
 
 //Creates the popup after hovering a term/section name
 //section is the header of the found section, for use when scrolling to it
 function popup(term, definition, mousePos, document, docNumber, section, defPage){
+	if(defPage)
+		return [term, definition]
 	let popupElement = document.createElement('div')
 	popupElement.innerHTML = popupHTML
 	if(document.getElementById('docs-and-console'))
@@ -206,7 +244,6 @@ function popup(term, definition, mousePos, document, docNumber, section, defPage
 	popupElement.addEventListener('mousemove', () =>{
 		clearTimeout(hoverTimer)
 	})
-	console.log(position)
 	popupElement.addEventListener('mousemove', (mouseEvent) =>{
 		hoverTimer = setTimeout(() =>{
 			//Get the element that was hover'd
@@ -215,7 +252,6 @@ function popup(term, definition, mousePos, document, docNumber, section, defPage
 			//We cannot simply use pageX instead of screenX, as that messes up when you scroll the window
 			let mousePosNew = [mouseEvent.screenX - position[0], mouseEvent.screenY - position[1]]
 			let hoveredElement = document.elementFromPoint(mousePosNew[0], mousePosNew[1])
-			console.log([hoveredElement, mousePosNew, docNumber, document, false])
 			//Prepare the element to have a hover box appear
 			popupScript.wrapWords(hoveredElement, mousePosNew, docNumber, document, false)
 		}, 1000)
@@ -304,13 +340,13 @@ function hoverDef(allDefinitions, hoveredWord, mousePos, docNumber, defPage){
 	}
 	//If there's no matches in either, we're done here
 	if(docTerms.length === 0 && lastDocTerms.length === 0){
-		return popup(hoveredWord, "No match found", mousePos, docSlots[0].ownerDocument, docNumber)
+		return popup(hoveredWord, "No match found", mousePos, docSlots[0].ownerDocument, docNumber, undefined, defPage)
 	}
 	//If there's only 1 match, we can use that
 	if(docTerms.length === 1 && lastDocTerms.length === 0)
-		return popup(hoveredWord, allDefinitions[docNumber][docTerms[0][1]][1], mousePos, docSlots[0].ownerDocument, docNumber)
-	else if(docTerms.length === 0 && lastDocTerms === 1)
-		return popup(hoveredWord, allDefinitions[docSlots.length-2][lastDocTerms[0][1]][1], mousePos, docSlots[0].ownerDocument, docNumber)		//If we reach here, both docs contain multiple matches for the definition
+		return popup(hoveredWord, allDefinitions[docNumber][docTerms[0][1]][1], mousePos, docSlots[0].ownerDocument, docNumber, undefined, defPage)
+	else if(docTerms.length === 0 && lastDocTerms.length === 1)
+		return popup(hoveredWord, allDefinitions[docSlots.length-2][lastDocTerms[0][1]][1], mousePos, docSlots[0].ownerDocument, docNumber, undefined, defPage)		//If we reach here, both docs contain multiple matches for the definition
 	//Now find the shortest term containing the substring (We don't wanna return the definition of 'tax returns' when they hover 'tax')
 	let shortest = docTerms[0][0].length
 	let shortestIndex = 0
@@ -333,7 +369,7 @@ function hoverDef(allDefinitions, hoveredWord, mousePos, docNumber, defPage){
 		definition = allDefinitions[docNumber][docTerms[shortestIndex][1]]
 	else
 		definition = allDefinitions[docSlots.length-2][lastDocTerms[shortestIndexLast][1]]
-	popup(definition[0], definition[1], mousePos, docSlots[0].ownerDocument, docNumber, defPage)
+	return popup(definition[0], definition[1], mousePos, docSlots[0].ownerDocument, docNumber, undefined, defPage)
 }
 
 

@@ -74,17 +74,25 @@ ipc.on('position', (event, arg) =>{
 })
 
 //When a word is hovered in the definitions window, search for the hovered section, then return the popup text
-//arg will be [hoveredElement, mousePos]
-ipc.on('getSection', (event, arg) =>{
+//arg will be [hoveredElementText, mousePos, hovered element tagName]
+ipc.on('getSection', async (event, arg) =>{
 	//We want to fetch the section from the last doc, so we must find the index of the last doc
 	let lastDocIndex
 	if(docs[docs.length-1] !== null)
 		lastDocIndex = docs.length-1
 	else
 		lastDocIndex = docs.length-2
-	//sent data will be in the form [mousePos, section number, section text]
-	ipc.send('sendSection', [popupScript.wrapWords(arg[0], arg[1], lastDocIndex, document, true)])
-
+	//sent data will be in the form [section number, section text]
+	let popupData = popupScript.wrapWordsDef(arg[0], arg[1], lastDocIndex, document, arg[2])
+	//Once we've wrapped the text in spans, we want to replace it with the reconstructed paragraph
+	//then hover it again
+	console.log(popupData)
+	if(popupData){
+		if(popupData[0] === 're-hover')
+			ipc.send('re-hover', popupData[1])
+		else
+			ipc.send('sendSection', popupData)
+	}
 })
 
 //To add a new file after loading, simply un-hide the last one
