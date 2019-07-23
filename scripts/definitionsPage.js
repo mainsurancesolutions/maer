@@ -16,6 +16,8 @@ let hoverTimer
 let lastMousePos
 let lastElement
 
+let titleBar = document.getElementById('title-bar')
+
 document.getElementById('minimize-button').addEventListener('click', () =>{
 	ipc.send('minimizeDef')
 })
@@ -81,13 +83,15 @@ ipc.on('re-hover', (event, arg) =>{
 //When a definition/section is hovered, create a pop-up box to show it
 //The args received will be [term, definition, z level]
 ipc.on('sendSection', (event, arg) =>{
+	titleBar.style.zIndex = arg[2] + 1
 	let popupElement = document.createElement('div')
 	popupElement.innerHTML = popupHTML
 	document.body.appendChild(popupElement)
 	//Position the element where you hovered
 	//We set the top and right so we can easily detect if the element is offscreen
 	popupElement.style.left = lastMousePos[0] + "px"
-	popupElement.style.top = lastMousePos[1] + "px"
+	//We need to account for how far down we've scrolled
+	popupElement.style.top = (lastMousePos[1] + pageYOffset) + "px"
 
 	popupElement.classList.add("popup")
 	popupElement.getElementsByClassName('close-popup-button')[0].addEventListener('click', ()=>{
@@ -137,5 +141,22 @@ ipc.on('sendSection', (event, arg) =>{
 		for(let i = inputTags.length - 1; i >= 0; i--){
 			popupElement.getElementsByClassName('definition')[0].replaceChild(lineBreak.cloneNode(true), inputTags[i])
 		}
+	}
+
+	/*
+	Make sure the window is onscreen fully
+	The style.top, style.bottom, etc. are stored as "#px". So we must remove the px
+	We also don't want the popup to be on the title bar, which is 48px in height
+	It is worth noting that the origin point is the lower left of the popup, which is why we need the offset for 
+	setting the right and top boundaries
+	Another effect of the origin being the lower left is we never have to worry about the element going off the bottom or left
+	*/
+	if((popupElement.style.top.slice(0, -2) - pageYOffset)-popupElement.offsetHeight < 48)
+		popupElement.style.top = (popupElement.offsetHeight + 48 + pageYOffset) + "px"
+	//The location of the right side of the element
+	let elementRight = document.body.clientWidth - popupElement.style.left.slice(0, -2) - popupElement.offsetWidth
+	if(elementRight < 0){
+		popupElement.style.left = (document.body.clientWidth - popupElement.offsetWidth) + "px"
+		popupElement.style.right = popupElement.offsetWidth + "px"
 	}
 })

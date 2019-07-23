@@ -18,6 +18,16 @@ p{
 	background-color: #ff0000;
 }
 
+#app-title{
+	position: fixed;
+	left: 50%;
+	top: -.5%;
+	font-family: Arial, sans-serif !important;
+	font-size: 18px;
+	transform: translate(-50%, 0);
+	color: white;
+}
+
 #right-title-buttons{
 	-webkit-app-region: no-drag;
 	display: flex;
@@ -73,4 +83,18 @@ p{
 .definition{
 	margin-top: 4px;
 	text-align: left;
+}
+
+::-webkit-scrollbar{
+	width: 20px;
+}
+
+::-webkit-scrollbar-track{
+	border-radius: 25px;
+}
+
+::-webkit-scrollbar-thumb{
+	background: #ff0000;
+	border-radius: 25px;
+	min-height: 25px;
 }
