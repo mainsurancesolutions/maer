@@ -32,3 +32,45 @@ p{
 	display: inline-block;
 	max-width: 58px;
 }
+
+.popup{
+    border: 2px groove #ff0000;
+    background-color: white;
+    margin: 0px;
+    padding: 4px;
+    padding-top: 2px;
+    position: absolute;
+    display: inline-block;
+    min-height: 15%;
+    min-width: 15%;
+    max-height: 40%;
+    max-width: 50%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    visibility: visible;
+    -webkit-animation: fadeIn 1s;
+    transform: translate(0, -100%);
+}
+
+.close-popup-button{
+	display: inline-block;
+	position: fixed;
+	height: 28px;
+	width: 28px;
+	right: 2px;
+	top: 2px;
+}
+
+.term{
+	text-align: center;
+	margin-right: 24px;
+	margin-top: 4px;
+	margin-bottom: 4px;
+	top: 2px;
+	font-size: 18px;
+}
+
+.definition{
+	margin-top: 4px;
+	text-align: left;
+}

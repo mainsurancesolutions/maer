@@ -171,8 +171,6 @@ module.exports ={
 	//Altered version of the above function for hovering text in the definitions page
 	wrapWordsDef: function(hoveredText, mousePos, docNumber, document, tag){
 		let paragraph
-		console.log(hoveredText)
-		console.log(tag)
 		switch(tag){
 			case 'P':
 				paragraph = hoveredText
@@ -216,13 +214,11 @@ module.exports ={
 //section is the header of the found section, for use when scrolling to it
 function popup(term, definition, mousePos, document, docNumber, section, defPage){
 	if(defPage)
-		return [term, definition]
+		return [term, definition, zCounter++]
 	let popupElement = document.createElement('div')
 	popupElement.innerHTML = popupHTML
-	if(document.getElementById('docs-and-console'))
-		document.getElementById('docs-and-console').appendChild(popupElement)
-	else
-		document.body.appendChild(popupElement)
+	document.getElementById('docs-and-console').appendChild(popupElement)
+
 	//Position the element where you hovered
 	//We set the top and right so we can easily detect if the element is offscreen
 	popupElement.style.left = mousePos[0] + "px"

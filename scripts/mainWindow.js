@@ -86,7 +86,6 @@ ipc.on('getSection', async (event, arg) =>{
 	let popupData = popupScript.wrapWordsDef(arg[0], arg[1], lastDocIndex, document, arg[2])
 	//Once we've wrapped the text in spans, we want to replace it with the reconstructed paragraph
 	//then hover it again
-	console.log(popupData)
 	if(popupData){
 		if(popupData[0] === 're-hover')
 			ipc.send('re-hover', popupData[1])
