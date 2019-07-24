@@ -186,17 +186,21 @@ document.getElementById('compare-button').addEventListener('click', async () =>{
 	//Show console
 	consoleBlock.style.display= "inline-block"
 	document.getElementById('edit-button').style.display= "inline-block"
-	//Show 'hide' buttons
-	for(let i = 0; i < docBlocks.length; i++)
-		hideButtons[i].style.display = "inline-block"
+	//Show 'hide' buttons of shown docs
+	for(let i = 0; i < docBlocks.length; i++){
+		if(docs[i])
+			hideButtons[i].style.display = "inline-block"
+	}
 	//Show 'save' button and hide 'load' button
 	document.getElementById('save-button').style.display= "inline-block"
 	document.getElementById('load-button').style.display= "none"
 	//Change doc titles
 	for(let i = 0; i < docBlocks.length; i++){
-		docTitleSlots[i].style.display = "inline-block"
-		docTitleSlots[i].value = docNicknames[i]
-		uploadTextSlots[i].innerHTML = ""
+		if(docs[i]){
+			docTitleSlots[i].style.display = "inline-block"
+			docTitleSlots[i].value = docNicknames[i]
+			uploadTextSlots[i].innerHTML = ""
+		}
 	}
 	//Reveal add button
 	document.getElementById('add-button').style.display= "inline-block"

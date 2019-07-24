@@ -132,6 +132,7 @@ ipc.on('definitions', (event, arg) =>{
 	})
 	defPage.loadFile('definitions.html')
 	defPage.removeMenu()
+	defPage.openDevTools()
 	defPage.once('ready-to-show', () =>{
 		defPage.send('loadDefinitions', arg)
 		defPage.show()
