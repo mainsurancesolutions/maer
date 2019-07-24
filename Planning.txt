@@ -1,6 +1,5 @@
 To-do list:
 Section hover goes to deepest layer
-Fix issues with adding new version after comparing
 Scroll through one doc, it scrolls through all
 Front-end clean-up:
 	Add new version

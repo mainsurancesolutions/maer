@@ -103,3 +103,15 @@ p{
 	border-radius: 25px;
 	min-height: 25px;
 }
+
+del{
+	color: red;
+	text-decoration: line-through;
+	text-decoration-color: red;
+}
+
+ins{
+	font-weight: bold;
+	color: #1cc916;
+	text-decoration: none;
+}

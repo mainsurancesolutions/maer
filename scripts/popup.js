@@ -6,6 +6,12 @@ const scrollScript = require('..\\scripts\\scroll.js')
 let zCounter = 2
 let position = [0, 0]
 
+/*
+This file controls what happens when you hover your mouse over a word,
+creating a pop-up containing the definition if it has one, or the section text
+if it's a section number
+*/
+
 module.exports ={
 
 	setPosition: function(pos){
@@ -369,60 +375,127 @@ function hoverDef(allDefinitions, hoveredWord, mousePos, docNumber, defPage){
 }
 
 
-//When you hover a section number long enough, have a popup appear with a link to that section
+/*
+When you hover text like "Section 2.01" long enough, have a popup appear with the text from it
+For the purposes of this function, I define the terms 'section', 'subsection', and 'sub-subsection' as follows:
+Section: The level just below article. For example, 2.01, 2.02, 2.03, ... are sections
+Subsection: 2.01(a), 2.01(b), 2.01(c), ...
+Sub-subsection: 2.01(a)(i), 2.01(a)(ii), 2.01(a)(iii), ...
+*/
 function hoverSection(section, mousePos, docNumber, defPage){
 	let document = docSlots[0].ownerDocument
 	let docChildren = docSlots[docNumber].childNodes
 	let sectionText = ""
 	let sectionNum
+	let fullSectionNum
 	let sectionIndex
 	let sectionHeader
 	//If we hovered a section
 	if(section.split(' ')[0] === "Section"){
-		//Some section links will be written like "2.02(a)(ii)"
-		//We only want the 2.02 part, which is what 'trimmedSection' will be
-		sectionNum = section.split(' ')[1].split("(")[0]
-		//Now search each subsection to find the number
+		//Some section links will be written like "Section 2.02(a)(ii)"
+		//sectionNum will be just the '2.02'
+		//fullSectionNum will be '2.02(a)(ii)'
+		fullSectionNum = section.split(' ')[1]
+		sectionNum = fullSectionNum.substring(0, 4)
+
+		//We can determine if the section link goes to subsection or sub-subsection by seeing how many '(' it contains
+		let depth = fullSectionNum.split('(').length
+		console.log(depth)
+		console.log(sectionNum)
+		//Now search each section to find the number
 		h2s = docSlots[docNumber].getElementsByTagName('H2')
 		for(let i = 0; i < h2s.length; i++){
 			if(h2s[i].textContent.includes(sectionNum)){
+				//We've found the section
 				sectionHeader = h2s[i]
-				//Once we find the section, we wanna fetch the paragraphs from that section
 				sectionIndex = Array.from(docChildren).indexOf(h2s[i])
-				for(let j = sectionIndex+1; j < docChildren.length; j++){
-					if(docChildren[j].tagName === "H1" || docChildren[j].tagName === "H2")
-						break
-					else
-						sectionText += docChildren[j].innerHTML
+				/*
+				If it did specify a subsection, we must search for only that subsection and take all paragraphs from it
+				If it specified a sub-subsection, we must search for the heading subsection, then the sub-subsection within it
+				*/
+				//If the section we hovered specified a subsection and/or a sub-subsection
+				if(depth > 1){
+					//First find the subsection specified. We do this by finding what comes after the first (, then the
+					//index of the first ), and taking what's between them
+					let subsectionLetter = fullSectionNum.split('(')[1].substring(0, fullSectionNum.split('(')[1].indexOf(')'))
+					for(let j = sectionIndex+1; j < docChildren.length; j++){
+						if(docChildren[j].tagName === "H1" || docChildren[j].tagName === "H2")
+							break
+						//Found the subsection
+						if(docChildren[j].textContent.startsWith("(" + subsectionLetter + ")")){
+							//Collect the first paragraph no matter what
+							sectionText += docChildren[j].innerHTML
+							fullSectionNum = "Section " + fullSectionNum
+							//Collect the rest of the subsection if we want the whole thing
+							if(depth === 2){
+								for(let k = j+1; k < docChildren.length; k++){
+									if(docChildren[k].classList.contains('subsection-bullet') || docChildren[k].tagName === "H1" || docChildren[k].tagName === "H2")
+										break
+									sectionText += "<br>" + docChildren[k].innerHTML
+								}
+								break
+							}
+							//Collect just sub-subsection text if that's all that was asked for
+							//in most cases this will just be the one paragraph, but sometimes not
+							else{
+								//First find the sub-subsection
+								let subsubsectionNum = fullSectionNum.split('(')[2].substring(0, fullSectionNum.split('(')[2].indexOf(')'))
+								for(let k = j+1; k < docChildren.length; k++){
+									if(docChildren[k].textContent.startsWith("(" + subsubsectionNum + ")")){
+										sectionText += "<br>" + docChildren[k].innerHTML
+										for(let x = k+1; x < docChildren.length; x++){
+											if(docChildren[x].classList.contains('subsection-bullet') || docChildren[x].classList.contains('subsection-sub-bullet') || docChildren[x].tagName === "H1" || docChildren[x].tagName === "H2")
+												break
+											sectionText += "<br>" + docChildren[k].innerHTML
+										}
+										break
+									}
+								}
+								break
+							}
+						}
+					}
 				}
-				sectionNum = "Section " + sectionNum
-				break
+				//If the section we hovered didn't specify a subsection, we want all paragraphs in that section
+				else{
+					//Take all paragraphs until we reach the next H1 or H2 tag, which would be a new article or section
+					for(let j = sectionIndex+1; j < docChildren.length; j++){
+						console.log(docChildren[j])
+						console.log(sectionText)
+						if(docChildren[j].tagName === "H1" || docChildren[j].tagName === "H2")
+							break
+						else
+							sectionText += "<br>" + docChildren[j].innerHTML
+					}
+					fullSectionNum = "Section " + sectionNum
+					break
+				}
 			}
 		}
 	}
 	//Works pretty much the same as when fetching a section
 	else if(section.split(' ')[0] === "Article"){
 		//Convert the article number to an integer
-		sectionNum = romanToArabic(section.split(' ')[1])
+		fullSectionNum = romanToArabic(section.split(' ')[1])
 		h1s = docSlots[docNumber].getElementsByTagName('H1')
 		for(let i = 0; i < h1s.length; i++){
-			if(h1s[i].textContent.includes(" " + sectionNum + " ")){
+			if(h1s[i].textContent.includes(" " + fullSectionNum + " ")){
 				sectionHeader = h1s[i]
 				sectionIndex = Array.from(docChildren).indexOf(h1s[i])
 				for(let j = sectionIndex+1; j < docChildren.length; j++){
 					if(docChildren[j].tagName === "H1")
 						break
 					else if(docChildren[j].tagName !== "INPUT")
-						sectionText += docChildren[j].innerHTML
+						sectionText += "<br>" + docChildren[j].innerHTML
 				}
-				sectionNum = "Article " + sectionNum 
+				fullSectionNum = "Article " + fullSectionNum 
 				break
 			}
 		}
 	}
 	//Now that we've fetched the section/article text, we should reveal any items that are hidden
 	sectionText = sectionText.replace("display: none", "display: block")
-	return popup(sectionNum, sectionText, mousePos, document, docNumber, sectionHeader, defPage)
+	return popup(fullSectionNum, sectionText, mousePos, document, docNumber, sectionHeader, defPage)
 }
 
 //Helper function when finding an article by number, converts roman numerals to integers
