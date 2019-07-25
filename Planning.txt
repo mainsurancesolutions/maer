@@ -25,7 +25,6 @@ If a section has changes in one doc, all instances of that section across docs s
 Button to close all pop-ups
 Click out of pop-ups to close all
 Scrolling resets pop-up timer
-If no match is found, no pop-up
 Pair nearby capitalized words, in order to maximize accuracy of definitions
 ^ (watch out for 'and' and 'or', as you might have 'and' in a definition,
 and you might have 'definition and definition')

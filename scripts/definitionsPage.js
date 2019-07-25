@@ -47,6 +47,9 @@ ipc.on('loadDefinitions', (event, arg) =>{
 	document.body.addEventListener('mousemove', () =>{
 		clearTimeout(hoverTimer)
 	})
+	document.addEventListener('scroll', () =>{
+		clearTimeout(hoverTimer)
+	})
 	document.body.addEventListener('mousemove', (mouseEvent) =>{
 		hoverTimer = setTimeout(() =>{
 			//Get the element that was hover'd
@@ -108,6 +111,7 @@ ipc.on('sendSection', (event, arg) =>{
 	popupElement.addEventListener('mousemove', () =>{
 		clearTimeout(hoverTimer)
 	})
+
 	popupElement.addEventListener('mousemove', (mouseEvent) =>{
 		hoverTimer = setTimeout(() =>{
 			//Get the element that was hover'd

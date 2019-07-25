@@ -256,7 +256,7 @@ function popup(term, definition, mousePos, document, docNumber, section, defPage
 			let hoveredElement = document.elementFromPoint(mousePosNew[0], mousePosNew[1])
 			//Prepare the element to have a hover box appear
 			popupScript.wrapWords(hoveredElement, mousePosNew, docNumber, document, false)
-		}, 1250)
+		}, 1100)
 	})
 	popupElement.addEventListener('mouseout', () =>{
 		clearTimeout(hoverTimer)

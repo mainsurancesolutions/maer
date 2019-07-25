@@ -138,7 +138,7 @@ ins{
     overflow-x: hidden;
     overflow-y: auto;
     visibility: visible;
-    -webkit-animation: fadeIn 1s;
+    -webkit-animation: fadeIn 0.5s;
     transform: translate(0, -100%);
 }
 

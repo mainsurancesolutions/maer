@@ -291,7 +291,7 @@ async function setUpScrollFunction(){
 		/*
 		Start watching for mouse hovers
 		The way this works is, when you move your mouse in a doc, it starts counting down a timer
-		Moving your mouse again will reset the timer
+		Moving your mouse again or scrolling will reset the timer
 		If the timer reaches zero (so if you move your mouse into a doc and then dont move again),
 		it will call the popupScript to generate a popup
 		If you move your mouse off of the doc, it will cancel the timer
@@ -299,6 +299,9 @@ async function setUpScrollFunction(){
 		*/
 		for(let i = 0; i < docSlots.length-1; i++){
 			docSlots[i].addEventListener('mousemove', () =>{
+				clearTimeout(hoverTimer)
+			})
+			docBlocks[i].addEventListener('scroll', () =>{
 				clearTimeout(hoverTimer)
 			})
 			docSlots[i].addEventListener('mousemove', (mouseEvent) =>{
@@ -309,7 +312,7 @@ async function setUpScrollFunction(){
 					
 					//Prepare the element to have a hover box appear
 					popupScript.wrapWords(hoveredElement, mousePos, i, document, false)
-				}, 1250)
+				}, 1100)
 			})
 			docSlots[i].addEventListener('mouseout', () =>{
 				clearTimeout(hoverTimer)

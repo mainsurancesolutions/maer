@@ -146,7 +146,7 @@ async function findDiffs(fields, tocBlock){
 					//If we found a tag with changes, we wanna show the category/subcategory before it
 					case 'H1':
 						//We only wanna catalogue the table of contents once
-						if(i === 1){
+						if(i === rippedHtml.length-1){
 							tableOfContents.push([docElements[j].textContent, subSections.reverse()])
 							subSections = []
 						}
@@ -158,7 +158,7 @@ async function findDiffs(fields, tocBlock){
 						}
 						break
 					case 'H2':
-						if(i === 1){
+						if(i === rippedHtml.length-1){
 							subSections.push(docElements[j].textContent)
 						}
 						if(showNextH2){

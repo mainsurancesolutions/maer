@@ -63,7 +63,7 @@ p{
     overflow-x: hidden;
     overflow-y: auto;
     visibility: visible;
-    -webkit-animation: fadeIn 1s;
+    -webkit-animation: fadeIn 0.5s;
     transform: translate(0, -100%);
 }
 
@@ -114,4 +114,9 @@ ins{
 	font-weight: bold;
 	color: #1cc916;
 	text-decoration: none;
+}
+
+@-webkit-keyframes fadeIn{
+	from{opacity: 0;}
+	to{opacity: 1;}
 }
