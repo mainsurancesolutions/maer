@@ -18,7 +18,8 @@ body{
 	display: flex;
 	position: fixed;
 	left: 1%;
-	top: 1%;
+	top: 48px;
+	transform: translate(0, -150%);
 }
 
 #left-title-buttons input{
@@ -51,6 +52,17 @@ body{
 	flex-grow: 1;
 	display: inline-block;
 	max-width: 58px;
+}
+
+#close-popups-button{
+	-webkit-app-region: no-drag;
+	display: block;
+	position: fixed;
+	max-width: 83px;
+	max-height: 48px;
+	top: 48px;
+	right: 186px;
+	transform: translate(0, -150%);
 }
 
 /*div containing docs and console*/
