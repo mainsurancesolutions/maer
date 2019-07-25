@@ -114,7 +114,6 @@ ipc.on('sendSection', (event, arg) =>{
 			let mousePos = [mouseEvent.screenX - position[0], mouseEvent.screenY - position[1]]
 			lastMousePos = mousePos
 			let hoveredElement = document.elementFromPoint(mousePos[0], mousePos[1])
-			console.log(hoveredElement)
 			//Send hovered text to mainWindow.js in order to get the section text from there
 			if(hoveredElement.classList.contains('definition') || hoveredElement.tagName === 'SPAN'){
 				lastElement = hoveredElement

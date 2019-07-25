@@ -400,8 +400,6 @@ function hoverSection(section, mousePos, docNumber, defPage){
 
 		//We can determine if the section link goes to subsection or sub-subsection by seeing how many '(' it contains
 		let depth = fullSectionNum.split('(').length
-		console.log(depth)
-		console.log(sectionNum)
 		//Now search each section to find the number
 		h2s = docSlots[docNumber].getElementsByTagName('H2')
 		for(let i = 0; i < h2s.length; i++){
@@ -460,8 +458,6 @@ function hoverSection(section, mousePos, docNumber, defPage){
 				else{
 					//Take all paragraphs until we reach the next H1 or H2 tag, which would be a new article or section
 					for(let j = sectionIndex+1; j < docChildren.length; j++){
-						console.log(docChildren[j])
-						console.log(sectionText)
 						if(docChildren[j].tagName === "H1" || docChildren[j].tagName === "H2")
 							break
 						else

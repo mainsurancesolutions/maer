@@ -1,11 +1,12 @@
 To-do list:
-Section hover goes to deepest layer
 Scroll through one doc, it scrolls through all
 Front-end clean-up:
 	Add new version
 	Hiding docs
 	Definitions page
+	New buttons
 	Everything, really
+PATENT
 Licensing
 Security Verification
 
@@ -18,3 +19,16 @@ drag docs and drop them on the app to open them (like google docs importing)
 Make sure the clients feel secure
 Scroll through one doc, it scrolls through all
 Change how you save/load. Folder structure? (avoid issues with deleting docs and then loading, as they might assume it saved the docs)
+Change width of docs (all should always have same width)
+When clicking a paragraph, bring to the EXACT height of the clicked doc
+If a section has changes in one doc, all instances of that section across docs should have "Show all text" (to preserve lining up with others)
+Button to close all pop-ups
+Click out of pop-ups to close all
+Scrolling resets pop-up timer
+If no match is found, no pop-up
+Pair nearby capitalized words, in order to maximize accuracy of definitions
+^ (watch out for 'and' and 'or', as you might have 'and' in a definition,
+and you might have 'definition and definition')
+Kirk contact info
+Fix sometimes that you click a section and it will pull up the wrong one in the other docs
+Cover edge cases for definitions like "Section 409A." (check indexOf(".") to make sure its not at the end)
