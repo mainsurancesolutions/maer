@@ -309,7 +309,7 @@ async function setUpScrollFunction(){
 					
 					//Prepare the element to have a hover box appear
 					popupScript.wrapWords(hoveredElement, mousePos, i, document, false)
-				}, 1000)
+				}, 1250)
 			})
 			docSlots[i].addEventListener('mouseout', () =>{
 				clearTimeout(hoverTimer)

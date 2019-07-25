@@ -256,7 +256,7 @@ function popup(term, definition, mousePos, document, docNumber, section, defPage
 			let hoveredElement = document.elementFromPoint(mousePosNew[0], mousePosNew[1])
 			//Prepare the element to have a hover box appear
 			popupScript.wrapWords(hoveredElement, mousePosNew, docNumber, document, false)
-		}, 1000)
+		}, 1250)
 	})
 	popupElement.addEventListener('mouseout', () =>{
 		clearTimeout(hoverTimer)
@@ -327,51 +327,20 @@ function hoverDef(allDefinitions, hoveredWord, mousePos, docNumber, defPage){
 		hoveredWord = hoveredWord.trim().substring(0, hoveredWord.length-1)
 	if(hoveredWord[0] === "\"")
 		hoveredWord = hoveredWord.substring(1)
-	let docTerms = []
+	//See if we have a match for it in the definitions in the hover'd doc
 	for(let i = 0; i < allDefinitions[docNumber].length; i++){
-		if(allDefinitions[docNumber][i][0].includes(hoveredWord)){
-			docTerms.push([allDefinitions[docNumber][i][0], i])
+		if(allDefinitions[docNumber][i][0] === hoveredWord){
+			return popup(hoveredWord, allDefinitions[docNumber][i][1], mousePos, docSlots[0].ownerDocument, docNumber, undefined, defPage)
 		}
 	}
-	//In case we don't find it there, we also check the most recent doc and compare
-	let lastDocTerms = []
+	//In case we don't find it there, we also check the most recent doc
 	for(let i = 0; i < allDefinitions[docSlots.length-2].length; i++){
-		if(allDefinitions[docSlots.length-2][i][0].includes(hoveredWord)){
-			lastDocTerms.push([allDefinitions[docSlots.length-2][i][0], i])
+		if(allDefinitions[docSlots.length-2][i][0] ===hoveredWord){
+			return popup(hoveredWord, allDefinitions[docSlots.length-2][i][0], mousePos, docSlots[0].ownerDocument, docNumber, undefined, defPage)
 		}
 	}
-	//If there's no matches in either, we're done here
-	if(docTerms.length === 0 && lastDocTerms.length === 0){
-		return popup(hoveredWord, "No match found", mousePos, docSlots[0].ownerDocument, docNumber, undefined, defPage)
-	}
-	//If there's only 1 match, we can use that
-	if(docTerms.length === 1 && lastDocTerms.length === 0)
-		return popup(hoveredWord, allDefinitions[docNumber][docTerms[0][1]][1], mousePos, docSlots[0].ownerDocument, docNumber, undefined, defPage)
-	else if(docTerms.length === 0 && lastDocTerms.length === 1)
-		return popup(hoveredWord, allDefinitions[docSlots.length-2][lastDocTerms[0][1]][1], mousePos, docSlots[0].ownerDocument, docNumber, undefined, defPage)		//If we reach here, both docs contain multiple matches for the definition
-	//Now find the shortest term containing the substring (We don't wanna return the definition of 'tax returns' when they hover 'tax')
-	let shortest = docTerms[0][0].length
-	let shortestIndex = 0
-	for(let i = 0; i < docTerms.length; i++){
-		if(docTerms[i][0].length < shortest){
-			shortest = docTerms[i][0].length
-			shortestIndex = i
-		}
-	}
-	let shortestLast = lastDocTerms[0][0].length
-	let shortestIndexLast = 0
-	for(let i = 0; i < lastDocTerms.length; i++){
-		if(lastDocTerms[i][0].length < shortestLast){
-			shortestLast = lastDocTerms[i][0].length
-			shortestIndexLast = i
-		}
-	}
-	//Now that we've found the shortest match, find it in the allDefinitions array and show that to the user
-	if(shortest <= shortestLast)
-		definition = allDefinitions[docNumber][docTerms[shortestIndex][1]]
-	else
-		definition = allDefinitions[docSlots.length-2][lastDocTerms[shortestIndexLast][1]]
-	return popup(definition[0], definition[1], mousePos, docSlots[0].ownerDocument, docNumber, undefined, defPage)
+	//If there's no matches in either, don't show a pop-up
+	return false
 }
 
 
