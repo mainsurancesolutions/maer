@@ -189,6 +189,14 @@ async function findDiffs(fields, tocBlock){
 								break
 							}
 							if(k === docElements[j].childNodes.length-1 && !(docElements[j].childNodes[k].tagName === 'INS' || docElements[j].childNodes[k].tagName === 'DEL')){
+								//If the element has children (a table for example), we'll need
+								//to check all the children for changes
+								if(docElements[j].childNodes[k].childNodes.length > 0){
+									if(childrenChanged(docElements[j].childNodes[k])){
+										docElements[j].childNodes[k].classList.add('changed-paragraph')
+										break
+									}
+								}
 								docElements[j].style.display = "none"
 								break
 							}
@@ -437,6 +445,25 @@ function numberSections(docSlots){
 			}
 		}
 	}
+}
+
+/*
+Iterates through the children of an element (recursively if needed) to find out if it contains changes
+If it contains changes, return true
+otherwise, false
+*/
+function childrenChanged(elem){
+	for(let i = 0; i < elem.childNodes.length; i++){
+		if(elem.childNodes[i].tagName === 'INS' || elem.childNodes[i].tagName === 'DEL')
+			return true
+		//If the child has children, recurse to check those children for changes
+		if(elem.childNodes[i].childNodes.length > 0){
+			if(childrenChanged(elem.childNodes[i]))
+				return true
+		}
+	}
+	//If we've checked all children and not found a change, return false
+	return false
 }
 
 //Converts an integer to a roman numeral
