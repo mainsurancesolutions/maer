@@ -67,6 +67,14 @@ document.getElementById('def-button').addEventListener('click', () =>{
 	ipc.send('definitions', allDefinitions)
 })
 
+//Closes all open pop-ups when clicked
+document.getElementById('close-popups-button').addEventListener('click', () =>{
+	popups = document.getElementsByClassName('popup')
+	for(let i = popups.length-1; i >= 0; i--){
+		popups[i].parentElement.removeChild(popups[i])
+	}
+})
+
 //When the position of the window changes, update the position array
 ipc.on('position', (event, arg) =>{
 	position = [arg[0], arg[1]]

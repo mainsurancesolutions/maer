@@ -1,5 +1,4 @@
 To-do list:
-Fix comparing tables
 Improve hovering definitions to account for multiple words
 Fix hovering in definitions window sometimes duplicating the definition
 Front-end clean-up:
