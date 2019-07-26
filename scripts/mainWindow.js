@@ -75,6 +75,27 @@ document.getElementById('close-popups-button').addEventListener('click', () =>{
 	}
 })
 
+//You can also close all pop-ups by clicking anywhere other than a button or the pop-up
+document.addEventListener('click', () =>{
+	if(event.target.tagName !== 'INPUT' && !event.target.classList.contains('popup')){
+		//also account for the case in which the parent of what you clicked is the pop-up (ie text in the pop-up)
+		if(event.target.parentElement){
+			if(!event.target.parentElement.classList.contains('popup')){
+				popups = document.getElementsByClassName('popup')
+				for(let i = popups.length-1; i >= 0; i--){
+					popups[i].parentElement.removeChild(popups[i])
+				}
+			}
+		}
+		else{
+			popups = document.getElementsByClassName('popup')
+			for(let i = popups.length-1; i >= 0; i--){
+				popups[i].parentElement.removeChild(popups[i])
+			}
+		}
+	}
+})
+
 //When the position of the window changes, update the position array
 ipc.on('position', (event, arg) =>{
 	position = [arg[0], arg[1]]
