@@ -1,5 +1,7 @@
 To-do list:
-Scroll through one doc, it scrolls through all
+Fix comparing tables
+Improve hovering definitions to account for multiple words
+Fix hovering in definitions window sometimes duplicating the definition
 Front-end clean-up:
 	Add new version
 	Hiding docs

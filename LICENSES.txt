@@ -1,0 +1,17 @@
+Credits
+This application uses Open Source components. You can find the source code
+of their open source projects along with license information below.We acknowledge
+and are grateful to these developers for their contributions to open source.
+
+Project: mammoth https://github.com/mwilliamson/mammoth.js
+Copyright (c) 2013, Michael Williamson
+BSD 2-Clause "Simplified" License https://github.com/mwilliamson/mammoth.js/blob/master/LICENSE
+
+Project: htmldiff https://github.com/idesis-gmbh/htmldiff.js
+Copyright (c) 2012 The Network Inc. and contributors
+Copyright (c) 2018 idesis GmbH, Rellinghauser Straﬂe 334F, D-45136 Essen, http://www.idesis.de
+MIT License (MIT) https://github.com/idesis-gmbh/htmldiff.js/blob/master/LICENSE
+
+Project: string-similarity https://github.com/aceakash/string-similarity
+Copyright (c) 2018 Akash Kurdekar
+MIT License (MIT) https://github.com/aceakash/string-similarity/blob/master/LICENSE

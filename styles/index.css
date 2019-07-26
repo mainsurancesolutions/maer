@@ -85,6 +85,15 @@ body{
 	text-align: left;
 }
 
+table{
+	table-layout: auto;
+}
+
+table, th, td{
+	border: 1px solid black;
+	border-collapse: collapse;
+}
+
 del{
 	color: red;
 	text-decoration: line-through;
