@@ -143,12 +143,23 @@ module.exports ={
 					}
 					reconstructed += "</span> "
 				}
-				//If the word is "Section", we wanna wrap it with the section number
-				//BUT make sure the word directly after the section isnt a tag
-				//ie watch out for cases like "Section <a id="DocXTextRef67"></a> 210"
+				/*If the word is "Section", we wanna wrap it with the section number
+				BUT make sure the word directly after the section isnt a tag
+				ie watch out for cases like "Section <a id="DocXTextRef67"></a> 210"
+				We also want to make sure it's actually 'Section sectionNumber', and not something like
+				'Section 409A', which is a definition, not a section in the document
+				We do this by checking for a period in the following word, as a section will always have that that period
+				*/
 				else if(splitParagraph[i].trim() === "Section" || splitParagraph[i].trim() === "Article"){
 					if(!splitParagraph[i+1].includes('<')){
-						reconstructed += '<span>' + splitParagraph[i] + " " + splitParagraph[i+1] + '</span> '
+						if(splitParagraph[i].trim() === "Section"){
+							if(splitParagraph[i+1].indexOf('.') !== -1 && splitParagraph[i+1].indexOf('.') !== splitParagraph[i+1].length-1)
+								reconstructed += '<span>' + splitParagraph[i] + " " + splitParagraph[i+1] + '</span> '
+							else
+								reconstructed += '<span>' + splitParagraph[i] + '</span> '
+						}
+						else
+							reconstructed += '<span>' + splitParagraph[i] + " " + splitParagraph[i+1] + '</span> '
 						i++
 					}
 					else
@@ -310,7 +321,7 @@ If you hover over long enough, the definition of that term will appear
 along with buttons to scroll to it
 allDefinitions: detailed by the getDefs function, where it is created
 We want to give the user the definition as it is defined in the current document
-If the definition is not present in the given document, see if it's in the others, starting with the most recent doc
+If the definition is not present in the given document, see if it's in the most recent document
 */
 function hoverDef(allDefinitions, hoveredWord, mousePos, docNumber, defPage){
 	//Remember that allDefinitions[docNumber] is the array of [term, definition] for the given doc
@@ -330,13 +341,13 @@ function hoverDef(allDefinitions, hoveredWord, mousePos, docNumber, defPage){
 	//See if we have a match for it in the definitions in the hover'd doc
 	for(let i = 0; i < allDefinitions[docNumber].length; i++){
 		if(allDefinitions[docNumber][i][0] === hoveredWord){
-			return popup(hoveredWord, allDefinitions[docNumber][i][1], mousePos, docSlots[0].ownerDocument, docNumber, undefined, defPage)
+			return popup(hoveredWord, "As defined in document #" + (docNumber + 1) + ": " + allDefinitions[docNumber][i][1], mousePos, docSlots[0].ownerDocument, docNumber, undefined, defPage)
 		}
 	}
 	//In case we don't find it there, we also check the most recent doc
 	for(let i = 0; i < allDefinitions[docSlots.length-2].length; i++){
 		if(allDefinitions[docSlots.length-2][i][0] ===hoveredWord){
-			return popup(hoveredWord, allDefinitions[docSlots.length-2][i][0], mousePos, docSlots[0].ownerDocument, docNumber, undefined, defPage)
+			return popup(hoveredWord, "As defined in the most recent document: " + allDefinitions[docSlots.length-2][i][0], mousePos, docSlots[0].ownerDocument, docNumber, undefined, defPage)
 		}
 	}
 	//If there's no matches in either, don't show a pop-up

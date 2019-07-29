@@ -23,8 +23,6 @@ Change how you save/load. Folder structure? (avoid issues with deleting docs and
 Change width of docs (all should always have same width)
 When clicking a paragraph, bring to the EXACT height of the clicked doc
 If a section has changes in one doc, all instances of that section across docs should have "Show all text" (to preserve lining up with others)
-Button to close all pop-ups
-Click out of pop-ups to close all
 Pair nearby capitalized words, in order to maximize accuracy of definitions
 ^ (watch out for 'and' and 'or', as you might have 'and' in a definition,
 and you might have 'definition and definition')
