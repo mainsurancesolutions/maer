@@ -75,6 +75,7 @@ module.exports ={
 				break
 			case 'P':
 				paragraph = hoveredElement
+				
 				//In case they hover a gap in the doc, and it attempts to wrap the *entire doc*
 				//We don't want it to do that!
 				if(hoveredElement.classList.contains('doc'))
@@ -86,7 +87,7 @@ module.exports ={
 				if(hoveredElement.innerText.length < 30){
 					//Hovered a definition
 					if(hoveredElement.innerText.trim().split(' ')[0] !== "Section" && hoveredElement.innerText.trim().split(' ')[0] !== "Article")
-						return hoverDef(allDefinitions, hoveredElement.innerText, mousePos, docNumber, false)
+						return hoverDef(allDefinitions, hoveredElement.innerText, mousePos, docNumber, hoveredElement.parentElement, false)
 					//Hovered an article or section
 					else
 						return hoverSection(hoveredElement.innerText.trim(), mousePos, docNumber, false)
@@ -153,14 +154,18 @@ module.exports ={
 				else if(splitParagraph[i].trim() === "Section" || splitParagraph[i].trim() === "Article"){
 					if(!splitParagraph[i+1].includes('<')){
 						if(splitParagraph[i].trim() === "Section"){
-							if(splitParagraph[i+1].indexOf('.') !== -1 && splitParagraph[i+1].indexOf('.') !== splitParagraph[i+1].length-1)
+							//If it's a section number, it will always have a period, and the first instance of a period won't be at the end
+							if(splitParagraph[i+1].indexOf('.') !== -1 && splitParagraph[i+1].indexOf('.') !== splitParagraph[i+1].length-1){
 								reconstructed += '<span>' + splitParagraph[i] + " " + splitParagraph[i+1] + '</span> '
+								i++
+							}
 							else
 								reconstructed += '<span>' + splitParagraph[i] + '</span> '
 						}
-						else
+						else{
 							reconstructed += '<span>' + splitParagraph[i] + " " + splitParagraph[i+1] + '</span> '
-						i++
+							i++
+						}
 					}
 					else
 						reconstructed += '<span>' + splitParagraph[i] + '</span> '
@@ -174,11 +179,23 @@ module.exports ={
 		}
 		paragraph.innerHTML = reconstructed
 		let hoveredWord = document.elementFromPoint(mousePos[0], mousePos[1]).innerText
+		console.log(splitParagraph)
 		//Make sure we're not grabbing the entire paragraph
 		if(hoveredWord.length < 30){
 			//Hovered a definition
-			if(hoveredWord.trim().split(' ')[0] !== "Section" && hoveredWord.trim().split(' ')[0] !== "Article")
-				hoverDef(allDefinitions, hoveredWord, mousePos, docNumber, false)
+			if(hoveredWord.trim().split(' ')[0] !== "Section" && hoveredWord.trim().split(' ')[0] !== "Article"){
+				//Find the index of the term in the paragraph
+				let termIndex = 0
+				let child = hoveredWord.previousSibling
+				console.log(child)
+				while(child != null){
+					termIndex++
+					child = child.previousSibling
+				}
+				console.log(termIndex)
+				console.log(hoveredWord)
+				hoverDef(allDefinitions, hoveredWord, mousePos, docNumber, paragraph, false, termIndex)
+			}
 			//Hovered an article or section
 			else
 				hoverSection(hoveredWord.trim(), mousePos, docNumber, false)
@@ -186,22 +203,22 @@ module.exports ={
 	},
 
 	//Altered version of the above function for hovering text in the definitions page
-	wrapWordsDef: function(hoveredText, mousePos, docNumber, document, tag){
+	wrapWordsDef: function(hoveredElement, mousePos, docNumber, document, tag){
 		let paragraph
 		switch(tag){
 			case 'P':
-				paragraph = hoveredText
+				paragraph = hoveredElement
 				break
 			case 'SPAN':
 				//This will happen if the paragraph has been hovered once before
 				//in which case it's already prepared to be sent off
-				if(hoveredText.length < 30){
+				if(hoveredElement.length < 30){
 					//Hovered a definition
-					if(hoveredText.trim().split(' ')[0] !== "Section" && hoveredText.trim().split(' ')[0] !== "Article")
-						return hoverDef(allDefinitions, hoveredText, mousePos, docNumber, true)
+					if(hoveredElement.trim().split(' ')[0] !== "Section" && hoveredElement.trim().split(' ')[0] !== "Article")
+						return hoverDef(allDefinitions, hoveredElement, mousePos, docNumber, hoveredElement.parentElement, true)
 					//Hovered an article or section
 					else
-						return hoverSection(hoveredText.trim(), mousePos, docNumber, true)
+						return hoverSection(hoveredElement.trim(), mousePos, docNumber, true)
 				}
 				else
 					return
@@ -209,7 +226,8 @@ module.exports ={
 				return
 		}
 		//Split the paragraph into words and wrap them in spans
-		let splitParagraph = paragraph.split(" ")
+		console.log(paragraph.innerHTML)
+		let splitParagraph = paragraph.innerHTML.split(" ")
 		let reconstructed = ""
 		//When in the definitions window, there's no risk of the text being in a tag,
 		//so we can skip the process of checking for it
@@ -323,7 +341,7 @@ allDefinitions: detailed by the getDefs function, where it is created
 We want to give the user the definition as it is defined in the current document
 If the definition is not present in the given document, see if it's in the most recent document
 */
-function hoverDef(allDefinitions, hoveredWord, mousePos, docNumber, defPage){
+function hoverDef(allDefinitions, hoveredWord, mousePos, docNumber, paragraph, defPage, termIndex){
 	//Remember that allDefinitions[docNumber] is the array of [term, definition] for the given doc
 	//We'll populate this with all of the terms from the current doc, then compare the hovered word to them
 	//to find the closest match
@@ -333,27 +351,94 @@ function hoverDef(allDefinitions, hoveredWord, mousePos, docNumber, defPage){
 	[any term that has the hovered word as a substring, the index of said term]
 	We will then take the longest substring, and get the definition from that
 	*/
-	//First trim the end of the term if it's a period or comma
+	//First trim the end of the term if it's punctuation
 	if(hoveredWord.substring(hoveredWord.length-1) === "," || hoveredWord.substring(hoveredWord.length-1) === "." || hoveredWord.substring(hoveredWord.length-1) === "\"" || hoveredWord.substring(hoveredWord.length-1) === ":" || hoveredWord.substring(hoveredWord.length-1) === ";")
 		hoveredWord = hoveredWord.trim().substring(0, hoveredWord.length-1)
 	if(hoveredWord[0] === "\"")
 		hoveredWord = hoveredWord.substring(1)
+	let splitParagraph = paragraph.innerText.split(" ")
+	let term = matchDefinition(splitParagraph, allDefinitions[docNumber], termIndex)
+	console.log(term)
 	//See if we have a match for it in the definitions in the hover'd doc
 	for(let i = 0; i < allDefinitions[docNumber].length; i++){
-		if(allDefinitions[docNumber][i][0] === hoveredWord){
-			return popup(hoveredWord, "As defined in document #" + (docNumber + 1) + ": " + allDefinitions[docNumber][i][1], mousePos, docSlots[0].ownerDocument, docNumber, undefined, defPage)
+		if(allDefinitions[docNumber][i][0] === term){
+			return popup(term, "As defined in document " + (docNumber + 1) + ": " + allDefinitions[docNumber][i][1], mousePos, docSlots[0].ownerDocument, docNumber, undefined, defPage)
 		}
 	}
 	//In case we don't find it there, we also check the most recent doc
 	for(let i = 0; i < allDefinitions[docSlots.length-2].length; i++){
-		if(allDefinitions[docSlots.length-2][i][0] ===hoveredWord){
-			return popup(hoveredWord, "As defined in the most recent document: " + allDefinitions[docSlots.length-2][i][0], mousePos, docSlots[0].ownerDocument, docNumber, undefined, defPage)
+		if(allDefinitions[docSlots.length-2][i][0] ===term){
+			return popup(term, "As defined in the most recent document: " + allDefinitions[docSlots.length-2][i][0], mousePos, docSlots[0].ownerDocument, docNumber, undefined, defPage)
 		}
 	}
 	//If there's no matches in either, don't show a pop-up
 	return false
 }
 
+//When you hover a word, check the other words near it to find the exact definition you're hovering
+//ie, when hovering the word 'Tax' in 'Tax Returns', check the nearby words to find out that
+//it should be giving the definition for 'Tax Returns'
+//Returns the largest term that the hovered word is a part of
+function matchDefinition(splitParagraph, definitions, startIndex, endIndex = startIndex){
+	console.log([splitParagraph, definitions, startIndex, endIndex])
+	if(startIndex < 0 || endIndex > splitParagraph.length-1)
+		return [null, 0]
+	//First check if the hovered word is a part of any defined term
+	let currentTerm = ""
+	for(let i = startIndex; i <= endIndex; i++){
+		if(splitParagraph[i][splitParagraph[i].length-1] === "." || splitParagraph[i][splitParagraph[i].length-1] === ",")
+			splitParagraph[i] = splitParagraph[i].substring(0, splitParagraph[i].length-1)
+		currentTerm += splitParagraph[i] + " "
+		console.log(currentTerm)
+	}
+	currentTerm = currentTerm.trim()
+	//Keep track of all the terms that 'could' match up to what we have hovered
+	let possibleTerms = []
+	for(let i = 0; i < definitions.length; i++){
+		if(definitions[i][0].includes(currentTerm))
+			possibleTerms.push(definitions[i])
+		if(i === definitions.length-1 && possibleTerms.length === 0)
+			return [null, 0]
+	}
+	console.log(possibleTerms)
+	//Keep expanding the search until there is only 1 term remaining
+	if(possibleTerms.length === 1){
+		if(possibleTerms[0][0] === currentTerm)
+			return [possibleTerms[0][0], possibleTerms.length]
+	}
+	//These will each return [full term, length of full term]
+	let leftSide = matchDefinition(splitParagraph, possibleTerms, startIndex - 1, endIndex)
+	let rightSide = matchDefinition(splitParagraph, possibleTerms, startIndex, endIndex + 1)
+	console.log(leftSide)
+	console.log(rightSide)
+	//If no matches are found by expanding to either side, we've found the longest possible string
+	//In that case, check our possible matches to see if we have an exact match
+	if(leftSide[1] === 0 && rightSide[1] === 0){
+		for(let i = 0; i < possibleTerms.length; i++){
+			if(possibleTerms[i][0] === currentTerm)
+				return [currentTerm, endIndex-startIndex+1]
+		}
+		return [null, 0]
+	}
+	if(leftSide[1] >= rightSide[1])
+		return leftSide
+	return rightSide
+}
+
+//Checks if the given word + the word to its left is part of a defined term
+function matchLeft(splitParagraph, definitions, index){
+	//Operates similarly to 
+	for(let i = 0; i < definitions.length; i++){
+		if(definitions[i][0] === splitParagraph[index])
+			break
+		if(i === definitions.length-1)
+			return false
+	}
+}
+
+function matchRight(splitParagraph, definitions, index){
+
+}
 
 /*
 When you hover text like "Section 2.01" long enough, have a popup appear with the text from it
