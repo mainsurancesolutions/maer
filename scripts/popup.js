@@ -210,13 +210,9 @@ module.exports ={
 				//in which case it's already prepared to be sent off
 				if(hoveredElement.length < 30){
 					//Hovered a definition
-					if(hoveredElement.trim().split(' ')[0] !== "Section" && hoveredElement.trim().split(' ')[0] !== "Article"){
-						hoveredElement.innerText += "(hov)"
-						return hoverDef(allDefinitions, hoveredElement, mousePos, docNumber, hoveredElement.parentElement, true)
-					}
-					//Hovered an article or section
-					else
+					if(hoveredElement.trim().split(' ')[0] === "Section" && hoveredElement.trim().split(' ')[0] === "Article")
 						return hoverSection(hoveredElement.trim(), mousePos, docNumber, true)
+					return
 				}
 				else
 					return
@@ -224,8 +220,7 @@ module.exports ={
 				return
 		}
 		//Split the paragraph into words and wrap them in spans
-		console.log(paragraph.innerHTML)
-		let splitParagraph = paragraph.innerHTML.split(" ")
+		let splitParagraph = paragraph.split(" ")
 		let reconstructed = ""
 		//When in the definitions window, there's no risk of the text being in a tag,
 		//so we can skip the process of checking for it
@@ -238,6 +233,7 @@ module.exports ={
 			else
 				reconstructed += '<span>' + splitParagraph[i] + '</span> '
 		}
+		console.log(reconstructed)
 		//Now that we've split the paragraph, check the hover'd element once again
 		return ['re-hover', reconstructed]
 	}
@@ -347,21 +343,23 @@ function hoverDef(allDefinitions, hoveredElement, mousePos, docNumber, paragraph
 	//to find the closest match
 	let definition
 	let splitParagraph = paragraph.innerText.split(" ")
-	console.log(splitParagraph)
 	//We find the hovered word by locating the word that ends with '(hov)'
 	//hoveredWord will be a string containing the text contents of hoveredElement
 	let hoveredWord
 	let wordIndex
 	for(let i = 0; i < splitParagraph.length; i++){
 		if(splitParagraph[i].includes('(hov)')){
+			console.log(hoveredElement)
+			console.log(splitParagraph[i])
 			wordIndex = i
 			//Now remove the '(hov)' from the end of the word
-			splitParagraph[i] = splitParagraph[i].substring(0, splitParagraph[i].length-5)
-			hoveredElement.innerText = splitParagraph[i]
+			hoveredElement.innerHTML = hoveredElement.innerHTML.replace('(hov)', '')
+			splitParagraph[i] = hoveredElement.innerText
 			hoveredWord = hoveredElement.innerText
 			break
 		}
 	}
+	console.log(hoveredElement)
 	console.log(hoveredWord)
 	/*
 	We will extract from the definitions array the following:
@@ -407,7 +405,7 @@ function matchDefinition(splitParagraph, definitions, startIndex, endIndex = sta
 	for(let i = startIndex; i <= endIndex; i++){
 		console.log(splitParagraph[i][splitParagraph[i].length-1])
 		//remove punctuation at the end of the term
-		while(splitParagraph[i][splitParagraph[i].length-1] === "." || splitParagraph[i][splitParagraph[i].length-1] === "," || splitParagraph[i][splitParagraph[i].length-1] === "\"" || splitParagraph[i][splitParagraph[i].length-1] === ")")
+		while(splitParagraph[i][splitParagraph[i].length-1] === "." || splitParagraph[i][splitParagraph[i].length-1] === "," || splitParagraph[i][splitParagraph[i].length-1] === "\"" || splitParagraph[i][splitParagraph[i].length-1] === ")" || splitParagraph[i][splitParagraph[i].length-1] === ";" || splitParagraph[i][splitParagraph[i].length-1] === ":")
 			splitParagraph[i] = splitParagraph[i].substring(0, splitParagraph[i].length-1)
 		while(splitParagraph[i][0] === "\"" || splitParagraph[i][0] === "(")
 			splitParagraph[i] = splitParagraph[i].substring(1)

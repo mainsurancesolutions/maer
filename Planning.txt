@@ -1,5 +1,4 @@
 To-do list:
-Improve hovering definitions to account for multiple words
 Add 'Show all text' to all docs when one doc has changes in that section
 Widening docs
 Fix hovering in definitions window sometimes duplicating the definition

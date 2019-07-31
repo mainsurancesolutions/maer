@@ -292,21 +292,25 @@ function numberSections(docSlots){
 					break
 				//Determine if the paragraph is a bullet point in a section/subsection
 				case 'P':
-					if(docElements[j].classList.contains('subsection-bullet')){
-						subsubsectionNumber = 1
-						//Start numbering like (aa), (bb), (cc), etc if we've gone past (z)
-						if(subsectionNumber <= 25)
-							docElements[j].innerHTML = "(" + alphabet[subsectionNumber] + ") " + docElements[j].innerHTML
-						else{
-							docElements[j].innerHTML = "(" + alphabet[subsectionNumber % 26] + alphabet[subsectionNumber % 26] + ") " + docElements[j].innerHTML
+					if(docElements[j].innerText.length > 0){
+						if(docElements[j].classList.contains('subsection-bullet')){
+							subsubsectionNumber = 1
+							//Start numbering like (aa), (bb), (cc), etc if we've gone past (z)
+							if(subsectionNumber <= 25)
+								docElements[j].innerHTML = "(" + alphabet[subsectionNumber] + ") " + docElements[j].innerHTML
+							else{
+								docElements[j].innerHTML = "(" + alphabet[subsectionNumber % 26] + alphabet[subsectionNumber % 26] + ") " + docElements[j].innerHTML
+							}
+							subsectionNumber++
+							break
 						}
-						subsectionNumber++
-						break
-					}
-					else if(docElements[j].classList.contains('subsection-sub-bullet')){
-						docElements[j].innerHTML = "(" + romanize(subsubsectionNumber) + ") " + docElements[j].innerHTML
-						subsubsectionNumber++
-						break
+						else if(docElements[j].classList.contains('subsection-sub-bullet')){
+							docElements[j].innerHTML = "(" + romanize(subsubsectionNumber) + ") " + docElements[j].innerHTML
+							subsubsectionNumber++
+							break
+						}
+						else
+							break
 					}
 					else
 						break
