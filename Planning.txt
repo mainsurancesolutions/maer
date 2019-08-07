@@ -22,10 +22,6 @@ Make sure the clients feel secure
 Scroll through one doc, it scrolls through all
 Change how you save/load. Folder structure? (avoid issues with deleting docs and then loading, as they might assume it saved the docs)
 Change width of docs (all should always have same width)
-When clicking a paragraph, bring to the EXACT height of the clicked doc
 If a section has changes in one doc, all instances of that section across docs should have "Show all text" (to preserve lining up with others)
-Pair nearby capitalized words, in order to maximize accuracy of definitions
-^ (watch out for 'and' and 'or', as you might have 'and' in a definition,
-and you might have 'definition and definition')
 Kirk contact info
 Fix sometimes that you click a section and it will pull up the wrong one in the other docs

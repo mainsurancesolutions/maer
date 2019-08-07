@@ -95,9 +95,14 @@ ipc.on('load', (event, arg) =>{
 		properties: ['openfile']
 	}, (file) =>{
 		if(file !== undefined){
-			mainWindow.webContents.send('loadFile', file[0])
-			//Store the filename of the loaded file
-			loadedName = file[0]
+			console.log(file[0].slice(-5))
+			if(file[0].slice(-5) !== '.maer')
+				mainWindow.webContents.send('wrongType')
+			else{
+				mainWindow.webContents.send('loadFile', file[0])
+				//Store the filename of the loaded file
+				loadedName = file[0]
+			}
 		}
 	})
 })

@@ -7,6 +7,9 @@ const popupScript = require('.\\scripts\\popup.js')
 
 let docBlockHTML = fs.readFileSync('docBlock.html')
 
+let globalMaxW = 45
+let globalMinW = 22
+
 //Position of the window relative to the screen as a whole
 let position = [0, 0]
 
@@ -67,20 +70,17 @@ document.getElementById('def-button').addEventListener('click', () =>{
 	ipc.send('definitions', allDefinitions)
 })
 
-//Closes all open pop-ups when clicked
-document.getElementById('close-popups-button').addEventListener('click', () =>{
-	popups = document.getElementsByClassName('popup')
-	for(let i = popups.length-1; i >= 0; i--){
-		popups[i].parentElement.removeChild(popups[i])
-	}
-})
-
-//You can also close all pop-ups by clicking anywhere other than a button or the pop-up
+//Close all pop-ups by clicking anywhere other than a button or the pop-up
 document.addEventListener('click', () =>{
+	console.log(event.target)
 	if(event.target.tagName !== 'INPUT' && !event.target.classList.contains('popup')){
 		//also account for the case in which the parent of what you clicked is the pop-up (ie text in the pop-up)
 		if(event.target.parentElement){
 			if(!event.target.parentElement.classList.contains('popup')){
+				if(event.target.parentElement.parentElement){
+					if(event.target.parentElement.parentElement.classList.contains('popup'))
+						return
+				}
 				popups = document.getElementsByClassName('popup')
 				for(let i = popups.length-1; i >= 0; i--){
 					popups[i].parentElement.removeChild(popups[i])
@@ -94,6 +94,36 @@ document.addEventListener('click', () =>{
 			}
 		}
 	}
+})
+
+//For resizing the document windows
+const borderSize = 4
+let mPos
+
+function resize(e){
+	console.log("Resizing")
+	const dx = mPos - e.x
+	mPos = e.x
+	console.log(e)
+	docBlocks[0].style.width = (parseInt(getComputedStyle(docBlocks[0], '').width) + dx) + "px"
+}
+
+for(let i = 0; i < docBlocks.length; i++){
+	docBlocks[i].addEventListener("mousedown", (e) =>{
+		if(e.offsetX < borderSize){
+			console.log(e)
+			mPos = e.x
+			document.addEventListener("mousemove", resize, false)
+		}
+	}, false)
+}
+
+document.addEventListener("mouseup", () =>{
+	document.removeEventListener("mousemove", resize, false)
+}, false)
+
+ipc.on("wrongType", () =>{
+	alert("You must choose a saved project to load")
 })
 
 //When the position of the window changes, update the position array
@@ -368,8 +398,8 @@ for(let i = 0; i < 2; i++){
 		if(docSlots[i].style.display === "none"){
 			currentlyShown[i] = true
 			docSlots[i].style.display = "inline-block"
-			docBlocks[i].style.minWidth = "20vw"
-			docBlocks[i].style.maxWidth = "45vw"
+			docBlocks[i].style.minWidth = globalMinW + "vw"
+			docBlocks[i].style.maxWidth = globalMaxW + "vw"
 			docBlocks[i].style.overflowX = "hidden"
 			docBlocks[i].style.overflowY = "auto"
 			docBlocks[i].style.borderStyle = "solid"
@@ -505,8 +535,8 @@ function docsFull(force = false){
 		if(docSlots[docNumber-1].style.display === "none"){
 			currentlyShown[docNumber-1] = true
 			docSlots[docNumber-1].style.display = "inline-block"
-			docBlocks[docNumber-1].style.minWidth = "20vw"
-			docBlocks[docNumber-1].style.maxWidth = "45vw"
+			docBlocks[docNumber-1].style.minWidth = globalMinW + "vw"
+			docBlocks[docNumber-1].style.maxWidth = globalMaxW + "vw"
 			docBlocks[docNumber-1].style.overflowX = "hidden"
 			docBlocks[docNumber-1].style.overflowY = "auto"
 			docBlocks[docNumber-1].style.borderStyle = "solid"

@@ -79,6 +79,7 @@ ipc.on('re-hover', (event, arg) =>{
 	let hoveredElement = document.elementFromPoint(lastMousePos[0], lastMousePos[1])
 	//Now that we've wrapped it in spans, we should be hovering a span
 	//So now we can actually tell which exact term we're hovering
+	console.log(hoveredElement.tagName)
 	if(hoveredElement.classList.contains('definitionItem') || hoveredElement.tagName === 'SPAN')
 		ipc.send('getSection', [hoveredElement.innerText, lastMousePos, hoveredElement.tagName])
 })
