@@ -96,47 +96,42 @@ document.addEventListener('click', () =>{
 })
 
 //For resizing the document windows
-const borderSize = 4
+const borderSize = 6
 let mPos
 let clickedDoc
-
-for(let i = 0; i < docBlocks.length; i++){
-	docBlocks[i].addEventListener("mousedown", (e) =>{
-		mPos = e.x
-		clickedDoc = i
-		//If we clicked the left border, expand the docblock from the left
-		if(e.offsetX < borderSize){
-			document.addEventListener("mousemove", leftExpand, false)
-		}
-		else if(e.offsetX > docBlocks[1].style.width - 4){
-			document.addEventListener("mousemove", rightExpand, false)
-		}
-	}, false)
-}
-
-function leftExpand(e){
-	console.log("Expanding left")
-	const change = mPos - e.x
-	mPos = e.x
-	console.log(e.offsetX)
-	currWidth = (parseInt(getComputedStyle(docBlocks[clickedDoc], '').width) - e.offsetX)
-	docBlocks[1].style.maxWidth = currWidth + "px"
-	docBlocks[1].style.minWidth = currWidth + "px"
-}
+let changingWidth = false
+let firstResize = true
 
 function rightExpand(e){
-	console.log("Expanding right")
+	if(firstResize){
+		docBlocks[clickedDoc].style.maxWidth = docBlocks[clickedDoc].clientWidth + "px"
+		docBlocks[clickedDoc].style.minWidth = docBlocks[clickedDoc].clientWidth + "px"
+		firstResize = false
+	}
+	changingWidth = true
 	const change = e.x - mPos
 	mPos = e.x
 	console.log(e.offsetX)
 	currWidth = (parseInt(getComputedStyle(docBlocks[clickedDoc], '').maxWidth) + change)
+	globalMaxW = currWidth
+	globalMinW = currWidth
 	docBlocks[clickedDoc].style.maxWidth = currWidth + "px"
 	docBlocks[clickedDoc].style.minWidth = currWidth + "px"
 }
 
+//Set all the doc widths to the same as the one you just changed
 document.addEventListener("mouseup", () =>{
-	document.removeEventListener("mousemove", leftExpand, false)
 	document.removeEventListener("mousemove", rightExpand, false)
+	if(changingWidth){
+		changingWidth = false
+		for(let i = 0; i < docBlocks.length; i++){
+			//Don't resize hidden docs
+			if(docBlocks[i].style.borderStyle !== "none"){
+				docBlocks[i].style.maxWidth = globalMaxW + "px"
+				docBlocks[i].style.minWidth = globalMinW + "px"
+			}
+		}
+	}
 }, false)
 
 ipc.on("wrongType", () =>{
@@ -394,6 +389,18 @@ async function setUpScrollFunction(){
 				clearTimeout(hoverTimer)
 			})
 		}
+
+		//Add listeners to each doc to allow resizing
+		for(let i = 0; i < docBlocks.length; i++){
+			docBlocks[i].addEventListener("mousedown", (e) =>{
+				mPos = e.x
+				clickedDoc = i
+				//If you clicked on the right border
+				if(e.offsetX > docBlocks[i].clientWidth - borderSize){
+					document.addEventListener("mousemove", rightExpand, false)
+				}
+			}, false)
+		}
 	})
 }
 
@@ -420,6 +427,10 @@ for(let i = 0; i < 2; i++){
 			docBlocks[i].style.overflowX = "hidden"
 			docBlocks[i].style.overflowY = "auto"
 			docBlocks[i].style.borderStyle = "solid"
+			docBlocks[i].style.paddingLeft = "1%"	
+			docBlocks[i].style.marginLeft = "1%"
+			docBlocks[i].style.paddingRight = "1%"	
+			docBlocks[i].style.marginRight = "1%"
 		}
 		//Hide
 		else{
@@ -428,7 +439,11 @@ for(let i = 0; i < 2; i++){
 			docBlocks[i].style.minWidth = docTitleSlots[i].clientWidth + "px"
 			docBlocks[i].style.overflowX = "visible"
 			docBlocks[i].style.overflowY = "visible"
-			docBlocks[i].style.borderStyle = "none"			
+			docBlocks[i].style.borderStyle = "none"
+			docBlocks[i].style.paddingLeft = "0"	
+			docBlocks[i].style.marginLeft = "0"
+			docBlocks[i].style.paddingRight = "0"	
+			docBlocks[i].style.marginRight = "0"		
 		}
 		updateCompareButton()
 	})
@@ -557,6 +572,10 @@ function docsFull(force = false){
 			docBlocks[docNumber-1].style.overflowX = "hidden"
 			docBlocks[docNumber-1].style.overflowY = "auto"
 			docBlocks[docNumber-1].style.borderStyle = "solid"
+			docBlocks[docNumber-1].style.paddingLeft = "1%"	
+			docBlocks[docNumber-1].style.marginLeft = "1%"
+			docBlocks[docNumber-1].style.paddingRight = "1%"	
+			docBlocks[docNumber-1].style.marginRight = "1%"
 		}
 		//Hide
 		else{
@@ -566,6 +585,10 @@ function docsFull(force = false){
 			docBlocks[docNumber-1].style.overflowX = "visible"
 			docBlocks[docNumber-1].style.overflowY = "visible"
 			docBlocks[docNumber-1].style.borderStyle = "none"
+			docBlocks[docNumber-1].style.paddingLeft = "0"	
+			docBlocks[docNumber-1].style.marginLeft = "0"
+			docBlocks[docNumber-1].style.paddingRight = "0"	
+			docBlocks[docNumber-1].style.marginRight = "0"
 		}
 		updateCompareButton()
 	})
