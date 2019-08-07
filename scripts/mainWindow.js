@@ -72,7 +72,6 @@ document.getElementById('def-button').addEventListener('click', () =>{
 
 //Close all pop-ups by clicking anywhere other than a button or the pop-up
 document.addEventListener('click', () =>{
-	console.log(event.target)
 	if(event.target.tagName !== 'INPUT' && !event.target.classList.contains('popup')){
 		//also account for the case in which the parent of what you clicked is the pop-up (ie text in the pop-up)
 		if(event.target.parentElement){
@@ -99,31 +98,49 @@ document.addEventListener('click', () =>{
 //For resizing the document windows
 const borderSize = 4
 let mPos
-
-function resize(e){
-	console.log("Resizing")
-	const dx = mPos - e.x
-	mPos = e.x
-	console.log(e)
-	docBlocks[0].style.width = (parseInt(getComputedStyle(docBlocks[0], '').width) + dx) + "px"
-}
+let clickedDoc
 
 for(let i = 0; i < docBlocks.length; i++){
 	docBlocks[i].addEventListener("mousedown", (e) =>{
+		mPos = e.x
+		clickedDoc = i
+		//If we clicked the left border, expand the docblock from the left
 		if(e.offsetX < borderSize){
-			console.log(e)
-			mPos = e.x
-			document.addEventListener("mousemove", resize, false)
+			document.addEventListener("mousemove", leftExpand, false)
+		}
+		else if(e.offsetX > docBlocks[1].style.width - 4){
+			document.addEventListener("mousemove", rightExpand, false)
 		}
 	}, false)
 }
 
+function leftExpand(e){
+	console.log("Expanding left")
+	const change = mPos - e.x
+	mPos = e.x
+	console.log(e.offsetX)
+	currWidth = (parseInt(getComputedStyle(docBlocks[clickedDoc], '').width) - e.offsetX)
+	docBlocks[1].style.maxWidth = currWidth + "px"
+	docBlocks[1].style.minWidth = currWidth + "px"
+}
+
+function rightExpand(e){
+	console.log("Expanding right")
+	const change = e.x - mPos
+	mPos = e.x
+	console.log(e.offsetX)
+	currWidth = (parseInt(getComputedStyle(docBlocks[clickedDoc], '').maxWidth) + change)
+	docBlocks[clickedDoc].style.maxWidth = currWidth + "px"
+	docBlocks[clickedDoc].style.minWidth = currWidth + "px"
+}
+
 document.addEventListener("mouseup", () =>{
-	document.removeEventListener("mousemove", resize, false)
+	document.removeEventListener("mousemove", leftExpand, false)
+	document.removeEventListener("mousemove", rightExpand, false)
 }, false)
 
 ipc.on("wrongType", () =>{
-	alert("You must choose a saved project to load")
+	alert("You must select a saved project to load")
 })
 
 //When the position of the window changes, update the position array
