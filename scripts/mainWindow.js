@@ -108,10 +108,13 @@ function rightExpand(e){
 		docBlocks[clickedDoc].style.minWidth = docBlocks[clickedDoc].clientWidth + "px"
 		firstResize = false
 	}
+	//A boolean value indicating that we are currently changing the width
 	changingWidth = true
+	//The difference between our current mouse position and our previous mouse position
+	//Positive means we moved to the right, so expand
 	const change = e.x - mPos
 	mPos = e.x
-	console.log(e.offsetX)
+	//Set the new width to be the old one + the change
 	currWidth = (parseInt(getComputedStyle(docBlocks[clickedDoc], '').maxWidth) + change)
 	globalMaxW = currWidth
 	globalMinW = currWidth
@@ -252,8 +255,9 @@ document.getElementById('compare-button').addEventListener('click', async () =>{
 		alert("Upload failed. If you moved the documents since last time you opened them, you'll have to start a new project.")
 	}
 	//Hide the last unused slot
-	if(docs[docBlocks.length-1] === null)
+	if(docs[docBlocks.length-1] === null){
 		docBlocks[docBlocks.length-1].style.display= "none"
+	}
 	//Show console
 	consoleBlock.style.display= "inline-block"
 	document.getElementById('edit-button').style.display= "inline-block"
@@ -390,16 +394,23 @@ async function setUpScrollFunction(){
 			})
 		}
 
-		//Add listeners to each doc to allow resizing
-		for(let i = 0; i < docBlocks.length; i++){
-			docBlocks[i].addEventListener("mousedown", (e) =>{
-				mPos = e.x
-				clickedDoc = i
-				//If you clicked on the right border
-				if(e.offsetX > docBlocks[i].clientWidth - borderSize){
+		//Add listeners to each 'expand' button to allow resizing
+		let expandButtons = document.getElementsByClassName('expand')
+		console.log(expandButtons)
+		for(let i = 0; i < expandButtons.length; i++){
+			//Hide the expand button if the docblock itself is hidden
+			if(docBlocks[i].style.display === "none"){
+				expandButtons[i].style.display = "none"
+			}
+			else{
+				expandButtons[i].style.display = ""
+				expandButtons[i].addEventListener("mousedown", (e) =>{
+					console.log(i)
+					mPos = e.x
+					clickedDoc = i
 					document.addEventListener("mousemove", rightExpand, false)
-				}
-			}, false)
+				}, false)
+			}
 		}
 	})
 }
@@ -547,7 +558,7 @@ function docsFull(force = false){
 	//Update the arrays containing all docs/elements from all docs
 	docs.push(null)
 	let docNumber = docs.length
-	docBlocks[docBlocks.length-1].insertAdjacentHTML('afterend', docBlockHTML)
+	document.getElementById('docs').insertAdjacentHTML('beforeend', docBlockHTML)
 	docBlocks = document.getElementsByClassName('doc-block')
 	docSlots = document.getElementsByClassName('doc')
 	docTitleSlots = document.getElementsByClassName('doc-title')

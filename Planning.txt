@@ -1,6 +1,5 @@
 To-do list:
 Add 'Show all text' to all docs when one doc has changes in that section
-Widening docs
 Fix hovering in definitions window sometimes duplicating the definition
 Front-end clean-up:
 	Add new version
@@ -21,7 +20,6 @@ drag docs and drop them on the app to open them (like google docs importing)
 Make sure the clients feel secure
 Scroll through one doc, it scrolls through all
 Change how you save/load. Folder structure? (avoid issues with deleting docs and then loading, as they might assume it saved the docs)
-Change width of docs (all should always have same width)
 If a section has changes in one doc, all instances of that section across docs should have "Show all text" (to preserve lining up with others)
 Kirk contact info
 Fix sometimes that you click a section and it will pull up the wrong one in the other docs

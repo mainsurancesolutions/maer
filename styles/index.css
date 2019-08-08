@@ -144,6 +144,20 @@ ins{
 	border: 6px solid #ff0000;
 }
 
+/*Invisible vertical block denoting where you can click and drag your mouse to change
+the width of a docblock*/
+.expand{
+	padding: 0px;
+	margin: 0px;
+	top: 25px;
+	right: calc(1% + 6px);
+	height: calc(100% - 50px);
+	min-width: 6px;
+	max-width: 6px;
+	position: relative;
+	cursor: w-resize;
+}
+
 .popup{
     border: 2px groove #ff0000;
     background-color: white;
@@ -214,7 +228,7 @@ ins{
 	overflow-y: auto;
 	word-wrap: break-word;
 	border-radius: 25px;
-	border: 4px solid #ff0000;
+	border: 6px solid #ff0000;
 }
 
 #hide-console{
