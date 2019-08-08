@@ -1,5 +1,4 @@
 To-do list:
-Add 'Show all text' to all docs when one doc has changes in that section
 Fix hovering in definitions window sometimes duplicating the definition
 Front-end clean-up:
 	Add new version

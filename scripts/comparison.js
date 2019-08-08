@@ -115,6 +115,7 @@ async function findDiffs(fields, tocBlock){
 	let showNextH1 = false
 	let showNextH2 = false
 	let showNextSubsection = false
+	let hideNextRevealText = false
 
 	//Clear the table of contents in case it was already populated
 	//Helper function to ensure it's cleared before proceeding
@@ -158,18 +159,18 @@ async function findDiffs(fields, tocBlock){
 						}
 						break
 					case 'H2':
+						docElements[j].insertAdjacentHTML('afterend', revealText)
 						if(i === rippedHtml.length-1){
 							subSections.push(docElements[j].textContent)
 						}
 						if(showNextH2){
 							showNextH2 = false
-							docElements[j].insertAdjacentHTML('afterend', revealText)
 							if(i === rippedHtml.length-1)
 								changedHeaders.push(docElements[j].textContent)
-						}					
+						}
 						break
 					default:
-						//Check if its has insertions/deletions
+						//Check if it has insertions/deletions
 						for(let k = 0; k < docElements[j].childNodes.length; k++){
 							//If we find a change, we leave it visible and make sure the next h2/h3 tags are shown
 							if(docElements[j].childNodes[k].tagName === 'INS' || docElements[j].childNodes[k].tagName === 'DEL'){
@@ -248,6 +249,7 @@ async function findDiffs(fields, tocBlock){
 				}
 			}
 		}
+
 		//Remove all supertext, which can cause some issues
 		let superText = tocBlock.ownerDocument.getElementsByTagName('SUP')
 		for(let i = superText.length-1; i >= 0; i--){
@@ -256,6 +258,28 @@ async function findDiffs(fields, tocBlock){
 		numberSections(fields)
 	})
 
+	//Hide the 'Reveal unhidden text' buttons if the section is hidden
+	for(let i = 1; i < rippedHtml.length; i++){
+		//Update the list of elements in the document
+		docElements = await fields[i].childNodes
+		for(let j = 0; j < docElements.length; j++){
+			switch(docElements[j].tagName){
+				//If we found a section header, find the dropdown button in that header
+				case 'H2':
+					if(docElements[j].getElementsByTagName('INPUT').length > 0){
+						if(docElements[j].getElementsByTagName('INPUT')[0].src.includes("images/showSection.png"))
+							hideNextRevealText = true
+					}
+					break
+				case 'BUTTON':
+					if(hideNextRevealText){
+						docElements[j].style.display = "none"
+						hideNextRevealText = false
+					}
+					break
+			}
+		}
+	}
 		
 }
 //Add article/section numbers to documents as well as buttons to collapse them
@@ -333,7 +357,7 @@ function numberSections(docSlots){
 					hiddenArticle = true
 					break
 				}
-				if(docElements[k].tagName !== "H2" && docElements[k].style.display !== "none"){
+				if(docElements[k].tagName !== "H2" && docElements[k].style.display !== "none" && !docElements[k].classList.contains("reveal-text")){
 					break
 				}
 			}
@@ -387,7 +411,7 @@ function numberSections(docSlots){
 			for(let k = Array.from(docElements).indexOf(sectionButtons[j].parentElement) + 1; k < docElements.length; k++){
 				if(docElements[k].tagName === "H1" || docElements[k].tagName === "H2")
 					break
-				if(docElements[k].style.display !== "none"){
+				if(docElements[k].style.display !== "none" && !docElements[k].classList.contains("reveal-text")){
 					sectionButtons[j].src = "images/hideSection.png"
 					break
 				}

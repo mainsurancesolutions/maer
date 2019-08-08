@@ -396,7 +396,6 @@ async function setUpScrollFunction(){
 
 		//Add listeners to each 'expand' button to allow resizing
 		let expandButtons = document.getElementsByClassName('expand')
-		console.log(expandButtons)
 		for(let i = 0; i < expandButtons.length; i++){
 			//Hide the expand button if the docblock itself is hidden
 			if(docBlocks[i].style.display === "none"){
