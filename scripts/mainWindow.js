@@ -80,10 +80,12 @@ document.addEventListener('dragover', (event) =>{
 document.addEventListener('drop', (event) =>{
 	event.preventDefault()
 	console.log(event.dataTransfer.files)
-	if(event.dataTransfer.files.length !== 1){
+	if(event.dataTransfer.files.length > 1){
 		alert("You must upload 1 file at a time")
 		return false
 	}
+	if(event.dataTransfer.files.length < 1)
+		return false
 
 	//Show the most recent docBlock
 	docBlocks[docBlocks.length-1].style.display= "inline-block"
@@ -98,9 +100,10 @@ document.addEventListener('drop', (event) =>{
 	//Trim the path and file extension to get the filename
 	let filepath = inputFile.path
 	let filename = filepath.substring(filepath.lastIndexOf("\\") + 1, filepath.lastIndexOf("."))
-	if(filepath.slice(-5) !== '.docx'){
+	console.log(filepath)
+	if(filepath.slice(-5).toLowerCase() !== '.docx'){
 		alert("You must upload a .docx file")
-		return
+		return false
 	}
 	docNicknames[whichDoc] = filename
 
@@ -452,7 +455,6 @@ async function setUpScrollFunction(){
 			else{
 				expandButtons[i].style.display = ""
 				expandButtons[i].addEventListener("mousedown", (e) =>{
-					console.log(i)
 					mPos = e.x
 					clickedDoc = i
 					document.addEventListener("mousemove", rightExpand, false)
@@ -571,6 +573,10 @@ function fileAdded(){
 
 	//Trim the path and file extension to get the filename
 	let filepath = children[1].value
+	if(filepath.slice(-5).toLowerCase() !== '.docx'){
+		alert("You must upload a .docx file")
+		return false
+	}
 	let filename = filepath.substring(filepath.lastIndexOf("\\") + 1, filepath.lastIndexOf("."))
 	docNicknames[whichDoc] = filename
 
