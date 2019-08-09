@@ -70,6 +70,51 @@ document.getElementById('def-button').addEventListener('click', () =>{
 	ipc.send('definitions', allDefinitions)
 })
 
+//We don't want any event to fire upon ending a drag
+document.addEventListener('dragover', (event) =>{
+	event.preventDefault();
+	return false;
+}, false);
+
+//Dragging and dropping a .docx file onto the page
+document.addEventListener('drop', (event) =>{
+	event.preventDefault()
+	console.log(event.dataTransfer.files)
+	if(event.dataTransfer.files.length !== 1){
+		alert("You must upload 1 file at a time")
+		return false
+	}
+
+	//Show the most recent docBlock
+	docBlocks[docBlocks.length-1].style.display= "inline-block"
+
+	//First get the file that was dropped in
+	let inputFile = event.dataTransfer.files[0]
+
+	//Find out which slot to put it in by finding the last empty doc
+	let whichDoc = docs.indexOf(null)
+	console.log(whichDoc)
+
+	//Trim the path and file extension to get the filename
+	let filepath = inputFile.path
+	let filename = filepath.substring(filepath.lastIndexOf("\\") + 1, filepath.lastIndexOf("."))
+	docNicknames[whichDoc] = filename
+
+	//Store the doc and change the title
+	docs[whichDoc] = inputFile
+	uploadTextSlots[whichDoc].innerHTML = filename + " uploaded successfully"
+
+	//Find and remove the 'Upload file' button once a file has been uploaded
+	docBlocks[whichDoc].getElementsByClassName('file-button')[0].style.display = "none"
+
+	currentlyShown[whichDoc] = true
+	updateCompareButton()
+	//Check if all docs are full
+	docsFull()
+
+	return false
+}, false)
+
 //Close all pop-ups by clicking anywhere other than a button or the pop-up
 document.addEventListener('click', () =>{
 	if(event.target.tagName !== 'INPUT' && !event.target.classList.contains('popup')){
@@ -222,7 +267,6 @@ ipc.on('loadFile', async (event, arg) =>{
 	//Basically do the processes as if we just uploaded the files
 	let fileButtons = document.getElementsByClassName('file-button')
 	for(let j = 0; j < project[0].length; j++){
-		//lastShown[j] = true
 		currentlyShown[j] = true
 		//First hide the file upload buttons
 		fileButtons[j].style.display= "none"
@@ -548,9 +592,9 @@ function fileAdded(){
 function docsFull(force = false){
 	if(!force){
 		for(let i = 0; i < docs.length; i++){
-		//If there's an empty slot left, no need to add a new one
-		if(docs[i] === null)
-			return
+			//If there's an empty slot left, no need to add a new one
+			if(docs[i] === null)
+				return
 		}
 	}
 	
