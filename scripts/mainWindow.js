@@ -98,6 +98,10 @@ document.addEventListener('drop', (event) =>{
 	//Trim the path and file extension to get the filename
 	let filepath = inputFile.path
 	let filename = filepath.substring(filepath.lastIndexOf("\\") + 1, filepath.lastIndexOf("."))
+	if(filepath.slice(-5) !== '.docx'){
+		alert("You must upload a .docx file")
+		return
+	}
 	docNicknames[whichDoc] = filename
 
 	//Store the doc and change the title
