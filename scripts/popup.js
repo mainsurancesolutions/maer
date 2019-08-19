@@ -33,20 +33,35 @@ module.exports ={
 			let definitionsHeader
 			//Definitions is usually at the end, so we can save time by starting there
 			for(let j = headers.length-1; j > 0; j--){
-				if(headers[j].textContent.includes("Definitions"))
+				if(headers[j].textContent.toLowerCase().includes("definitions"))
 					definitionsHeader = headers[j]
 			}
+			//If we didn't find it, then perhaps instead of a Definitions section there is a Definitions article
+			if(!definitionsHeader){
+				headers = docSlots[i].getElementsByTagName('H1')
+				for(let j = headers.length-1; j > 0; j--){
+					if(headers[j].textContent.toLowerCase().includes("definitions"))
+						definitionsHeader = headers[j]
+				}
+			}
+			console.log(definitionsHeader)
 			//Now we find the header index in the nodes of the doc, and start gather definitions
 			//in that section
 			let textNodes = Array.from(docSlots[i].childNodes)
 			//To be populated as [term, definition]
 			for(let j = textNodes.indexOf(definitionsHeader)+1; j < textNodes.length; j++){
 				let termAndDef = [null, null]
+				if(textNodes[j].tagName === "H1")
+					break
 				//Skip the paragraph if it doesn't begin with a term in quotations
+				console.log(textNodes[j].textContent)
 				if(textNodes[j].textContent[0] === "\""){
-					if(textNodes[j].tagName !== "P")
-						break
 					termAndDef[0] = textNodes[j].textContent.split("\"")[1]
+					termAndDef[1] = textNodes[j].textContent.substring(termAndDef[0].length+3)
+					docTermsAndDefs.push(termAndDef)
+				}
+				if(textNodes[j].textContent[0] === "“"){
+					termAndDef[0] = textNodes[j].textContent.split("“")[1]
 					termAndDef[1] = textNodes[j].textContent.substring(termAndDef[0].length+3)
 					docTermsAndDefs.push(termAndDef)
 				}

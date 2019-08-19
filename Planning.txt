@@ -1,22 +1,4 @@
 To-do list:
-Fix hovering in definitions window sometimes duplicating the definition
-Front-end clean-up:
-	Add new version
-	Hiding docs
-	Definitions page
-	New buttons
-	Everything, really
-PATENT
-Licensing
-Security Verification
-
-
-
-
-
-Notes from reviews:
-Make sure the clients feel secure
-Scroll through one doc, it scrolls through all
-Change how you save/load. Folder structure? (avoid issues with deleting docs and then loading, as they might assume it saved the docs)
+Patent
 Kirk contact info
-Fix sometimes that you click a section and it will pull up the wrong one in the other docs
+Timed license
