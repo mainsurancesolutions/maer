@@ -44,7 +44,6 @@ module.exports ={
 						definitionsHeader = headers[j]
 				}
 			}
-			console.log(definitionsHeader)
 			//Now we find the header index in the nodes of the doc, and start gather definitions
 			//in that section
 			let textNodes = Array.from(docSlots[i].childNodes)
@@ -54,7 +53,6 @@ module.exports ={
 				if(textNodes[j].tagName === "H1")
 					break
 				//Skip the paragraph if it doesn't begin with a term in quotations
-				console.log(textNodes[j].textContent)
 				if(textNodes[j].textContent[0] === "\""){
 					termAndDef[0] = textNodes[j].textContent.split("\"")[1]
 					termAndDef[1] = textNodes[j].textContent.substring(termAndDef[0].length+3)
@@ -246,7 +244,6 @@ module.exports ={
 			else
 				reconstructed += '<span>' + splitParagraph[i] + '</span> '
 		}
-		console.log(reconstructed)
 		//Now that we've split the paragraph, check the hover'd element once again
 		return ['re-hover', reconstructed]
 	}
@@ -464,7 +461,6 @@ function hoverSection(section, mousePos, docNumber, defPage){
 	let fullSectionNum
 	let sectionIndex
 	let sectionHeader
-	console.log(section, mousePos, docNumber, defPage)
 	//If we hovered a section
 	if(section.split(' ')[0] === "Section"){
 		//Some section links will be written like "Section 2.02(a)(ii)"

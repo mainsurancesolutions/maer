@@ -373,6 +373,7 @@ function numberSections(docSlots){
 				them if they so choose
 				*/
 				docElements = Array.from(docSlots[i].childNodes)
+				foundASection = false
 				//Show items
 				if(articleButtons[j].src.includes("images/showSection.png")){
 					//Start with the element right after the article title
@@ -381,9 +382,26 @@ function numberSections(docSlots){
 						if(docElements[k].tagName === "H1")
 							break
 						//Set the display style to the default if they're to be shown
-						if(docElements[k].tagName === "H2")
+						if(docElements[k].tagName === "H2"){
 							docElements[k].style.display = ""
+							foundASection = true
+						}
 					}
+					//We must account for the possibility of the article not having any sections
+					//If no sections were found, it means this article has the text within it directly, so we can treat it as a section
+					if(!foundASection){
+						for(let k = docElements.indexOf(event.target.parentElement) + 1; k < docElements.length; k++){
+							if(docElements[k].tagName === "H1" || docElements[k].tagName === "H2")
+								break
+							docElements[k].style.display = ""
+							//If the section contains changes, it will have a 'Show hidden text' button
+							//If so, we wanna change that to 'Hide unchanged text' when we re-open a section
+							if(docElements[k].tagName === 'BUTTON')
+								docElements[k].innerText = "Hide unchanged text"
+						}
+						
+					}
+					foundASection = false
 					articleButtons[j].src = "images/hideSection.png"
 				}
 				//Hide items
@@ -392,10 +410,20 @@ function numberSections(docSlots){
 						if(docElements[k].tagName === "H1")
 							break
 						//change the button on the section headers to reflect being hidden
-						if(docElements[k].tagName === "H2")
+						if(docElements[k].tagName === "H2"){
 							docElements[k].childNodes[0].src = "images/showSection.png"
+							foundASection = true
+						}
 						docElements[k].style.display = "none"
 					}
+					if(!foundASection){
+						for(let k = docElements.indexOf(event.target.parentElement) + 1; k < docElements.length; k++){
+							if(docElements[k].tagName === "H1" || docElements[k].tagName === "H2")
+								break
+							docElements[k].style.display = "none"
+						}
+					}
+					foundASection = false
 					articleButtons[j].src = "images/showSection.png"
 				}
 			})
