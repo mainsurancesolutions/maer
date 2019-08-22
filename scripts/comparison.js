@@ -142,6 +142,8 @@ async function findDiffs(fields, tocBlock){
 
 			//Iterate through all elements in a doc backwards
 			docElements = fields[i].childNodes
+			showNextH1 = false
+			showNextH2 = false
 			for(let j = docElements.length-1; j >= 0; j--){
 				switch(docElements[j].tagName){
 					//If we found a tag with changes, we wanna show the category/subcategory before it
@@ -200,7 +202,7 @@ async function findDiffs(fields, tocBlock){
 								}
 								docElements[j].style.display = "none"
 								break
-							}
+							}							
 						}
 						break
 				}
@@ -316,6 +318,9 @@ function numberSections(docSlots){
 					break
 				//Determine if the paragraph is a bullet point in a section/subsection
 				case 'P':
+					if(docElements[j].innerHTML.includes("<br>")){
+						docElements[j].innerHTML = docElements[j].innerHTML.replace(new RegExp('<br>', 'g'), '')
+					}
 					if(docElements[j].innerText.length > 0){
 						if(docElements[j].classList.contains('subsection-bullet')){
 							subsubsectionNumber = 1
