@@ -44,6 +44,11 @@ module.exports ={
 						definitionsHeader = headers[j]
 				}
 			}
+
+			if(!definitionsHeader){
+				alert("Failed to fetch definitions: Definitions article/section not found.")
+				return
+			}
 			//Now we find the header index in the nodes of the doc, and start gather definitions
 			//in that section
 			let textNodes = Array.from(docSlots[i].childNodes)
@@ -59,7 +64,7 @@ module.exports ={
 					docTermsAndDefs.push(termAndDef)
 				}
 				if(textNodes[j].textContent[0] === "“"){
-					termAndDef[0] = textNodes[j].textContent.split("“")[1]
+					termAndDef[0] = textNodes[j].textContent.split("”")[0].substring(1)
 					termAndDef[1] = textNodes[j].textContent.substring(termAndDef[0].length+3)
 					docTermsAndDefs.push(termAndDef)
 				}
@@ -379,7 +384,6 @@ function hoverDef(allDefinitions, hoveredElement, mousePos, docNumber, paragraph
 		hoveredWord = hoveredWord.substring(1)
 	splitParagraph = paragraph.innerText.split(" ")
 	let term = matchDefinition(splitParagraph, allDefinitions[docNumber], wordIndex)[0]
-
 	//If nothing was found, don't show a pop-up
 	if(term === null)
 		return false

@@ -318,7 +318,7 @@ function numberSections(docSlots){
 					break
 				//Determine if the paragraph is a bullet point in a section/subsection
 				case 'P':
-					if(docElements[j].innerHTML.includes("<br>")){
+					if(i === 0 && docElements[j].innerHTML.includes("<br>")){
 						docElements[j].innerHTML = docElements[j].innerHTML.replace(new RegExp('<br>', 'g'), '')
 					}
 					if(docElements[j].innerText.length > 0){
