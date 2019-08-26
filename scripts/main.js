@@ -19,7 +19,7 @@ app.on('window-all-closed', () => {
 
 function createMainWindow(){
 	mainWindow = new BrowserWindow({
-		icon: 'C:/MA/ElectronTest/images/icon.ico',
+		icon: app.getAppPath() + '/images/icon.ico',
 		frame: false,
 		webPreferences: {
         	nodeIntegration: true
@@ -58,9 +58,8 @@ trial edition.
 */
 ipc.on('getDemoDate', (event, arg) =>{
 	let appDataPath = (process.env.APPDATA || (process.platform == 'darwin' ? process.env.HOME + 'Library/Preferences' : process.env.HOME + "/.local/share"))
-	console.log(appDataPath)
 	if(fs.existsSync(appDataPath + '/MA-Easy-Reader/maerdata')){
-		let jsonDate = fs.readFileSync(appDataPath + '/maerdata', 'utf8')
+		let jsonDate = fs.readFileSync(appDataPath + '/MA-Easy-Reader/maerdata', 'utf8')
 		let endDate = new Date(JSON.parse(jsonDate))
 		mainWindow.webContents.send('demoEndDate', endDate)
 	}
