@@ -1,5 +1,5 @@
-const popupHTML = fs.readFileSync('definitionPopup.html')
-const scrollScript = require('..\\scripts\\scroll.js')
+const popupHTML = fs.readFileSync(__dirname + '/../definitionPopup.html')
+const scrollScript = require(__dirname + '/../scripts/scroll.js')
 //Each pop-up will have a z index ensuring they appear above everything else
 //we increment that counter with each new popup so that if you have multiple popups,
 //the most recent will show up in front of all others

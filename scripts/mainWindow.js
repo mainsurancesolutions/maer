@@ -1,11 +1,11 @@
 const ipc = require('electron').ipcRenderer
 const fs = require('fs')
-const compareScript = require('.\\scripts\\comparison.js')
-const saveScript = require('.\\scripts\\saveManager.js')
-const scrollScript = require('.\\scripts\\scroll.js')
-const popupScript = require('.\\scripts\\popup.js')
+const compareScript = require(__dirname + '\\scripts\\comparison.js')
+const saveScript = require(__dirname + '\\scripts\\saveManager.js')
+const scrollScript = require(__dirname + '\\scripts\\scroll.js')
+const popupScript = require(__dirname + '\\scripts\\popup.js')
 
-let docBlockHTML = fs.readFileSync('docBlock.html')
+let docBlockHTML = fs.readFileSync(__dirname + '\\docBlock.html')
 
 //boolean, if the demo has expired. Only relevant in demo version
 let expired

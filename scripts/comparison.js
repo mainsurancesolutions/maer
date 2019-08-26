@@ -1,10 +1,10 @@
 const mammoth = require('mammoth')
 const diff = require('node-htmldiff')
 const fs = require('fs')
-const hideSectionButton = fs.readFileSync('hideSectionButton.html')
-const hideArticleButton = fs.readFileSync('hideArticleButton.html')
-const hideParagraphsButton = fs.readFileSync('hideParagraphsButton.html')
-const revealText = fs.readFileSync('revealText.html')
+const hideSectionButton = fs.readFileSync(__dirname + '/../hideSectionButton.html')
+const hideArticleButton = fs.readFileSync(__dirname + '/../hideArticleButton.html')
+const hideParagraphsButton = fs.readFileSync(__dirname + '/../hideParagraphsButton.html')
+const revealText = fs.readFileSync(__dirname + '/../revealText.html')
 
 //HTML ripped from files as well as error/warning messages
 let rippedHtml

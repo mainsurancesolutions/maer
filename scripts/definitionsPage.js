@@ -1,6 +1,6 @@
 const ipc = require('electron').ipcRenderer
 const fs = require('fs')
-const popupHTML = fs.readFileSync('definitionPopup.html')
+const popupHTML = fs.readFileSync(__dirname + '\\definitionPopup.html')
 
 /*
 An array of arrays of [term, definition] for each doc
