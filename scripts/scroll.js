@@ -4,6 +4,7 @@ module.exports ={
 	//The function that actually adjusts where the doc is scrolled to
 	scrollTo: function(scrollingDoc, targetP){
 		scrollTarget = targetP.offsetTop - (scrollingDoc.offsetHeight/2)
+		scrollTarget += 250
 		scrollingDoc.scrollTop = scrollTarget
 	},
 

@@ -1,5 +1,6 @@
 const electron = require('electron')
 const {app, BrowserWindow, BrowserView, dialog, shell} = electron
+const fs = require('fs')
 const path = require('path')
 const ipc = require('electron').ipcMain
 let mainWindow
@@ -42,9 +43,43 @@ function createMainWindow(){
 	//When the main window is moved, send a signal to let it know its position changed
 	mainWindow.on('move', (event, arg) =>{
 		mainWindow.webContents.send('position', mainWindow.getPosition())
-	})
-	
+	})	
 }
+
+//####################THIS CODE MAKES THE PROGRAM EXPIRE AFTER 6 MONTHS############
+/*
+In order to remove the 'demo version' limitation, simply remove this function, the corresponding ipc
+function in mainWindow.js, as well as the check for it in the 'compare-button' event in mainWindow.js.
+This function operates by placing a 'date' file in the users appdata folder the first time they click compare
+The 'date' file contains a 'date' object for 6 months in the future. If this file does not exist, this will
+create it. Then, whenever the compare button is clicked, it will make a new date object. If the new date
+is later than the stored one, it will say the demo has expired. Effectively creating a 6 month
+trial edition.
+*/
+ipc.on('getDemoDate', (event, arg) =>{
+	let appDataPath = (process.env.APPDATA || (process.platform == 'darwin' ? process.env.HOME + 'Library/Preferences' : process.env.HOME + "/.local/share"))
+	console.log(appDataPath)
+	if(fs.existsSync(appDataPath + '/MA-Easy-Reader/maerdata')){
+		let jsonDate = fs.readFileSync(appDataPath + '/maerdata', 'utf8')
+		let endDate = new Date(JSON.parse(jsonDate))
+		mainWindow.webContents.send('demoEndDate', endDate)
+	}
+	//If the file doesn't exist, create and populate it with a date
+	else{
+		let endDate = new Date()
+		//Add 6 months to the date
+		endDate = new Date(endDate.getTime() + 15770000000)
+		let jsonDate = JSON.stringify(endDate)
+		fs.writeFileSync(appDataPath + '/MA-Easy-Reader/maerdata', jsonDate, function(err){
+			if(err){
+				console.log(err)
+				throw err
+			}
+		})
+		mainWindow.webContents.send('demoEndDate', endDate)
+	}
+})
+//#############################TRIAL VERSION CODE END###########################
 
 ipc.on('getPos', (event, arg) =>{
 	mainWindow.webContents.send('position', mainWindow.getPosition())

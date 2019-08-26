@@ -465,13 +465,30 @@ function hoverSection(section, mousePos, docNumber, defPage){
 	let fullSectionNum
 	let sectionIndex
 	let sectionHeader
+
+	//remove punctuation at the end
+	while(section.substring(section.length-1) === "," || section.substring(section.length-1) === "." || section.substring(section.length-1) === "\"" || section.substring(section.length-1) === ":" || section.substring(section.length-1) === ";")
+		section = section.trim().substring(0, section.length-1)
+
 	//If we hovered a section
 	if(section.split(' ')[0] === "Section"){
 		//Some section links will be written like "Section 2.02(a)(ii)"
 		//sectionNum will be just the '2.02'
 		//fullSectionNum will be '2.02(a)(ii)'
 		fullSectionNum = section.split(' ')[1]
+
 		sectionNum = fullSectionNum.substring(0, 4)
+		//In case the sectionNum is written like '2.2(a)'
+		if(sectionNum.includes('(')){
+			sectionNum = sectionNum.substring(0, sectionNum.indexOf('('))
+			sectionNum = sectionNum.split('.')[0] + ".0" + sectionNum.split('.')[1]
+			fullSectionNum = sectionNum + fullSectionNum.substring(sectionNum.length)
+		}
+		//In case the sectionNum is written like '2.2'
+		if(sectionNum.length === 3){
+			sectionNum = sectionNum.split('.')[0] + ".0" + sectionNum.split('.')[1]
+			fullSectionNum = sectionNum + fullSectionNum.substring(3)
+		}
 
 		//We can determine if the section link goes to subsection or sub-subsection by seeing how many '(' it contains
 		let depth = fullSectionNum.split('(').length
@@ -566,6 +583,7 @@ function hoverSection(section, mousePos, docNumber, defPage){
 	}
 	//Now that we've fetched the section/article text, we should reveal any items that are hidden
 	sectionText = sectionText.replace("display: none", "display: block")
+	sectionText = sectionText.replace('Show all text', '')
 	return popup(fullSectionNum, sectionText, mousePos, document, docNumber, sectionHeader, defPage)
 }
 

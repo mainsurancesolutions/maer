@@ -7,6 +7,9 @@ const popupScript = require('.\\scripts\\popup.js')
 
 let docBlockHTML = fs.readFileSync('docBlock.html')
 
+//boolean, if the demo has expired. Only relevant in demo version
+let expired
+
 let globalMaxW = 45
 let globalMinW = 22
 
@@ -193,6 +196,16 @@ ipc.on("wrongType", () =>{
 	alert("You must select a saved project to load")
 })
 
+//Acquires the date the demo is set to expire and checks it against the current date.
+//Only relevant in demo version
+ipc.send('getDemoDate')
+ipc.on("demoEndDate", (event, arg) =>{
+	if(new Date(arg) < new Date())
+		expired = true
+	else
+		expired = false
+})
+
 //When the position of the window changes, update the position array
 ipc.on('position', (event, arg) =>{
 	position = [arg[0], arg[1]]
@@ -286,8 +299,13 @@ ipc.on('loadFile', async (event, arg) =>{
 	document.getElementById('compare-button').click()
 })
 
+//The main comparison function. Runs when the 'compare' button is pressed
 //Read and render all non-hidden documents
 document.getElementById('compare-button').addEventListener('click', async () =>{
+	if(expired){
+		alert("Trial version of M&A Easy Reader has expired.\r\nPlease contact Kirk Sanderson at kirk@rwpolicy.com to ask about purchasing a full license.")
+		return
+	}
 	let shownDocs = []
 	let shownSlots = []
 	//Find out which docs are hidden
