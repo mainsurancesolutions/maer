@@ -200,7 +200,9 @@ async function findDiffs(fields, tocBlock){
 										break
 									}
 								}
-								docElements[j].style.display = "none"
+								//We only wanna hide elements in the most recent doc
+								if(i === rippedHtml.length-1)
+									docElements[j].style.display = "none"
 								break
 							}							
 						}
