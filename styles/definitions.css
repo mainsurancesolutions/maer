@@ -15,7 +15,7 @@ p{
 	top: 0;
 	width: 100%;
 	height: 48px;
-	background-color: #ff0000;
+	background-color: #778188;
 }
 
 #app-title{
@@ -49,7 +49,7 @@ p{
 }
 
 .popup{
-    border: 2px groove #ff0000;
+    border: 2px groove #778188;
     background-color: white;
     margin: 0px;
     padding: 4px;
