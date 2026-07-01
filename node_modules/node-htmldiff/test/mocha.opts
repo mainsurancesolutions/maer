@@ -1,3 +1,0 @@
---require test/config.js
---ui bdd
---reporter spec
