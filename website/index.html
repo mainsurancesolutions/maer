@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ContractsCompare — The only redline tool that tells the full story</title>
+  <meta name="description" content="ContractsCompare shows every turn of negotiation simultaneously — from first draft to final execution. Patent No. US-11227107-B2." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Georgia&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --navy: #0a1628;
+      --navy-mid: #112240;
+      --navy-light: #1a3a5c;
+      --gold: #c9a84c;
+      --gold-light: #e8c96d;
+      --white: #ffffff;
+      --off-white: #f4f5f7;
+      --gray-light: #e8eaed;
+      --gray-mid: #9aa0a6;
+      --gray-dark: #5f6368;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--navy);
+      background: var(--white);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    a { text-decoration: none; color: inherit; }
+
+    .container {
+      width: 100%;
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .section-label {
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gold);
+      display: block;
+      margin-bottom: 16px;
+    }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-block;
+      font-family: Arial, sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      padding: 14px 28px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 2px solid transparent;
+      text-align: center;
+    }
+    .btn-gold {
+      background: var(--gold);
+      color: var(--navy);
+      border-color: var(--gold);
+    }
+    .btn-gold:hover {
+      background: var(--gold-light);
+      border-color: var(--gold-light);
+    }
+    .btn-outline-white {
+      background: transparent;
+      color: var(--white);
+      border-color: rgba(255, 255, 255, 0.6);
+    }
+    .btn-outline-white:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--white);
+    }
+    .btn-outline-navy {
+      background: transparent;
+      color: var(--navy);
+      border-color: var(--navy);
+    }
+    .btn-outline-navy:hover {
+      background: var(--navy);
+      color: var(--white);
+    }
+
+    /* ── 1. Sticky nav ── */
+    #navbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: var(--navy);
+      transition: box-shadow 0.3s ease;
+    }
+    #navbar.scrolled {
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 68px;
+    }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .logo-mark {
+      width: 34px;
+      height: 34px;
+      background: var(--gold);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Georgia, serif;
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--navy);
+    }
+    .nav-brand-name {
+      font-family: Georgia, serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--white);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-family: Arial, sans-serif;
+      font-size: 15px;
+      color: rgba(255, 255, 255, 0.85);
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--gold); }
+    .nav-cta .btn { padding: 10px 22px; font-size: 14px; }
+    .nav-toggle { display: none; }
+
+    /* ── 2. Hero ── */
+    .hero {
+      background: var(--navy);
+      text-align: center;
+      padding: 100px 0 90px;
+    }
+    .eyebrow {
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gold);
+      display: block;
+      margin-bottom: 26px;
+    }
+    .hero h1 {
+      color: var(--white);
+      font-size: 52px;
+      max-width: 900px;
+      margin: 0 auto 26px;
+    }
+    .hero h1 em {
+      color: var(--gold);
+      font-style: italic;
+    }
+    .hero-subtext {
+      font-family: Arial, sans-serif;
+      font-size: 18px;
+      color: rgba(255, 255, 255, 0.65);
+      max-width: 720px;
+      margin: 0 auto 38px;
+    }
+    .hero-buttons {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 34px;
+    }
+    .hero-meta {
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+      color: var(--gold);
+      letter-spacing: 0.3px;
+    }
+
+    /* ── 3. Problem bar ── */
+    .problem-bar {
+      background: var(--navy-mid);
+      text-align: center;
+      padding: 60px 0;
+    }
+    .problem-bar p {
+      font-family: Arial, sans-serif;
+      font-size: 19px;
+      line-height: 1.7;
+      color: rgba(255, 255, 255, 0.7);
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .problem-bar p b {
+      color: var(--gold);
+      font-weight: 700;
+    }
+
+    /* ── Generic section ── */
+    .section {
+      padding: 90px 0;
+    }
+    .section-light { background: var(--off-white); }
+    .section-white { background: var(--white); }
+    .section-navy { background: var(--navy); }
+    .section-head {
+      text-align: center;
+      max-width: 760px;
+      margin: 0 auto 56px;
+    }
+    .section-head h2 {
+      font-size: 38px;
+      margin-bottom: 18px;
+    }
+    .section-navy .section-head h2 { color: var(--white); }
+    .section-intro {
+      font-family: Arial, sans-serif;
+      font-size: 17px;
+      color: var(--gray-dark);
+    }
+    .section-navy .section-intro {
+      color: rgba(255, 255, 255, 0.65);
+    }
+
+    /* ── 4. Features grid ── */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .feature-card {
+      background: var(--white);
+      border: 2px solid var(--gray-light);
+      border-radius: 12px;
+      padding: 32px 28px;
+      transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+      position: relative;
+    }
+    .feature-card:hover {
+      border-color: var(--gold);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 28px rgba(10, 22, 40, 0.08);
+    }
+    .feature-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 10px;
+      background: var(--navy);
+      color: var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      margin-bottom: 20px;
+    }
+    .feature-card h3 {
+      font-size: 20px;
+      margin-bottom: 12px;
+      color: var(--navy);
+    }
+    .feature-card p {
+      font-family: Arial, sans-serif;
+      font-size: 15px;
+      color: var(--gray-dark);
+    }
+    .badge {
+      display: inline-block;
+      font-family: Arial, sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--navy);
+      background: var(--gold);
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    /* ── 5. AI section ── */
+    .ai-cols {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+      margin-top: 20px;
+    }
+    .ai-col {
+      background: var(--navy-mid);
+      border-top: 3px solid var(--gold);
+      border-radius: 0 0 10px 10px;
+      padding: 30px 26px;
+    }
+    .ai-col h3 {
+      font-size: 20px;
+      color: var(--white);
+      margin-bottom: 14px;
+    }
+    .ai-col p {
+      font-family: Arial, sans-serif;
+      font-size: 15px;
+      color: rgba(255, 255, 255, 0.65);
+    }
+    .ai-tagline {
+      text-align: center;
+      font-family: Georgia, serif;
+      font-style: italic;
+      font-size: 24px;
+      color: var(--white);
+      margin: 56px auto 20px;
+      max-width: 700px;
+    }
+    .ai-earlyaccess {
+      text-align: center;
+      font-family: Arial, sans-serif;
+      font-size: 16px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+    .ai-earlyaccess a {
+      color: var(--gold);
+      font-weight: 700;
+    }
+    .ai-earlyaccess a:hover { text-decoration: underline; }
+
+    /* ── 6. How it works ── */
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 36px;
+    }
+    .step {
+      text-align: center;
+    }
+    .step-num {
+      width: 62px;
+      height: 62px;
+      border-radius: 50%;
+      background: var(--navy);
+      color: var(--gold);
+      font-family: Georgia, serif;
+      font-size: 26px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 22px;
+    }
+    .step h3 {
+      font-size: 21px;
+      margin-bottom: 12px;
+      color: var(--navy);
+    }
+    .step p {
+      font-family: Arial, sans-serif;
+      font-size: 15px;
+      color: var(--gray-dark);
+    }
+
+    /* ── 7. Testimonials ── */
+    .quotes {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 26px;
+    }
+    .quote-card {
+      background: var(--off-white);
+      border-left: 4px solid var(--gold);
+      border-radius: 0 8px 8px 0;
+      padding: 30px 28px;
+    }
+    .quote-card p {
+      font-family: Georgia, serif;
+      font-size: 17px;
+      font-style: italic;
+      color: var(--navy);
+      margin-bottom: 18px;
+      line-height: 1.55;
+    }
+    .quote-card cite {
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 700;
+      color: var(--gold);
+    }
+
+    /* ── 8. Pricing ── */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 26px;
+      align-items: start;
+    }
+    .price-card {
+      background: var(--white);
+      border: 2px solid var(--gray-light);
+      border-radius: 12px;
+      padding: 36px 30px;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    .price-card.featured {
+      border-color: var(--gold);
+      box-shadow: 0 16px 40px rgba(10, 22, 40, 0.12);
+      position: relative;
+    }
+    .price-card.featured::before {
+      content: "MOST POPULAR";
+      position: absolute;
+      top: -13px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--gold);
+      color: var(--navy);
+      font-family: Arial, sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      padding: 5px 14px;
+      border-radius: 4px;
+    }
+    .price-tier {
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 12px;
+    }
+    .price-amount {
+      font-family: Georgia, serif;
+      font-size: 40px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 4px;
+    }
+    .price-period {
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      color: var(--gray-mid);
+      margin-bottom: 18px;
+    }
+    .price-desc {
+      font-family: Arial, sans-serif;
+      font-size: 15px;
+      color: var(--gray-dark);
+      margin-bottom: 22px;
+    }
+    .price-features {
+      list-style: none;
+      margin-bottom: 28px;
+      flex-grow: 1;
+    }
+    .price-features li {
+      font-family: Arial, sans-serif;
+      font-size: 15px;
+      color: var(--navy);
+      padding: 7px 0 7px 26px;
+      position: relative;
+    }
+    .price-features li::before {
+      content: "\2713";
+      position: absolute;
+      left: 0;
+      color: var(--gold);
+      font-weight: 700;
+    }
+    .price-card .btn { width: 100%; }
+    .price-note {
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+      color: var(--gray-mid);
+      text-align: center;
+      margin-top: 12px;
+    }
+
+    /* ── 9. Contact ── */
+    .contact-card {
+      background: var(--white);
+      border-radius: 14px;
+      padding: 40px;
+      max-width: 560px;
+      margin: 0 auto;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    }
+    .form-group { margin-bottom: 18px; }
+    .form-group label {
+      display: block;
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 6px;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      font-family: Arial, sans-serif;
+      font-size: 15px;
+      padding: 12px 14px;
+      border: 1px solid var(--gray-light);
+      border-radius: 6px;
+      color: var(--navy);
+      background: var(--white);
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--gold);
+    }
+    .form-group textarea { resize: vertical; }
+    .contact-meta {
+      text-align: center;
+      margin-top: 34px;
+    }
+    .contact-meta .email {
+      font-family: Arial, sans-serif;
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--gold);
+      display: block;
+      margin-bottom: 14px;
+    }
+    .contact-meta small {
+      display: block;
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.5);
+      line-height: 1.8;
+    }
+
+    /* ── 10. Footer ── */
+    .footer {
+      background: var(--navy);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 50px 0 0;
+    }
+    .footer-top {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr auto;
+      gap: 30px;
+      align-items: center;
+      padding-bottom: 40px;
+    }
+    .footer-tagline {
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.5);
+      margin-top: 14px;
+      max-width: 320px;
+    }
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      list-style: none;
+    }
+    .footer-links a {
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.75);
+    }
+    .footer-links a:hover { color: var(--gold); }
+    .footer-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 22px 0;
+      text-align: center;
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.45);
+    }
+    .footer-bottom span { margin: 0 8px; }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .features-grid,
+      .ai-cols,
+      .steps,
+      .quotes,
+      .pricing-grid {
+        grid-template-columns: 1fr;
+      }
+      .footer-top {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+      .footer-tagline { margin: 14px auto 0; }
+      .footer-links { justify-content: center; }
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 68px;
+        left: 0;
+        right: 0;
+        background: var(--navy);
+        flex-direction: column;
+        gap: 0;
+        padding: 10px 0;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+      }
+      .nav-links.open { display: flex; }
+      .nav-links li { width: 100%; text-align: center; }
+      .nav-links a { display: block; padding: 14px 0; }
+      .nav-toggle {
+        display: block;
+        background: none;
+        border: none;
+        color: var(--white);
+        font-size: 26px;
+        cursor: pointer;
+        line-height: 1;
+      }
+      .hero h1 { font-size: 36px; }
+      .section-head h2 { font-size: 30px; }
+      .hero { padding: 70px 0 60px; }
+      .section { padding: 64px 0; }
+    }
+
+    @media (max-width: 560px) {
+      .hero h1 { font-size: 30px; }
+      .contact-card { padding: 28px 22px; }
+      .nav-cta { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── 1. STICKY NAV ── -->
+  <nav id="navbar">
+    <div class="container nav-inner">
+      <a href="#top" class="nav-brand">
+        <span class="logo-mark">CC</span>
+        <span class="nav-brand-name">ContractsCompare</span>
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#how-it-works">How It Works</a></li>
+        <li><a href="#ai">AI</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <div class="nav-cta">
+        <a class="btn btn-gold" href="https://app.contractscompare.com">Try It Free</a>
+      </div>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">&#9776;</button>
+    </div>
+  </nav>
+
+  <!-- ── 2. HERO ── -->
+  <header class="hero" id="top">
+    <div class="container">
+      <span class="eyebrow">Patent No. US-11227107-B2</span>
+      <h1>The only redline tool that tells the <em>full story</em></h1>
+      <p class="hero-subtext">Most tools compare two versions. ContractsCompare shows every turn of negotiation &mdash; simultaneously &mdash; so you see exactly how your deal evolved, from first draft to final execution.</p>
+      <div class="hero-buttons">
+        <a class="btn btn-gold" href="https://app.contractscompare.com">Try It Free &rarr;</a>
+        <a class="btn btn-outline-white" href="#contact">Schedule a Demo</a>
+      </div>
+      <p class="hero-meta">Works on any device &middot; No installation required &middot; Upload .docx files &middot; Compare in seconds</p>
+    </div>
+  </header>
+
+  <!-- ── 3. PROBLEM BAR ── -->
+  <section class="problem-bar">
+    <div class="container">
+      <p><b>The problem:</b> Nearly every redline tool limits you to comparing two versions at a time. In a real negotiation &mdash; M&amp;A, real estate, derivatives, insurance, or any complex agreement &mdash; you're tracking 8, 12, sometimes 20 turns back and forth. ContractsCompare was built to show all of them, at once, telling the complete story of how your deal took shape.</p>
+    </div>
+  </section>
+
+  <!-- ── 4. FEATURES ── -->
+  <section class="section section-light" id="features">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-label">Features</span>
+        <h2>Everything you need to track a negotiation</h2>
+        <p class="section-intro">Designed by negotiation professionals, for negotiation professionals. Purpose-built for complex multi-party agreements across industries.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">&#10227;</div>
+          <h3>Dynamic multi-version redlines</h3>
+          <p>Compare every sequential turn of negotiation simultaneously. Watch language evolve from first draft to execution in one unified view &mdash; something no other tool offers.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">&#9776;</div>
+          <h3>Intelligent table of contents</h3>
+          <p>Auto-generated TOC highlights changed sections in gold so you immediately know where to focus. Collapse agreed sections to clear the noise and work faster.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">&#9678;</div>
+          <h3>Hover-to-define popups</h3>
+          <p>Hover any defined term to instantly see its definition without losing your place. Recursive popups let you drill into cross-references inside definitions.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">&#8597;</div>
+          <h3>Synchronized scrolling</h3>
+          <p>Click any paragraph and every version scrolls to the matching language instantly &mdash; even when text changed substantially between turns.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">&#9733;</div>
+          <h3>AI-powered suggestions <span class="badge">Coming Soon</span></h3>
+          <p>Buy-side and sell-side positioning powered by Claude AI, informed by a curated precedent library of real negotiated agreements.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">&#8862;</div>
+          <h3>Works everywhere</h3>
+          <p>Browser-based. No installation. Works on Mac, Windows, iPad, any modern device. Upload your .docx files and compare in seconds.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 5. AI SECTION ── -->
+  <section class="section section-navy" id="ai">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-label">Powered by Claude AI</span>
+        <h2>A negotiation co-pilot that knows which side you're on</h2>
+        <p class="section-intro">ContractsCompare AI analyzes your current draft against a curated library of real precedent agreements and suggests stronger language &mdash; based on your position. Whether you're negotiating a merger agreement, a real estate transaction, a derivatives contract, an insurance agreement, or any complex multi-party deal, ContractsCompare AI gives you an edge at every turn.</p>
+      </div>
+      <div class="ai-cols">
+        <div class="ai-col">
+          <h3>Buy-Side Mode</h3>
+          <p>Identifies counterparty-favorable language and suggests buyer-protective alternatives drawn from negotiated precedent.</p>
+        </div>
+        <div class="ai-col">
+          <h3>Sell-Side Mode</h3>
+          <p>Flags overreaching positions and recommends seller-favorable language based on market standard negotiated agreements.</p>
+        </div>
+        <div class="ai-col">
+          <h3>Precedent Library</h3>
+          <p>Every suggestion is grounded in real negotiated agreements &mdash; not generic boilerplate. The more you use it, the smarter it gets.</p>
+        </div>
+      </div>
+      <div style="background:rgba(255,255,255,0.06); border:1px solid rgba(201,168,76,0.3); border-radius:8px; padding:16px 24px; max-width:720px; margin:40px auto 0; text-align:center">
+        <p style="font-size:12px; color:rgba(255,255,255,0.5); font-family:Arial,sans-serif; line-height:1.7; margin:0">
+          <strong style="color:rgba(201,168,76,0.8)">Important:</strong>
+          ContractsCompare AI provides data-driven suggestions based on negotiated precedent. It is not a law firm and does not provide legal advice. All suggestions are starting points for professional review and should not replace the judgment of qualified legal counsel.
+        </p>
+      </div>
+      <p class="ai-tagline">This isn't autocomplete. This is a negotiation co-pilot.</p>
+      <p class="ai-earlyaccess">Coming Soon &mdash; <a href="#contact">Join the Early Access List</a></p>
+    </div>
+  </section>
+
+  <!-- ── 6. HOW IT WORKS ── -->
+  <section class="section section-light" id="how-it-works">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-label">How It Works</span>
+        <h2>From upload to insight in seconds</h2>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <h3>Upload your versions</h3>
+          <p>Drag and drop your agreement files &mdash; as many versions as you have. Any complex agreement, any industry. No account required.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <h3>Compare instantly</h3>
+          <p>ContractsCompare generates redlines across every consecutive turn, highlighting exactly what changed and where across all versions simultaneously.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <h3>Navigate with precision</h3>
+          <p>Use the intelligent TOC, hover popups, and synchronized scrolling to move through the negotiation story with speed and confidence.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 7. TESTIMONIALS ── -->
+  <section class="section section-white">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-label">What Professionals Say</span>
+        <h2>Trusted by negotiation professionals</h2>
+      </div>
+      <div class="quotes">
+        <div class="quote-card">
+          <p>"Other tools fail to embrace the need to compare more than two versions at a time. ContractsCompare steps up and fills that gap."</p>
+          <cite>&mdash; M&amp;A Attorney</cite>
+        </div>
+        <div class="quote-card">
+          <p>"This is the best redline comparison program I have found, particularly in regards to its use in negotiating agreements."</p>
+          <cite>&mdash; VC/PE M&amp;A Professional</cite>
+        </div>
+        <div class="quote-card">
+          <p>"ContractsCompare has eliminated the endless scroll to review reference sections and definitions within the greater document."</p>
+          <cite>&mdash; M&amp;A Insurance Professional</cite>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 8. PRICING ── -->
+  <section class="section section-light" id="pricing">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-label">Pricing</span>
+        <h2>Start free. Scale as you grow.</h2>
+        <p class="section-intro">Try the full comparison engine instantly with no account required. Upgrade for AI-powered suggestions and enterprise features.</p>
+      </div>
+      <div class="pricing-grid">
+        <!-- Free -->
+        <div class="price-card">
+          <div class="price-tier">Free</div>
+          <div class="price-amount">$0</div>
+          <div class="price-period">always</div>
+          <p class="price-desc">Full comparison engine. No account needed. No limits.</p>
+          <ul class="price-features">
+            <li>Unlimited version uploads</li>
+            <li>Dynamic multi-version redlines</li>
+            <li>Table of contents navigation</li>
+            <li>Hover-to-define popups</li>
+            <li>Synchronized scrolling</li>
+            <li>Works on any device</li>
+          </ul>
+          <a class="btn btn-outline-navy" href="https://app.contractscompare.com">Try it now &rarr;</a>
+        </div>
+        <!-- Pro (featured) -->
+        <div class="price-card featured">
+          <div class="price-tier">Pro</div>
+          <div class="price-amount">$499</div>
+          <div class="price-period">per user / month</div>
+          <p class="price-desc">AI-powered suggestions for your negotiating position.</p>
+          <ul class="price-features">
+            <li>Everything in Free</li>
+            <li>Buy-side / sell-side AI mode</li>
+            <li>Precedent library access</li>
+            <li>Clause risk scoring</li>
+            <li>Works across all agreement types</li>
+            <li>Priority support</li>
+          </ul>
+          <a class="btn btn-gold" href="#contact">Contact us</a>
+          <p class="price-note">Coming soon &mdash; contact us to be first</p>
+        </div>
+        <!-- Enterprise -->
+        <div class="price-card">
+          <div class="price-tier">Enterprise</div>
+          <div class="price-amount">Custom</div>
+          <div class="price-period">pricing</div>
+          <p class="price-desc">For law firms, banks, and institutional deal teams.</p>
+          <ul class="price-features">
+            <li>Everything in Pro</li>
+            <li>iManage integration</li>
+            <li>Team accounts and admin dashboard</li>
+            <li>Volume pricing</li>
+            <li>Custom precedent library</li>
+            <li>Dedicated onboarding</li>
+          </ul>
+          <a class="btn btn-outline-navy" href="#contact">Schedule a demo</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 9. CONTACT ── -->
+  <section class="section section-navy" id="contact">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-label">Contact</span>
+        <h2>Let's talk</h2>
+        <p class="section-intro">Whether you want to schedule a demo, ask about enterprise pricing, or just try the tool &mdash; we'd love to hear from you.</p>
+      </div>
+      <div class="contact-card">
+        <form action="mailto:kirk@contractscompare.com" method="POST" enctype="text/plain">
+          <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="Name" required />
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="Email" required />
+          </div>
+          <div class="form-group">
+            <label for="org">Organization</label>
+            <input type="text" id="org" name="Organization" />
+          </div>
+          <div class="form-group">
+            <label for="interest">I'm interested in...</label>
+            <select id="interest" name="Interest">
+              <option>Scheduling a demo</option>
+              <option>Enterprise pricing</option>
+              <option>Early AI access</option>
+              <option>General inquiry</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="message">Message</label>
+            <textarea id="message" name="Message" rows="4"></textarea>
+          </div>
+          <button type="submit" class="btn btn-gold" style="width:100%;">Send message</button>
+        </form>
+      </div>
+      <div class="contact-meta">
+        <a class="email" href="mailto:kirk@contractscompare.com">kirk@contractscompare.com</a>
+        <small>&copy; 2025 EasyReader Technology LLC (d/b/a ContractsCompare)</small>
+        <small>Patent No. US-11227107-B2</small>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 10. FOOTER ── -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-top">
+        <div>
+          <a href="#top" class="nav-brand">
+            <span class="logo-mark">CC</span>
+            <span class="nav-brand-name">ContractsCompare</span>
+          </a>
+          <p class="footer-tagline">Built for negotiation professionals across industries.</p>
+        </div>
+        <ul class="footer-links">
+          <li><a href="#features">Features</a></li>
+          <li><a href="#how-it-works">How It Works</a></li>
+          <li><a href="#ai">AI</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+        <div>
+          <a class="btn btn-gold" href="https://app.contractscompare.com">Try It Free</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>&copy; 2025 EasyReader Technology LLC</span>|
+        <span>Patent No. US-11227107-B2</span>|
+        <span><a href="mailto:kirk@contractscompare.com" style="color:inherit;">kirk@contractscompare.com</a></span>
+        <p style="font-size:11px; color:rgba(255,255,255,0.25); margin-top:6px; max-width:700px; margin-left:auto; margin-right:auto">
+          ContractsCompare is a document comparison and analysis tool, not a law firm. AI-generated suggestions are for reference only and do not constitute legal advice. Always consult qualified legal counsel before acting on any suggestion.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Sticky nav shadow on scroll
+    var navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', function () {
+      if (window.scrollY > 10) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+    });
+
+    // Mobile menu toggle
+    var navToggle = document.getElementById('navToggle');
+    var navLinks = document.getElementById('navLinks');
+    navToggle.addEventListener('click', function () {
+      navLinks.classList.toggle('open');
+    });
+    // Close the mobile menu after a link is tapped
+    navLinks.addEventListener('click', function (e) {
+      if (e.target.tagName === 'A') {
+        navLinks.classList.remove('open');
+      }
+    });
+  </script>
+</body>
+</html>
