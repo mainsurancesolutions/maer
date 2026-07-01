@@ -595,7 +595,7 @@ for(let i = 0; i < 2; i++){
 			docBlocks[i].style.flex = '1'
 			docBlocks[i].style.width = ''
 			docBlocks[i].style.minWidth = '320px'
-			docBlocks[i].style.padding = '0 20px 24px'
+			docBlocks[i].style.padding = '0 20px 32px'
 			docBlocks[i].classList.remove('panel-collapsed')
 			let existingLabel = docBlocks[i].querySelector('.collapsed-label')
 			if(existingLabel) existingLabel.remove()
@@ -747,7 +747,7 @@ function docsFull(force = false){
 			docBlocks[docNumber-1].style.flex = '1'
 			docBlocks[docNumber-1].style.width = ''
 			docBlocks[docNumber-1].style.minWidth = '320px'
-			docBlocks[docNumber-1].style.padding = '0 20px 24px'
+			docBlocks[docNumber-1].style.padding = '0 20px 32px'
 			docBlocks[docNumber-1].classList.remove('panel-collapsed')
 			let existingLabel = docBlocks[docNumber-1].querySelector('.collapsed-label')
 			if(existingLabel) existingLabel.remove()
