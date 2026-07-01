@@ -5,7 +5,9 @@ const fs = require('fs');
 const path = require('path');
 
 const app = express();
-const PORT = 3000;
+// Railway (and most PaaS hosts) inject the port via the PORT env var; fall back
+// to 3000 for local development.
+const PORT = process.env.PORT || 3000;
 
 // Ensure the uploads/ folder exists
 const UPLOADS_DIR = path.join(__dirname, 'uploads');
@@ -69,5 +71,5 @@ app.post('/api/cleanup', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`ContractsCompare server running on http://localhost:${PORT}`);
+  console.log('ContractsCompare server running on port ' + PORT);
 });
