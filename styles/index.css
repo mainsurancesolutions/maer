@@ -1,354 +1,874 @@
-body{
-	margin: 0px;
-	overflow: hidden;
+/* ── Reset & base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --navy:       #0a1628;
+  --navy-mid:   #112240;
+  --navy-light: #1a3a5c;
+  --gold:       #c9a84c;
+  --gold-light: #e8c96d;
+  --white:      #ffffff;
+  --off-white:  #f4f5f7;
+  --gray-light: #e8eaed;
+  --gray-mid:   #9aa0a6;
+  --gray-dark:  #5f6368;
+  --text-dark:  #1a1a2e;
+  --text-mid:   #3d3d5c;
+  --ins-bg:     #e6f4ea;
+  --ins-color:  #137333;
+  --del-bg:     #fce8e6;
+  --del-color:  #c5221f;
+  --shadow-sm:  0 1px 3px rgba(0,0,0,0.12);
+  --shadow-md:  0 4px 12px rgba(0,0,0,0.15);
+  --shadow-lg:  0 8px 24px rgba(0,0,0,0.2);
+  --radius:     6px;
+  --top-bar-h:  56px;
 }
 
-#title-bar{
-	-webkit-app-region: drag;
-	position: fixed;
-	overflow: hidden;
-	top: 0;
-	width: 100%;
-	height: 48px;
-	background-color: #778188;
+body {
+  font-family: 'Georgia', serif;
+  background: var(--off-white);
+  color: var(--text-dark);
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
-#left-title-buttons{
-	-webkit-app-region: no-drag;
-	display: flex;
-	position: fixed;
-	left: 1%;
-	top: 48px;
-	transform: translate(0, -150%);
+/* ── Top bar ── */
+#top-bar {
+  height: var(--top-bar-h);
+  background: var(--navy);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  box-shadow: var(--shadow-md);
+  z-index: 100;
+  flex-shrink: 0;
 }
 
-#left-title-buttons input{
-	max-width: 80px;
-}
-#restart-button{
-	max-width: 149px;
-}
-
-#app-title{
-	position: fixed;
-	left: 50%;
-	top: -.5%;
-	font-family: Arial, sans-serif !important;
-	font-size: 18px;
-	transform: translate(-50%, 0);
-	color: white;
+#top-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-#right-title-buttons{
-	-webkit-app-region: no-drag;
-	display: flex;
-	position: fixed;
-	right: 0px;
-	top: 0px;
-	height: 48px;
+#logo {
+  height: 32px;
+  width: auto;
 }
 
-#right-title-buttons input{
-	flex-grow: 1;
-	display: inline-block;
-	max-width: 58px;
+#app-title {
+  color: var(--white);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
-#toc-title{
-	text-align: center;
-	font-family: Arial, sans-serif !important;
-	font-size: 18px;
+#top-bar-center {
+  display: flex;
+  align-items: center;
 }
 
-/*div containing docs and console*/
-#docs-and-console{
-	display: flex;
-	margin: 1%;
-	margin-top: 48px;
-	margin-bottom: 7.5%;
-	padding-top: 1%;
-	text-align: center;
+#side-toggle {
+  display: flex;
+  background: var(--navy-light);
+  border-radius: 20px;
+  padding: 3px;
 }
 
-#docs{
-	display: flex;
-	overflow-x: auto;
-	width: 100%;
+.side-btn {
+  padding: 6px 20px;
+  border: none;
+  border-radius: 17px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: transparent;
+  color: var(--gray-mid);
 }
 
-.doc{
-	text-align: left;
+.side-btn.active {
+  background: var(--gold);
+  color: var(--navy);
+  font-weight: 600;
 }
 
-table{
-	table-layout: auto;
+#top-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-table, th, td{
-	border: 1px solid black;
-	border-collapse: collapse;
+/* ── Buttons ── */
+.nav-btn {
+  padding: 7px 16px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(255,255,255,0.2);
+  background: transparent;
+  color: var(--white);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
 }
 
-del{
-	color: red;
-	text-decoration: line-through;
-	text-decoration-color: red;
+.nav-btn:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.4);
 }
 
-ins{
-	font-weight: bold;
-	color: #1cc916;
-	text-decoration: none;
+.nav-btn.primary {
+  background: var(--gold);
+  color: var(--navy);
+  border-color: var(--gold);
+  font-weight: 600;
 }
 
-.subsection-bullet{
-	text-indent: 25px;
+.nav-btn.primary:hover {
+  background: var(--gold-light);
+  border-color: var(--gold-light);
 }
 
-.subsection-sub-bullet{
-	text-indent: 50px;
+/* Pulse the Re-Compare button when it appears so it isn't missed */
+.nav-btn.primary#re-compare-button {
+  animation: pulse-gold 1.5s ease-in-out 3;
 }
 
-.reveal-text{
-	color: #0645AD;
-	padding: 0;
-	border: none;
-	background: none;
+@keyframes pulse-gold {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(201,168,76,0.6); }
+  50% { box-shadow: 0 0 0 8px rgba(201,168,76,0); }
 }
 
-.reveal-text:hover{
-	text-decoration: underline;
+.nav-btn#restart-btn {
+  border-color: rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.7);
+  font-size: 12px;
 }
 
-/*div containing a document and related items (title and hide button for example)*/
-.doc-block{
-	max-width: 45vw;
-	min-width: 22vw;
-	margin-left: 1%;
-	margin-right: 1%;
-	padding-left: 1%;
-	padding-right: 1%;
-	min-height: 75vh;
-	max-height: 81vh;
-	overflow-x: hidden;
-	overflow-y: auto;
-	flex-grow: 1;
-	display: inline-block;
-	word-wrap: break-word;
-	border-radius: 25px;
-	border: 6px solid #778188;
+.nav-btn#restart-btn:hover {
+  color: var(--white);
+  border-color: rgba(255,255,255,0.4);
 }
 
-/*Invisible vertical block denoting where you can click and drag your mouse to change
-the width of a docblock*/
-.expand{
-	padding: 0px;
-	margin: 0px;
-	top: 25px;
-	right: calc(1% + 6px);
-	height: calc(100% - 50px);
-	min-width: 6px;
-	max-width: 6px;
-	position: relative;
-	cursor: w-resize;
+/* ── Main layout ── */
+#main-layout {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
 }
 
-.popup{
-    border: 2px groove #778188;
-    background-color: white;
-    margin: 0px;
-    padding: 4px;
-    padding-top: 2px;
-    position: absolute;
-    display: inline-block;
-    min-height: 15%;
-    min-width: 15%;
-    max-height: 40%;
-    max-width: 25%;
-    overflow-x: hidden;
-    overflow-y: auto;
-    visibility: visible;
-    -webkit-animation: fadeIn 0.5s;
-    transform: translate(0, -100%);
+/* ── Sidebar ── */
+#sidebar {
+  width: 260px;
+  min-width: 260px;
+  background: var(--navy-mid);
+  color: var(--white);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
 }
 
-.zoom-button{
-	color: #0645AD;
-	text-decoration: underline;
-	margin-top: 4px;
-	margin-bottom: 4px;
+#sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--navy-light);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--gold);
 }
 
-.close-popup-button{
-	display: inline-block;
-	position: fixed;
-	height: 28px;
-	width: 28px;
-	right: 2px;
-	top: 2px;
+#sidebar-header button {
+  background: none;
+  border: none;
+  color: var(--gray-mid);
+  cursor: pointer;
+  font-size: 16px;
+  padding: 2px 6px;
+  border-radius: 3px;
 }
 
-.term{
-	margin-right: 24px;
-	margin-top: 4px;
-	margin-bottom: 4px;
-	top: 2px;
-	font-size: 18px;
+#sidebar-header button:hover {
+  background: var(--navy-light);
+  color: var(--white);
 }
 
-.definition{
-	margin-top: 4px;
-	text-align: left;
-
+/* Collapse the sidebar to a thin strip with just the expand arrow.
+   The selector carries two IDs so it beats the generic "#sidebar-header button"
+   (1,0,1) rule above, so the gold / 18px arrow styling actually applies. */
+#sidebar-header #sidebar-collapse-btn {
+  background: none;
+  border: none;
+  color: var(--gold);
+  cursor: pointer;
+  font-size: 18px;
+  padding: 4px 8px;
 }
 
-@-webkit-keyframes fadeIn{
-	from{opacity: 0;}
-	to{opacity: 1;}
+#sidebar.collapsed {
+  width: 32px;
+  min-width: 32px;
 }
 
-.hide-button{
-	min-width: 80px;
+#sidebar.collapsed #table-of-contents,
+#sidebar.collapsed #sidebar-header span {
+  display: none;
 }
 
-#console-block{
-	min-width: 15vw;
-	max-width: 20vw;
-	padding: 5%
-	padding-top: 4%;
-	margin-left: 1%;
-	margin-right: 1%;
-	min-height: 40vh;
-	max-height: 81vh;
-	overflow-y: auto;
-	word-wrap: break-word;
-	border-radius: 25px;
-	border: 6px solid #778188;
+/* Centre the arrow in the thin strip so the header padding doesn't clip it */
+#sidebar.collapsed #sidebar-header {
+  padding-left: 0;
+  padding-right: 0;
+  justify-content: center;
 }
 
-#hide-console{
-	padding: 4px;
+#table-of-contents {
+  list-style: none;
+  padding: 12px 0;
+  overflow-y: auto;
+  flex: 1;
+}
+/* Firefox-only fallback for the TOC, scoped so Chrome/Edge keeps the bold 8px
+   gold ::-webkit-scrollbar below instead of a thin standard one */
+@supports (-moz-appearance: none) {
+  #table-of-contents {
+    scrollbar-width: thin;
+    scrollbar-color: var(--gold) var(--navy-mid);
+  }
+}
+#table-of-contents::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+#table-of-contents::-webkit-scrollbar-thumb {
+  background: var(--gold);
+  border-radius: 4px;
+}
+#table-of-contents::-webkit-scrollbar-track {
+  background: var(--navy-mid);
 }
 
-ol{
-	padding: 10px;
-	text-align: left;
-	list-style-type: none;
+#table-of-contents li {
+  padding: 8px 20px;
+  font-size: 12px;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  transition: all 0.15s;
+  line-height: 1.4;
+  color: rgba(255,255,255,0.7);
 }
 
-.section{
-	display: inline;
+#table-of-contents li:hover {
+  background: var(--navy-light);
+  color: var(--white);
+  border-left-color: var(--gold);
 }
 
-.section:after{
-	content: "";
-	display: block;
+#table-of-contents li.section {
+  font-weight: 600;
+  color: var(--white);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.subsection{
-	list-style-position: inside;
-	padding-left: 10px;
+/* The collapse-arrow wrapper (the <span> around .hide-section) is the actual
+   flex child of the section row, so flex-shrink belongs here, not on the input */
+#table-of-contents li.section > span {
+  flex-shrink: 0;
 }
 
-.changed{
-	color: #3478e5;
+#table-of-contents li.subsection {
+  padding-left: 48px;
 }
 
-.hide-section{
-	height: 12px;
-	width: 12px;
-	display: inline;
+@keyframes subtle-pulse {
+  0%, 100% { background: rgba(201, 168, 76, 0.08); }
+  50% { background: rgba(201, 168, 76, 0.18); }
 }
 
-.hide-article{
-	height: 24px;
-	width: 24px;
-	display: inline;
+#table-of-contents li.changed {
+  border-left-color: var(--gold);
+  color: var(--gold-light);
+  background: rgba(201, 168, 76, 0.08);
+  animation: subtle-pulse 2.5s ease-in-out infinite;
 }
 
-.hide-paragraphs{
-	height: 16px;
-	width: 16px;
-	display: inline;
+/* ── Docs area ── */
+#docs-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: calc(100vh - var(--top-bar-h));
 }
 
-.file-button{
-	width: 15vw;
-	height: auto;
+#docs-area.comparing {
+  flex-direction: row;
+  overflow-x: auto;
 }
 
-.doc-title{
-	border: none;
-	background: transparent;
-	border-bottom: 2px solid #778188;
-	outline: none;
-	display: none;
-	margin-top: 10px;
-	text-align: center;
-	font-size: 18px;
+/* ── Upload zone ── */
+#upload-zone {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  overflow-y: auto;
+  height: 100%;
+  max-height: calc(100vh - var(--top-bar-h));
+  box-sizing: border-box;
 }
 
-#compare-button{
-	position: fixed;
-	display: block;
-	max-width: 149px;
-	bottom: 2%;
-	left: 50%;
-	transform: translate(-50%, 0);
+#upload-instructions {
+  text-align: center;
+  margin-bottom: 24px;
+  padding: 0 20px;
+  flex-shrink: 0;
 }
 
-#re-compare-button{
-	position: fixed;
-	max-width: 149px;
-	bottom: 2%;
-	left: 50%;
-	transform: translate(-50%, 0);
+#upload-instructions h2 {
+  font-size: 24px;
+  color: var(--navy);
+  margin-bottom: 12px;
 }
 
-#def-button{
-	position: fixed;
-	display: none;
-	max-width: 141px;
-	bottom: 2%;
-	left: 35%;
-	transform: translate(-50%, 0);
+#upload-instructions p {
+  color: var(--gray-dark);
+  font-size: 15px;
+  max-width: 480px;
+  line-height: 1.6;
 }
 
-#edit-button{
-	position: fixed;
-	display: none;
-	max-width: 141px;
-	bottom: 2%;
-	left: 65%;
-	transform: translate(-50%, 0);
+.upload-hint {
+  margin-top: 8px;
+  font-size: 13px !important;
+  color: var(--gray-mid) !important;
 }
 
-#add-button{
-	position: fixed;
-	display: none;
-	max-width: 280px;
-	bottom: 2%;
-	left: 3%;
+#docs {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: hidden;
+  height: 100%;
+  width: 100%;
+  align-items: flex-start;
 }
 
-#logo{
-	position: fixed;
-	display: block;
-	max-width: 190px;
-	bottom: 2%;
-	right: 1%;
+/* Upload view (pre-compare): a CSS grid that auto-fits and WRAPS the upload
+   cards to new rows, so 2/3/4/5+ versions never overflow off-screen or stretch
+   oversized. Scoped to :not(.comparing) — NOT #upload-zone — because the
+   doc-blocks live inside #upload-zone in BOTH states. */
+#docs-area:not(.comparing) #docs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 240px));
+  gap: 24px;
+  justify-content: center;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  /* Override the shared base #docs (flex:1 / height:100% / overflow-y:hidden)
+     so the grid sizes to its content and wrapped rows aren't clipped — the
+     #upload-zone scrolls instead. */
+  flex: none;
+  height: auto;
+  overflow: visible;
 }
 
-::-webkit-scrollbar{
-	width: 20px;
+/* Each doc-block is now a GRID ITEM. Strip its panel chrome so only the dashed
+   upload card shows, and min-width:0 lets it shrink into its grid cell. */
+#docs-area:not(.comparing) .doc-block {
+  border-right: none;
+  min-width: 0;
+  max-width: none;
+  width: auto;
+  height: auto;
+  padding: 0;
+  flex: none;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
 }
 
-::-webkit-scrollbar-track{
-	border-radius: 25px;
+/* ...but no gap/padding in compare mode, so resize handles sit flush
+   against the panel edges */
+#docs-area.comparing #docs {
+  gap: 0;
+  padding: 0;
 }
 
-::-webkit-scrollbar-thumb{
-	background: #ff0000;
-	border-radius: 25px;
-	min-height: 25px;
+/* ── Doc blocks ── */
+.doc-block {
+  display: inline-flex;
+  flex-direction: column;
+  min-width: 320px;
+  max-width: 45vw;
+  flex: 1;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--white);
+  border-right: 1px solid var(--gray-light);
+  /* No top padding: the sticky .doc-version-header sticks to top:0 of the
+     scroll container's padding box, so any top padding leaves a gap above the
+     header when scrolled. Top spacing now comes from the header itself. */
+  padding: 0 20px 24px;
+  font-size: 14px;
+  line-height: 1.7;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.upload-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  border: 2px dashed var(--gray-light);
+  border-radius: 12px;
+  padding: 40px 24px;
+  text-align: center;
+  transition: border-color 0.2s, background 0.2s;
+  background: var(--white);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.upload-card:hover {
+  border-color: var(--gold);
+  background: rgba(201, 168, 76, 0.03);
+}
+
+.upload-icon {
+  font-size: 40px;
+  opacity: 0.4;
+}
+
+.upload-card .file-button {
+  background: var(--navy);
+  color: var(--white);
+  border: none;
+  padding: 8px 20px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 13px;
+  transition: background 0.2s;
+}
+
+.upload-card .file-button:hover {
+  background: var(--navy-light);
+}
+
+.doc-title {
+  border: none;
+  border-bottom: 1px solid var(--gray-light);
+  padding: 4px 8px;
+  font-size: 13px;
+  color: var(--gray-dark);
+  text-align: center;
+  width: 100%;
+  background: transparent;
+  outline: none;
+}
+
+/* "Version N" label inside the upload card */
+.upload-label {
+  font-size: 13px;
+  color: var(--gray-dark);
+  font-weight: 500;
+}
+
+/* Filename confirmation shown below the upload card after a file is chosen.
+   Lives outside .upload-card (see index.html / docBlockTemplate) so hiding the
+   card on upload doesn't hide this. Width matches the card so the centered text
+   sits directly beneath it. */
+.upload-text {
+  font-size: 11px;
+  text-align: center;
+  width: 100%;
+  word-break: break-word;
+  color: var(--ins-color);
+  margin-top: 8px;
+  box-sizing: border-box;
+}
+
+.upload-text:empty {
+  display: none;
+  margin: 0;
+}
+
+.hide-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 4px 8px;
+  font-size: 10px;
+  font-family: inherit;
+  background: var(--white);
+  border: 1px solid var(--gray-light);
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--gray-dark);
+  z-index: 11;
+  box-shadow: var(--shadow-sm);
+  width: auto;
+  white-space: nowrap;
+}
+
+.hide-button:hover {
+  background: var(--navy);
+  color: var(--white);
+  border-color: var(--navy);
+}
+
+/* ── Document content ── */
+.doc { outline: none; }
+
+.doc h1 {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--navy);
+  border-bottom: 2px solid var(--navy);
+  padding-bottom: 6px;
+  margin: 24px 0 12px;
+}
+
+.doc h2 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--navy-light);
+  margin: 16px 0 8px;
+  border-bottom: 1px solid var(--gray-light);
+  padding-bottom: 4px;
+}
+
+.doc p {
+  font-size: 13px;
+  line-height: 1.7;
+  margin-bottom: 6px;
+  color: var(--text-dark);
+}
+
+/* ── Redline colors ── */
+ins {
+  background: #c8e9d1;
+  color: #0d5c2e;
+  text-decoration: none;
+  border-radius: 2px;
+  padding: 0 2px;
+  font-weight: 500;
+}
+
+del {
+  background: var(--del-bg);
+  color: var(--del-color);
+  text-decoration: line-through;
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+/* ── Collapse buttons ── */
+.hide-article, .hide-paragraphs, .hide-section {
+  background: none;
+  border: none;
+  color: var(--gold);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 0 4px;
+  margin-right: 6px;
+  transition: transform 0.2s;
+}
+
+.hide-section {
+  background: none;
+  border: none;
+  color: var(--gold);
+  cursor: pointer;
+  font-size: 11px;
+  padding: 0 4px;
+  margin-right: 4px;
+}
+
+/* ── Resize handle between panels (drag to resize all panels together) ── */
+.expand {
+  width: 6px;
+  /* Stretch to the full row height — without this the empty div is 0px tall
+     (because #docs uses align-items:flex-start), so the handle is unclickable */
+  align-self: stretch;
+  cursor: col-resize;
+  background: var(--gray-light);
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+.expand:hover {
+  background: var(--gold);
+}
+
+/* ── Sticky version header on each document panel ── */
+.doc-version-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  background: var(--navy);
+  color: var(--gold);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  /* The .hide-button now lives inside this flex header (no longer absolutely
+     positioned), so the header no longer needs to reserve right-side space */
+  padding: 8px 12px;
+  /* margin-top 0 (doc-block now has no top padding); -20px sides bleed the
+     header to the full panel width */
+  margin: 0 -20px 16px -20px;
+  z-index: 10;
+  border-bottom: 2px solid var(--gold);
+  gap: 8px;
+}
+
+/* The hide/unhide button, moved into the flex header — no absolute positioning */
+.doc-version-header .hide-button {
+  position: relative;
+  top: auto;
+  right: auto;
+  margin-left: 8px;
+  flex-shrink: 0;
+}
+
+/* Print button in each version ribbon */
+.print-version-btn {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: var(--gold);
+  cursor: pointer;
+  font-size: 15px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+.print-version-btn:hover {
+  background: var(--gold);
+  color: var(--navy);
+  border-color: var(--gold);
+}
+
+/* (The old .restore-tab was removed — a hidden panel now collapses to a narrow
+   ~64px strip with an "Unhide" button, which serves the same purpose with one
+   mechanism instead of two.) */
+/* When collapsed to the 64px strip, keep the header visible so the Unhide
+   button (now living inside it) stays reachable — but strip it down to just
+   that button: hide the version name and print button, and shrink the header
+   to fit the narrow strip. */
+.panel-collapsed .doc-version-header {
+  justify-content: center;
+  padding: 8px 4px;
+  margin: 0 -4px 12px -4px;
+}
+.panel-collapsed .doc-version-header .version-name,
+.panel-collapsed .doc-version-header .print-version-btn {
+  display: none;
+}
+.panel-collapsed .doc-version-header .hide-button {
+  margin-left: 0;
+}
+
+/* Vertical document name shown in the collapsed 64px strip */
+.collapsed-label {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--navy);
+  text-align: center;
+  margin-top: 40px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-height: calc(100vh - 200px);
+}
+
+/* ── Reveal text button ── */
+.reveal-text {
+  display: block;
+  margin: 8px 0;
+  padding: 4px 12px;
+  background: var(--off-white);
+  border: 1px solid var(--gray-light);
+  border-radius: 4px;
+  font-size: 12px;
+  color: var(--gray-dark);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.reveal-text:hover {
+  background: var(--navy);
+  color: var(--white);
+  border-color: var(--navy);
+}
+
+/* ── Popup ── */
+.popup {
+  position: fixed;
+  background: var(--white);
+  border: 1px solid var(--gray-light);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  padding: 16px;
+  max-width: 360px;
+  min-width: 200px;
+  z-index: 500;
+  font-size: 13px;
+}
+
+.popup .term {
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 8px;
+  font-size: 13px;
+  border-bottom: 1px solid var(--gray-light);
+  padding-bottom: 6px;
+}
+
+.popup .definition {
+  color: var(--text-mid);
+  line-height: 1.6;
+  font-size: 12px;
+}
+
+.close-popup-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--gray-mid);
+  font-size: 14px;
+  padding: 2px 5px;
+  border-radius: 3px;
+}
+
+.close-popup-button:hover {
+  background: var(--gray-light);
+  color: var(--text-dark);
+}
+
+.zoom-button {
+  margin-top: 10px;
+  display: block;
+  font-size: 11px;
+  color: var(--navy-light);
+  background: var(--off-white);
+  border: 1px solid var(--gray-light);
+  border-radius: 3px;
+  padding: 3px 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.zoom-button:hover {
+  background: var(--navy);
+  color: var(--white);
+}
+
+/* ── Definitions modal ── */
+#def-modal {
+  position: fixed;
+  top: var(--top-bar-h);
+  right: 0;
+  width: 340px;
+  height: calc(100vh - var(--top-bar-h));
+  background: var(--white);
+  border-left: 1px solid var(--gray-light);
+  box-shadow: var(--shadow-lg);
+  overflow-y: auto;
+  z-index: 200;
+  padding: 20px;
+}
+
+#def-modal h3 {
+  color: var(--navy);
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--gold);
+}
+
+.definitionItem {
+  font-size: 12px;
+  line-height: 1.6;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--gray-light);
+  color: var(--text-mid);
+}
+
+/* ── Patent badge ── */
+#patent-badge {
+  font-size: 9px;
+  color: rgba(255,255,255,0.4);
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  margin-right: 8px;
+}
+
+/* ── Drag over highlight ── */
+body.drag-over #upload-zone {
+  background: rgba(201, 168, 76, 0.05);
+  border: 2px dashed var(--gold);
+}
+
+/* ── Scrollbar styling (global) ── */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--gray-light);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--navy-light);
+  border-radius: 5px;
+  border: 2px solid var(--gray-light);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--navy);
+}
+
+/* Firefox-only fallback: scoped via @supports so it does NOT suppress the bold
+   10px ::-webkit-scrollbar styling in Chrome/Edge (setting scrollbar-width there
+   would make Chromium ignore the webkit pseudo-elements). */
+@supports (-moz-appearance: none) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--navy-light) var(--gray-light);
+  }
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  #top-bar-center { display: none; }
+  .doc-block { min-width: 85vw; }
 }

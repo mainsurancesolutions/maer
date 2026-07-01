@@ -1,155 +1,125 @@
 <!DOCTYPE html>
-<html>
-	<head>
-		<meta charset="UTF-8">
-		<link rel="stylesheet" type="text/css" href="./styles/index.css">
-		<title>Contracts Compare</title>
-	</head>
-	<body>
-		<!-- Custom title bar with minimize, maximize, and close buttons -->
-		<div id="title-bar">
-			<div id="left-title-buttons">
-				<input type="image"
-				src="images/save.png" id="save-button"
-				onMouseOver="this.src='images/saveHover.png'"
-				onMouseOut="this.src='images/save.png'" 
-				style="display:none"
-				>
-				<input type="image"
-				src="images/load.png" id="load-button"
-				onMouseOver="this.src='images/loadHover.png'"
-				onMouseOut="this.src='images/load.png'"
-				>
-				<input id="restart-button"
-				type="image" src="images/restart.png"
-				onMouseOver="this.src='images/restartHover.png'"
-				onMouseOut="this.src='images/restart.png'"
-				>
-			</div>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="./styles/index.css">
+  <title>ContractsCompare</title>
+</head>
+<body>
 
-			<h3 id="app-title">Contracts Compare</h3>
-			<div id="right-title-buttons">
-				<input type="image"
-				src="images/minimize.png" id="minimize-button"
-				onMouseOver="this.src='images/minimizeHover.png'"
-				onMouseOut="this.src='images/minimize.png'"
-				>
-				<input type="image"
-				src="images/maximize.png" id="maximize-button"
-				onMouseOver="this.src='images/maximizeHover.png'"
-				onMouseOut="this.src='images/maximize.png'"
-				>
-				<input type="image"
-				src="images/close.png" id="close-button"
-				onMouseOver="this.src='images/closeHover.png'"
-				onMouseOut="this.src='images/close.png'"
-				>
-			</div>
-		</div>
+  <!-- Top navigation bar -->
+  <div id="top-bar">
+    <div id="top-bar-left">
+      <img id="logo" src="images/logo.png" onerror="this.style.display='none'"/>
+      <span id="app-title">ContractsCompare</span>
+      <button id="restart-btn" class="nav-btn"
+        style="margin-left:16px; display:none">
+        ↩ New Session
+      </button>
+    </div>
+    <div id="top-bar-center">
+      <div id="side-toggle">
+        <button id="buyside-btn" class="side-btn active">Buy-Side</button>
+        <button id="sellside-btn" class="side-btn">Sell-Side</button>
+      </div>
+    </div>
+    <div id="top-bar-right">
+      <span id="patent-badge">Pat. No. US-11227107-B2</span>
+      <button id="add-button" class="nav-btn" style="display:none">
+        + Add Version
+      </button>
+      <button id="def-button" class="nav-btn" style="display:none">
+        Definitions
+      </button>
+      <button id="compare-button" class="nav-btn primary">
+        Compare
+      </button>
+      <button id="re-compare-button" class="nav-btn primary"
+        style="display:none">
+        Re-Compare
+      </button>
+    </div>
+  </div>
 
-		<!--This is where the user will upload their documents.
-			The third slot only reveals after the 2nd slot has been filled-->
-		<div id="docs-and-console">
-			<!--The console that appears when you begin comparing-->
-			<div id="console-block" style="display:none">
-				<div id="console-contents">
-					<p id="toc-title">Table of Contents</p>
-					<input id="hide-console"
-					type="image" src="images/hide.png"
-					onMouseOver="this.src='images/hideHover.png'"
-					onMouseOut="this.src='images/hide.png'"/>
-					<ol id="table-of-contents"></ol>
-				</div>
-			</div>
-			<div id="docs">
-				<!--The file upload field itself is hidden
-					We use an input with an image that links to the file upload
-					purely because it looks better-->
-				<div id="block1" class="doc-block">
-					<input hidden
-					type="file" accept=".docx"
-					onchange="fileAdded()"/>
+  <!-- Main layout -->
+  <div id="main-layout">
 
-					<!--This button activates the input above,
-						asking for a file-->
-					<input class="file-button"
-					type="image" src="images/upload.png"/>
+    <!-- Left sidebar: Table of Contents -->
+    <div id="sidebar" style="display:none">
+      <div id="sidebar-header">
+        <span>Table of Contents</span>
+        <button id="sidebar-collapse-btn">‹</button>
+      </div>
+      <ol id="table-of-contents"></ol>
+    </div>
 
-					<input class="doc-title" 
-					onClick="this.select()" value=""
-					onchange="nameChange()">
-					<p class="upload-text">Upload a file</p>
+    <!-- Document upload and display area -->
+    <div id="docs-area">
 
-					<!-- Button to hide document. Starts hidden -->
-					<input class="hide-button"
-					type="image" src="images/hide.png"
-					style="display:none"
-					onMouseOver="this.src='images/hideHover.png'"
-					onMouseOut="this.src='images/hide.png'"/>
+      <!-- Upload zone shown before comparison -->
+      <div id="upload-zone">
+        <div id="upload-instructions">
+          <h2>Upload Agreement Versions</h2>
+          <p>Upload multiple versions of an agreement to compare
+            how it evolved through negotiation</p>
+          <p class="upload-hint">Drag and drop .docx files here,
+            or use the upload buttons below</p>
+        </div>
+        <div id="docs">
+          <div id="block1" class="doc-block">
+            <input hidden type="file" accept=".docx"
+              onchange="fileAdded()"/>
+            <div class="upload-card">
+              <div class="upload-icon">📄</div>
+              <p class="upload-label">Drop file here</p>
+              <button class="file-button nav-btn">Upload File</button>
+              <input class="doc-title"
+                onClick="this.select()" value=""
+                onchange="nameChange()"
+                placeholder="Version name...">
+            </div>
+            <!-- Filename confirmation; lives OUTSIDE the card so it stays
+                 visible after the card is hidden on upload -->
+            <p class="upload-text"></p>
+            <button class="hide-button" style="display:none">✕ Hide</button>
+            <p class="doc"></p>
+          </div>
+          <div class="expand" style="display:none"></div>
 
-					<p class="doc"></p>
-				</div>
-				<div class="expand" style="display:none"></div>
+          <div id="block2" class="doc-block">
+            <input hidden type="file" accept=".docx"
+              onchange="fileAdded()"/>
+            <div class="upload-card">
+              <div class="upload-icon">📄</div>
+              <p class="upload-label">Drop file here</p>
+              <button class="file-button nav-btn">Upload File</button>
+              <input class="doc-title"
+                onClick="this.select()" value=""
+                onchange="nameChange()"
+                placeholder="Version name...">
+            </div>
+            <!-- Filename confirmation; lives OUTSIDE the card so it stays
+                 visible after the card is hidden on upload -->
+            <p class="upload-text"></p>
+            <button class="hide-button" style="display:none">✕ Hide</button>
+            <p class="doc"></p>
+          </div>
+          <div class="expand" style="display:none"></div>
+        </div>
+      </div>
 
-				<div id="block2" class="doc-block">
-					<input hidden
-					type="file" accept=".docx"
-					onchange="fileAdded()"/>
+    </div>
+  </div>
 
-					<input class="file-button"
-					type="image" src="images/upload.png"/>
-
-					<input class="doc-title" 
-					onClick="this.select()" value=""
-					onchange="nameChange()">
-					<p class="upload-text">Upload a file</p>
-
-					<input class="hide-button"
-					type="image" src="images/hide.png"
-					style="display:none"
-					onMouseOver="this.src='images/hideHover.png'"
-					onMouseOut="this.src='images/hide.png'"/>
-
-					<p class="doc"></p>
-				</div>
-				<div class="expand" style="display:none"></div>
-				
-			</div>
-		</div>
-
-		<!--Button to initiate comparison-->
-		<input id="compare-button"
-		type="image" src="images/compare.png"
-		onMouseOver="this.src='images/compareHover.png'"
-		onMouseOut="this.src='images/compare.png'"/>
-
-		<!--Another compare button, but green and to symbolize that the compared docs have changed, so a re-comparison would change things-->
-		<input id="re-compare-button" style="display:none"
-		type="image" src="images/recompare.png"
-		onMouseOver="this.src='images/recompareHover.png'"
-		onMouseOut="this.src='images/recompare.png'"/>
-
-		<!--Button to add a new doc after comparing-->
-		<input id="add-button"
-		type="image" src="images/add.png"
-		onMouseOver="this.src='images/addHover.png'"
-		onMouseOut="this.src='images/add.png'"/>
-
-		<!--Button to open a page containing all definitions-->
-		<input id="def-button"
-		type="image" src="images/def.png"
-		onMouseOver="this.src='images/defHover.png'"
-		onMouseOut="this.src='images/def.png'"/>
-
-		<!--Button to open the most recent doc in your word processor-->
-		<input id="edit-button"
-		type="image" src="images/edit.png"
-		onMouseOver="this.src='images/editHover.png'"
-		onMouseOut="this.src='images/edit.png'"/>
-	</body>
-	<footer>
-		<img id="logo" src="images/logo.png"/>
-	</footer>
-	<script type="text/javascript" src="./scripts/mainWindow.js">
-	</script>
+  <script src="https://unpkg.com/mammoth@1.4.8/mammoth.browser.min.js">
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/string-similarity@4.0.4/umd/string-similarity.min.js">
+  </script>
+  <script src="./scripts/htmldiff.js"></script>
+  <script src="./scripts/scroll.js"></script>
+  <script src="./scripts/popup.js"></script>
+  <script src="./scripts/comparison.js"></script>
+  <script src="./scripts/mainWindow.js"></script>
+</body>
 </html>

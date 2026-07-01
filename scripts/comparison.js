@@ -1,10 +1,7 @@
-const mammoth = require('mammoth')
-const diff = require('node-htmldiff')
-const fs = require('fs')
-const hideSectionButton = fs.readFileSync(__dirname + '/../hideSectionButton.html')
-const hideArticleButton = fs.readFileSync(__dirname + '/../hideArticleButton.html')
-const hideParagraphsButton = fs.readFileSync(__dirname + '/../hideParagraphsButton.html')
-const revealText = fs.readFileSync(__dirname + '/../revealText.html')
+const hideSectionButton = '<input class="hide-section" type="button" value="▼"/>'
+const hideArticleButton = '<input class="hide-article" type="button" value="▼"/>'
+const hideParagraphsButton = '<input class="hide-paragraphs" type="button" value="▼"/>'
+const revealText = '<button class="reveal-text">Show all text</button>'
 
 //HTML ripped from files as well as error/warning messages
 let rippedHtml
@@ -19,33 +16,31 @@ let alphabet = ["a", "b", "c", "d", "e", "f", "g", "h",
 				"q", "r", "s", "t", "u", "v", "w", "x", 
 				"y", "z"]
 
-module.exports ={
-	//Main function, calls readDocs to rip the text, 
-	//waits until that's done, then finds and renders differences
-	render: async function(files, fields, tocBlock){
-		//Will return false if it fails to read the files
-		if(await readDocs(files, fields) === false)
-			return false
-		function ensureHtmlIsSet() {
-		    return new Promise(function (resolve, reject) {
-		        (function waitForHtml(){
-		        	//Make sure all docs have been loaded in
-		        	for(let i = 0; i < files.length - 1; i++){
-		        		//if we made it through all docs without finding a null or undefined, we're good
-		        		if(i === files.length-2 && rippedHtml[i] !== null && rippedHtml[i] !== undefined)
-		        			return resolve()
-		        		if(rippedHtml[i] === null || rippedHtml[i] === undefined)
-		        			break
-		        	}
-		            setTimeout(waitForHtml, 125)
-		        })();
-		    });
-		}
-		ensureHtmlIsSet().then(function(){
-			findDiffs(fields, tocBlock)
-		})
-		return true
+//Main function, calls readDocs to rip the text,
+//waits until that's done, then finds and renders differences
+async function render(files, fields, tocBlock){
+	//Will return false if it fails to read the files
+	if(await readDocs(files, fields) === false)
+		return false
+	function ensureHtmlIsSet() {
+	    return new Promise(function (resolve, reject) {
+	        (function waitForHtml(){
+	        	//Make sure all docs have been loaded in
+	        	for(let i = 0; i < files.length - 1; i++){
+	        		//if we made it through all docs without finding a null or undefined, we're good
+	        		if(i === files.length-2 && rippedHtml[i] !== null && rippedHtml[i] !== undefined)
+	        			return resolve()
+	        		if(rippedHtml[i] === null || rippedHtml[i] === undefined)
+	        			break
+	        	}
+	            setTimeout(waitForHtml, 125)
+	        })();
+	    });
 	}
+	ensureHtmlIsSet().then(function(){
+		findDiffs(fields, tocBlock)
+	})
+	return true
 }
 
 /*Reads the contents of a docx and converts it to html
@@ -54,13 +49,10 @@ field: array of <p> tags. This is where the html will go
 Possible for some or all elements to be null
 */
 async function readDocs(files, fields){
-	let numOfFiles
-	if(files.length > 2){
-		numOfFiles = files.length-1
-		rippedHtml = new Array(files.length-1)
-		rippedHtml.fill(null)
-	}
-	//Map docx styles to html styles
+	let numOfFiles = files.length - 1
+	rippedHtml = new Array(numOfFiles)
+	rippedHtml.fill(null)
+
 	let options = {
 		styleMap: [
 			"p[style-name='Corp 1'] => h1:fresh",
@@ -75,24 +67,24 @@ async function readDocs(files, fields){
 			"p[style-name='Heading 4'] => p.subsection-sub-bullet:fresh"
 		]
 	}
-	for(let i=0; i<numOfFiles; i++){
+
+	for(let i = 0; i < numOfFiles; i++){
 		fields[i].innerHTML = "Processing..."
 		try{
-			//Most common reason it will fail to read a file is if the user moved or deleted one of the files to be read
-			if(fs.existsSync(files[i].path)){
-				await mammoth.convertToHtml({path: files[i].path}, options)
-				.then(function(result){
-					if(rippedHtml[i] !== "")
-						rippedHtml[i] = result.value //Html generated from docx
-				})
-				.done()
-			}
-			else
-				return false			
-		}catch (e){
+			let arrayBuffer = await files[i].arrayBuffer()
+			let result = await mammoth.convertToHtml({arrayBuffer: arrayBuffer}, options)
+			rippedHtml[i] = result.value
+			//Upstream fix for stray subsection periods (e.g. "5.09 Independent
+			//Investigation\n. In making"): mammoth sometimes emits the numbering
+			//period at the START of the paragraph following a section header.
+			//Strip any leading period (plus optional whitespace/<br>) from every
+			//paragraph in the raw HTML, before the diff and numbering logic runs.
+			//numberSections() keeps its own strips as a second layer of defense.
+			rippedHtml[i] = rippedHtml[i].replace(/<p([^>]*)>\s*\.\s*(<br\s*\/?>)?\s*/gi, '<p$1>')
+		} catch(e) {
+			console.error("Failed to read file:", e)
 			return false
 		}
-		
 	}
 	return true
 }
@@ -134,7 +126,7 @@ async function findDiffs(fields, tocBlock){
 	clearTable(tableOfContentsElement).then(()=>{
 		//Iterate through all docs
 		for(let i = 1; i < rippedHtml.length; i++){
-			fields[i].innerHTML = diff(rippedHtml[i-1], rippedHtml[i])
+			fields[i].innerHTML = htmldiff(rippedHtml[i-1], rippedHtml[i])
 
 			//See section comments at the top. We will push subsections to this then
 			//push this + the section title to the tableOfContents
@@ -235,7 +227,7 @@ async function findDiffs(fields, tocBlock){
 					//Add the section number and name to the listitem
 					newListItem.appendChild(document.createTextNode((i+1) + ". " + tableOfContents[i][0]))
 					tocBlock.appendChild(newListItem)
-					tocBlock.insertBefore(hideSectionButtonElement.cloneNode(true), newListItem)
+					newListItem.insertBefore(hideSectionButtonElement.cloneNode(true), newListItem.firstChild)
 					for(let j = 0; j < tableOfContents[i][1].length; j++){
 						//Subsection number must be of the form 1.01, 1.02, 1.03, ..., 1.10, 1.11, ...
 						if(j < 9)
@@ -271,7 +263,7 @@ async function findDiffs(fields, tocBlock){
 				//If we found a section header, find the dropdown button in that header
 				case 'H2':
 					if(docElements[j].getElementsByTagName('INPUT').length > 0){
-						if(docElements[j].getElementsByTagName('INPUT')[0].src.includes("images/showSection.png"))
+						if(docElements[j].getElementsByTagName('INPUT')[0].value === "▶")
 							hideNextRevealText = true
 					}
 					break
@@ -310,6 +302,8 @@ function numberSections(docSlots){
 					docElements[j].insertAdjacentHTML('afterbegin', hideArticleButton)
 					break
 				case 'H2':
+					//Strip a leading stray period from the section title too (same source artifact)
+					docElements[j].innerText = docElements[j].innerText.replace(/^\s*\.\s*/, '')
 					if(sectionNumber > 9)
 						docElements[j].innerText = articleNumber + "." + sectionNumber + " " + docElements[j].innerText
 					else
@@ -323,6 +317,10 @@ function numberSections(docSlots){
 					if(i === 0 && docElements[j].innerHTML.includes("<br>")){
 						docElements[j].innerHTML = docElements[j].innerHTML.replace(new RegExp('<br>', 'g'), '')
 					}
+					//Strip a leading list-numbering artifact (a stray "." possibly separated by <br>
+					//or whitespace) that mammoth carried over from the source Word doc's native
+					//numbering, for ALL paragraphs (regular + subsection) before any (a)/(i) label.
+					docElements[j].innerHTML = docElements[j].innerHTML.replace(/^(\s|&nbsp;|<br\s*\/?>)*\.(\s|&nbsp;|<br\s*\/?>)*/i, '')
 					if(docElements[j].innerText.length > 0){
 						if(docElements[j].classList.contains('subsection-bullet')){
 							subsubsectionNumber = 1
@@ -382,7 +380,7 @@ function numberSections(docSlots){
 				docElements = Array.from(docSlots[i].childNodes)
 				foundASection = false
 				//Show items
-				if(articleButtons[j].src.includes("images/showSection.png")){
+				if(articleButtons[j].value === "▶"){
 					//Start with the element right after the article title
 					for(let k = docElements.indexOf(event.target.parentElement) + 1; k < docElements.length; k++){
 						//Stop once we reach the next article
@@ -409,7 +407,7 @@ function numberSections(docSlots){
 						
 					}
 					foundASection = false
-					articleButtons[j].src = "images/hideSection.png"
+					articleButtons[j].value = "▼"
 				}
 				//Hide items
 				else{
@@ -418,7 +416,7 @@ function numberSections(docSlots){
 							break
 						//change the button on the section headers to reflect being hidden
 						if(docElements[k].tagName === "H2"){
-							docElements[k].childNodes[0].src = "images/showSection.png"
+							docElements[k].childNodes[0].value = "▶"
 							foundASection = true
 						}
 						docElements[k].style.display = "none"
@@ -431,7 +429,7 @@ function numberSections(docSlots){
 						}
 					}
 					foundASection = false
-					articleButtons[j].src = "images/showSection.png"
+					articleButtons[j].value = "▶"
 				}
 			})
 			//If the article starts hidden, hide all section headers in it
@@ -447,14 +445,14 @@ function numberSections(docSlots){
 				if(docElements[k].tagName === "H1" || docElements[k].tagName === "H2")
 					break
 				if(docElements[k].style.display !== "none" && !docElements[k].classList.contains("reveal-text")){
-					sectionButtons[j].src = "images/hideSection.png"
+					sectionButtons[j].value = "▼"
 					break
 				}
 			}
 			sectionButtons[j].addEventListener('click', ()=>{
 				docElements = Array.from(docSlots[i].childNodes)
 				//Show items
-				if(sectionButtons[j].src.includes("images/showSection.png")){
+				if(sectionButtons[j].value === "▶"){
 					//Start with the element right after the section title
 					for(let k = docElements.indexOf(event.target.parentElement) + 1; k < docElements.length; k++){
 						if(docElements[k].tagName === "H1" || docElements[k].tagName === "H2")
@@ -465,7 +463,7 @@ function numberSections(docSlots){
 						if(docElements[k].tagName === 'BUTTON')
 							docElements[k].innerText = "Hide unchanged text"
 					}
-					sectionButtons[j].src = "images/hideSection.png"
+					sectionButtons[j].value = "▼"
 				}
 				//Hide items
 				else{
@@ -474,7 +472,7 @@ function numberSections(docSlots){
 							break
 						docElements[k].style.display = "none"
 					}
-					sectionButtons[j].src = "images/showSection.png"
+					sectionButtons[j].value = "▶"
 				}
 			})
 		}

@@ -1,10 +1,15 @@
-const popupHTML = fs.readFileSync(__dirname + '/../definitionPopup.html')
-const scrollScript = require(__dirname + '/../scripts/scroll.js')
+const popupHTML = `
+<div class="popup-content">
+  <button class="close-popup-button">✕</button>
+  <p class="term"></p>
+  <p class="definition"></p>
+  <button class="zoom-button">↗ Go to section</button>
+</div>`
 //Each pop-up will have a z index ensuring they appear above everything else
 //we increment that counter with each new popup so that if you have multiple popups,
 //the most recent will show up in front of all others
-let zCounter = 2
-let position = [0, 0]
+let zCounter = 1100
+window._popupPosition = [0,0]
 
 /*
 This file controls what happens when you hover your mouse over a word,
@@ -12,10 +17,10 @@ creating a pop-up containing the definition if it has one, or the section text
 if it's a section number
 */
 
-module.exports ={
+window.popupScript ={
 
 	setPosition: function(pos){
-		position = pos
+		window._popupPosition = pos
 	},
 
 	//Populate the allDefinitions array with tuples of terms and their definitions
@@ -199,7 +204,8 @@ module.exports ={
 		}
 		paragraph.innerHTML = reconstructed
 		let hoveredNode = document.elementFromPoint(mousePos[0], mousePos[1])
-		
+		if(!hoveredNode || !hoveredNode.innerText) return
+
 		let hoveredWord = hoveredNode.innerText
 		//Make sure we're not grabbing the entire paragraph
 		if(hoveredWord.length < 30){
@@ -261,12 +267,16 @@ function popup(term, definition, mousePos, document, docNumber, section, defPage
 		return [term, definition, zCounter++]
 	let popupElement = document.createElement('div')
 	popupElement.innerHTML = popupHTML
-	document.getElementById('docs-and-console').appendChild(popupElement)
+	document.body.appendChild(popupElement)
 
-	//Position the element where you hovered
-	//We set the top and right so we can easily detect if the element is offscreen
-	popupElement.style.left = mousePos[0] + "px"
-	popupElement.style.top = mousePos[1] + "px"
+	//Position the element where you hovered, keeping it below the top bar
+	let topBar = document.getElementById('top-bar')
+	let topBarHeight = topBar ? topBar.offsetHeight : 56
+	let initialTop = Math.max(mousePos[1], topBarHeight + 10)
+	popupElement.style.position = 'fixed'
+	popupElement.style.left = mousePos[0] + 'px'
+	popupElement.style.top = initialTop + 'px'
+	popupElement.style.zIndex = zCounter
 
 	popupElement.classList.add("popup")
 	popupElement.getElementsByClassName('close-popup-button')[0].addEventListener('click', ()=>{
@@ -290,10 +300,10 @@ function popup(term, definition, mousePos, document, docNumber, section, defPage
 			//Note that screenX is the coordinates on the entire screen, so we need to take into account the
 			//case in which the window is not fullscreened
 			//We cannot simply use pageX instead of screenX, as that messes up when you scroll the window
-			let mousePosNew = [mouseEvent.screenX - position[0], mouseEvent.screenY - position[1]]
+			let mousePosNew = [mouseEvent.clientX, mouseEvent.clientY]
 			let hoveredElement = document.elementFromPoint(mousePosNew[0], mousePosNew[1])
 			//Prepare the element to have a hover box appear
-			popupScript.wrapWords(hoveredElement, mousePosNew, docNumber, document, false)
+			window.popupScript.wrapWords(hoveredElement, mousePosNew, docNumber, document, false)
 		}, 1100)
 	})
 	popupElement.addEventListener('mouseout', () =>{
@@ -306,12 +316,15 @@ function popup(term, definition, mousePos, document, docNumber, section, defPage
 	})
 	//Zoom the doc to that section upon clicking the arrow button
 	popupElement.getElementsByClassName('zoom-button')[0].addEventListener('click', () =>{
-		scrollScript.scrollTo(document.getElementsByClassName('doc-block')[docNumber], section)
+		window.scrollScript.scrollTo(document.getElementsByClassName('doc-block')[docNumber], section)
 	})
 	//Remove the 'zoom to section' button if this is a definition
 	//if it's a section/article, we wanna remove the "collapse section" buttons
-	if(term.split(" ")[0] !== "Section" && term.split(" ")[0] !== "Article")
-		popupElement.removeChild(popupElement.getElementsByClassName('zoom-button')[0])
+	if(term.split(" ")[0] !== "Section" && term.split(" ")[0] !== "Article"){
+		let zoomBtn = popupElement.getElementsByClassName('zoom-button')[0]
+		if(zoomBtn && zoomBtn.parentElement)
+			zoomBtn.parentElement.removeChild(zoomBtn)
+	}
 	else{
 		let lineBreak = document.createElement("br")
 		//replace each "collapse section" button with a simple linebreak
@@ -324,22 +337,31 @@ function popup(term, definition, mousePos, document, docNumber, section, defPage
 	}
 
 
-	/*
-	Make sure the window is onscreen fully
-	The style.top, style.bottom, etc. are stored as "#px". So we must remove the px
-	We also don't want the popup to be on the title bar, which is 48px in height
-	It is worth noting that the origin point is the lower left of the popup, which is why we need the offset for 
-	setting the right and top boundaries
-	Another effect of the origin being the lower left is we never have to worry about the element going off the bottom or left
-	*/
-	if((popupElement.style.top.slice(0, -2))-popupElement.offsetHeight < 48)
-		popupElement.style.top = (popupElement.offsetHeight + 48) + "px"
-	//The location of the right side of the element
-	let elementRight = document.body.clientWidth - popupElement.style.left.slice(0, -2) - popupElement.offsetWidth
-	if(elementRight < 0){
-		popupElement.style.left = (document.body.clientWidth - popupElement.offsetWidth) + "px"
-		popupElement.style.right = popupElement.offsetWidth + "px"
-	}
+	//Make sure the popup is fully onscreen, nudging it back in if it overflows.
+	//Deferred via setTimeout(0) so the browser has laid out the element (giving it
+	//real dimensions) before we measure it
+	setTimeout(() => {
+		let rect = popupElement.getBoundingClientRect()
+		let topBar = document.getElementById('top-bar')
+		let topBarHeight = topBar ? topBar.offsetHeight : 56
+
+		// Fix horizontal position
+		if(rect.right > window.innerWidth - 10)
+			popupElement.style.left = (window.innerWidth - rect.width - 10) + 'px'
+		if(rect.left < 10)
+			popupElement.style.left = '10px'
+
+		// Fix vertical position
+		if(rect.top < topBarHeight + 10)
+			popupElement.style.top = (topBarHeight + 10) + 'px'
+		if(rect.bottom > window.innerHeight - 10)
+			popupElement.style.top = (window.innerHeight - rect.height - 10) + 'px'
+
+		// Final check - if still off top after bottom correction
+		rect = popupElement.getBoundingClientRect()
+		if(rect.top < topBarHeight + 10)
+			popupElement.style.top = (topBarHeight + 10) + 'px'
+	}, 0)
 }
 
 /*

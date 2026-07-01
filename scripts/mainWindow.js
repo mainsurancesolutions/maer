@@ -1,15 +1,3 @@
-const ipc = require('electron').ipcRenderer
-const fs = require('fs')
-const compareScript = require(__dirname + '\\scripts\\comparison.js')
-const saveScript = require(__dirname + '\\scripts\\saveManager.js')
-const scrollScript = require(__dirname + '\\scripts\\scroll.js')
-const popupScript = require(__dirname + '\\scripts\\popup.js')
-
-let docBlockHTML = fs.readFileSync(__dirname + '\\docBlock.html')
-
-//boolean, if the demo has expired. Only relevant in demo version
-let expired
-
 let globalMaxW = 45
 let globalMinW = 22
 
@@ -17,13 +5,33 @@ let globalMinW = 22
 let position = [0, 0]
 
 //Console block div
-let consoleBlock = document.getElementById('console-block')
+let consoleBlock = document.getElementById('sidebar')
 
 //The entire block divs for each doc
 let docBlocks = document.getElementsByClassName('doc-block')
 
 //The documents themselves, populated with input
 let docs = [null, null]
+
+//Template for a new doc block, inserted by docsFull() when adding versions.
+//A function so ${docs.length} is evaluated at insertion time for correct version numbering.
+function docBlockTemplate(){
+  return `
+  <div class="doc-block">
+    <input hidden type="file" accept=".docx" onchange="fileAdded()"/>
+    <div class="upload-card">
+      <div class="upload-icon">📄</div>
+      <p class="upload-label">Drop file here</p>
+      <button class="file-button nav-btn">Upload File</button>
+      <input class="doc-title" onClick="this.select()" value=""
+        onchange="nameChange()" placeholder="Version name...">
+    </div>
+    <p class="upload-text"></p>
+    <button class="hide-button" style="display:none">✕ Hide</button>
+    <p class="doc"></p>
+  </div>
+  <div class="expand" style="display:none"></div>`
+}
 
 /*
 Array detailing which docs are shown. Used to know when re-comparing docs would change the results
@@ -51,28 +59,6 @@ let hoverTimer
 //Buttons on each doc to hide the text from it
 let hideButtons = document.getElementsByClassName('hide-button')
 
-document.getElementById('minimize-button').addEventListener('click', () =>{
-	ipc.send('minimize')
-})
-
-document.getElementById('maximize-button').addEventListener('click', () =>{
-	ipc.send('maximize')
-})
-
-document.getElementById('close-button').addEventListener('click', () =>{
-	ipc.send('close')
-})
-
-document.getElementById('restart-button').addEventListener('click', () =>{
-	ipc.send('restart')
-})
-
-//When the definitions button is pressed, send a message to the main file
-//to create a definitions window and populate it with allDefinitions
-document.getElementById('def-button').addEventListener('click', () =>{
-	ipc.send('definitions', allDefinitions)
-})
-
 //We don't want any event to fire upon ending a drag
 document.addEventListener('dragover', (event) =>{
 	event.preventDefault();
@@ -80,49 +66,52 @@ document.addEventListener('dragover', (event) =>{
 }, false);
 
 //Dragging and dropping a .docx file onto the page
-document.addEventListener('drop', (event) =>{
-	event.preventDefault()
-	console.log(event.dataTransfer.files)
-	if(event.dataTransfer.files.length > 1){
-		alert("You must upload 1 file at a time")
-		return false
-	}
-	if(event.dataTransfer.files.length < 1)
-		return false
+document.addEventListener('drop', (event) => {
+  event.preventDefault()
+  if(event.dataTransfer.files.length > 1){
+    alert("You must upload 1 file at a time")
+    return false
+  }
+  if(event.dataTransfer.files.length < 1)
+    return false
 
-	//Show the most recent docBlock
-	docBlocks[docBlocks.length-1].style.display= "inline-block"
+  let inputFile = event.dataTransfer.files[0]
+  if(!inputFile){
+    alert("No file detected")
+    return false
+  }
 
-	//First get the file that was dropped in
-	let inputFile = event.dataTransfer.files[0]
+  if(!inputFile.name.toLowerCase().endsWith('.docx')){
+    alert("You must upload a .docx file")
+    return false
+  }
 
-	//Find out which slot to put it in by finding the last empty doc
-	let whichDoc = docs.indexOf(null)
-	console.log(whichDoc)
+  let filename = inputFile.name.replace(/\.docx$/i, '')
 
-	//Trim the path and file extension to get the filename
-	let filepath = inputFile.path
-	let filename = filepath.substring(filepath.lastIndexOf("\\") + 1, filepath.lastIndexOf("."))
-	console.log(filepath)
-	if(filepath.slice(-5).toLowerCase() !== '.docx'){
-		alert("You must upload a .docx file")
-		return false
-	}
-	docNicknames[whichDoc] = filename
+  let whichDoc = docs.indexOf(null)
+  if(whichDoc === -1){
+    docsFull()
+    whichDoc = docs.length - 1
+  }
 
-	//Store the doc and change the title
-	docs[whichDoc] = inputFile
-	uploadTextSlots[whichDoc].innerHTML = filename + " uploaded successfully"
-
-	//Find and remove the 'Upload file' button once a file has been uploaded
-	docBlocks[whichDoc].getElementsByClassName('file-button')[0].style.display = "none"
-
-	currentlyShown[whichDoc] = true
-	updateCompareButton()
-	//Check if all docs are full
-	docsFull()
-
-	return false
+  docBlocks[docBlocks.length-1].style.display = "inline-flex"
+  docNicknames[whichDoc] = filename
+  docs[whichDoc] = inputFile
+  //Hide the upload card and show the filename, matching fileAdded()'s behaviour
+  //(previously the card stayed visible above the dropped doc)
+  let dropBlock = docBlocks[whichDoc]
+  let uploadCard = dropBlock.querySelector('.upload-card')
+  if(uploadCard) uploadCard.style.display = 'none'
+  let uploadTextEl = dropBlock.querySelector('.upload-text')
+  if(uploadTextEl) uploadTextEl.innerHTML = filename + " uploaded successfully"
+  currentlyShown[whichDoc] = true
+  updateCompareButton()
+  //If this drop filled a newly-added slot, the re-compare button is now showing
+  if(document.getElementById('re-compare-button').style.display !== 'none'){
+    showToast('Version added — click Re-Compare to update')
+  }
+  docsFull()
+  return false
 }, false)
 
 //Close all pop-ups by clicking anywhere other than a button or the pop-up
@@ -159,8 +148,10 @@ let firstResize = true
 
 function rightExpand(e){
 	if(firstResize){
-		docBlocks[clickedDoc].style.maxWidth = docBlocks[clickedDoc].clientWidth + "px"
-		docBlocks[clickedDoc].style.minWidth = docBlocks[clickedDoc].clientWidth + "px"
+		//Switch the panel from flex:1 to a fixed pixel width, otherwise flex:1
+		//keeps overriding the width changes and the panel never actually resizes
+		docBlocks[clickedDoc].style.flex = 'none'
+		docBlocks[clickedDoc].style.width = docBlocks[clickedDoc].clientWidth + "px"
 		firstResize = false
 	}
 	//A boolean value indicating that we are currently changing the width
@@ -170,11 +161,11 @@ function rightExpand(e){
 	const change = e.x - mPos
 	mPos = e.x
 	//Set the new width to be the old one + the change
-	currWidth = (parseInt(getComputedStyle(docBlocks[clickedDoc], '').maxWidth) + change)
+	currWidth = (parseInt(getComputedStyle(docBlocks[clickedDoc], '').width) + change)
 	globalMaxW = currWidth
 	globalMinW = currWidth
-	docBlocks[clickedDoc].style.maxWidth = currWidth + "px"
-	docBlocks[clickedDoc].style.minWidth = currWidth + "px"
+	docBlocks[clickedDoc].style.flex = 'none'
+	docBlocks[clickedDoc].style.width = currWidth + "px"
 }
 
 //Set all the doc widths to the same as the one you just changed
@@ -183,129 +174,124 @@ document.addEventListener("mouseup", () =>{
 	if(changingWidth){
 		changingWidth = false
 		for(let i = 0; i < docBlocks.length; i++){
-			//Don't resize hidden docs
+			//Don't resize hidden docs. Switch every visible panel from flex:1 to a
+			//fixed pixel width so they all match the panel that was just resized.
 			if(docBlocks[i].style.borderStyle !== "none"){
-				docBlocks[i].style.maxWidth = globalMaxW + "px"
-				docBlocks[i].style.minWidth = globalMinW + "px"
+				docBlocks[i].style.flex = 'none'
+				docBlocks[i].style.width = globalMaxW + "px"
 			}
 		}
 	}
 }, false)
 
-ipc.on("wrongType", () =>{
-	alert("You must select a saved project to load")
-})
-
-//Acquires the date the demo is set to expire and checks it against the current date.
-//Only relevant in demo version
-ipc.send('getDemoDate')
-ipc.on("demoEndDate", (event, arg) =>{
-	if(new Date(arg) < new Date())
-		expired = true
-	else
-		expired = false
-})
-
-//When the position of the window changes, update the position array
-ipc.on('position', (event, arg) =>{
-	position = [arg[0], arg[1]]
-	popupScript.setPosition(position)
-})
-
-//When a word is hovered in the definitions window, search for the hovered section, then return the popup text
-//arg will be [hoveredElementText, mousePos, hovered element tagName]
-ipc.on('getSection', async (event, arg) =>{
-	//We want to fetch the section from the last doc, so we must find the index of the last doc
-	let lastDocIndex
-	if(docs[docs.length-1] !== null)
-		lastDocIndex = docs.length-1
-	else
-		lastDocIndex = docs.length-2
-	//sent data will be in the form [section number, section text]
-	let popupData = popupScript.wrapWordsDef(arg[0], arg[1], lastDocIndex, document, arg[2])
-	//Once we've wrapped the text in spans, we want to replace it with the reconstructed paragraph
-	//then hover it again
-	if(popupData){
-		if(popupData[0] === 're-hover')
-			ipc.send('re-hover', popupData[1])
-		else
-			ipc.send('sendSection', popupData)
-	}
-})
-
 //To add a new file after loading, simply un-hide the last one
 //If there is no last one, add a new one
 document.getElementById('add-button').addEventListener('click', () =>{
 	try{
-		docBlocks[docBlocks.length-1].style.display= "inline-block"
+		//Use inline-flex (matching the .doc-block CSS) so a re-shown / added card
+		//keeps the same column layout and width as the original two cards
+		docBlocks[docBlocks.length-1].style.display= "inline-flex"
+		let lastCard = docBlocks[docBlocks.length-1].querySelector('.upload-card')
+		if(lastCard) lastCard.style.display = ''
 		document.getElementsByClassName('file-button')[docBlocks.length-1].style.display= "inline-block"
 	} catch{
 		docsFull()
 	}
+	//Scroll the newly added/revealed panel into view (it may be off-screen right)
+	setTimeout(() => {
+		docBlocks[docBlocks.length-1].scrollIntoView({
+			behavior: 'smooth',
+			inline: 'end',
+			block: 'nearest'
+		})
+	}, 50)
 })
 
-//The save project button
-document.getElementById('save-button').addEventListener('click', () =>{
-	//Pass the save request to the main process to get the path
-	ipc.send('save')
-})
-
-//Edit button, opens last doc in default application for the user
-document.getElementById('edit-button').addEventListener('click', () =>{
-	//find the rightmost doc to edit
-	if(docs[docBlocks.length-1] !== null)
-		ipc.send('edit', docs[docBlocks.length-1].path)
-	else
-		ipc.send('edit', docs[docBlocks.length-2].path)
-})
-
-//Once we get the path from the main process, we can pass it to the saveScript to save it
-ipc.on('savePath', (event, arg) =>{
-	saveScript.save(arg, docs, docNicknames)
-})
-
-document.getElementById('load-button').addEventListener('click', () =>{
-	ipc.send('load')
-})
-
-//Pass the selected project to be loaded by the saveScript
-ipc.on('loadFile', async (event, arg) =>{
-	if(arg === undefined)
-		return
-	let project = await saveScript.load(arg)
-	
-	//Wait for the files to be fetched first before reading them
-	await new Promise((resolve) => {setTimeout(resolve, 10)});
-
-	//Force the creation of new doc slots if needed
-	for(let i = 2; i < project[0].length; i++){
-		docsFull(true)
-	}
-	docs = project[0]
-	docNicknames = project[1];
-
-	//Basically do the processes as if we just uploaded the files
-	let fileButtons = document.getElementsByClassName('file-button')
-	for(let j = 0; j < project[0].length; j++){
-		currentlyShown[j] = true
-		//First hide the file upload buttons
-		fileButtons[j].style.display= "none"
-		//Then show doc titles
-		docTitleSlots[j].innerHTML = docNicknames[j]
-	}
-	lastShown = currentlyShown.slice(0)
-
-	//Now compare
-	document.getElementById('compare-button').click()
+//Open a modal panel listing all definitions (browser replacement for the
+//Electron definitions window)
+document.getElementById('def-button').addEventListener('click', () => {
+  let defModal = document.getElementById('def-modal')
+  if(!defModal){
+    defModal = document.createElement('div')
+    defModal.id = 'def-modal'
+    defModal.style.cssText = `
+      position:fixed; top:0; right:0; width:35vw; height:100vh;
+      background:white; border-left:2px solid #ccc;
+      overflow-y:auto; z-index:1000; padding:20px;`
+    let closeBtn = document.createElement('button')
+    closeBtn.innerText = '✕ Close'
+    //A clearly visible, full-width close button that sticks to the top of the
+    //(scrollable) panel so it's always reachable
+    closeBtn.style.cssText = `
+      position: sticky;
+      top: 0;
+      margin-bottom: 15px;
+      cursor: pointer;
+      background: var(--navy);
+      color: var(--gold);
+      border: 1px solid var(--gold);
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-size: 13px;
+      width: 100%;
+      z-index: 10;`
+    closeBtn.addEventListener('click', () => {
+      defModal.remove()
+      let ov = document.getElementById('def-modal-overlay')
+      if(ov) ov.remove()
+    })
+    defModal.appendChild(closeBtn)
+    let title = document.createElement('h3')
+    title.innerText = 'Definitions'
+    defModal.appendChild(title)
+    for(let i = 0; i < allDefinitions.length; i++){
+      for(let j = 0; j < allDefinitions[i].length; j++){
+        let p = document.createElement('p')
+        p.classList.add('definitionItem')
+        p.innerText = '"' + allDefinitions[i][j][0] + '" ' + allDefinitions[i][j][1]
+        defModal.appendChild(p)
+      }
+    }
+    //Enable the hover-to-define popups inside the definitions panel too, by
+    //delegating from the modal to whichever .definitionItem is under the cursor
+    //(mirrors the per-docSlot hover wiring in setUpScrollFunction)
+    let defHoverTimer
+    defModal.addEventListener('mousemove', (mouseEvent) => {
+      clearTimeout(defHoverTimer)
+      defHoverTimer = setTimeout(() => {
+        let hoveredElement = document.elementFromPoint(mouseEvent.clientX, mouseEvent.clientY)
+        //Use closest() so hovering a child text node inside a .definitionItem still resolves it
+        let defItem = hoveredElement ? hoveredElement.closest('.definitionItem') : null
+        if(defItem){
+          window.popupScript.wrapWords(defItem,
+            [mouseEvent.clientX, mouseEvent.clientY], 0, document)
+        }
+      }, 1100)
+    })
+    defModal.addEventListener('mouseout', () => clearTimeout(defHoverTimer))
+    //Semi-transparent overlay behind the modal; clicking it closes the panel.
+    //(z-index 999 sits below the modal's inline z-index of 1000.)
+    let overlay = document.createElement('div')
+    overlay.id = 'def-modal-overlay'
+    overlay.style.cssText = `
+      position: fixed; top:0; left:0; right:0; bottom:0;
+      background: rgba(0,0,0,0.3); z-index: 999;`
+    overlay.addEventListener('click', () => {
+      defModal.remove()
+      overlay.remove()
+    })
+    document.body.appendChild(overlay)
+    document.body.appendChild(defModal)
+  } else {
+    defModal.remove()
+    let ov = document.getElementById('def-modal-overlay')
+    if(ov) ov.remove()
+  }
 })
 
 //The main comparison function. Runs when the 'compare' button is pressed
 //Read and render all non-hidden documents
 document.getElementById('compare-button').addEventListener('click', async () =>{
-	if(expired){
-		alert("Trial version of M&A Easy Reader has expired.\r\nPlease contact Kirk Sanderson at kirk@rwpolicy.com to ask about purchasing a full license.")
-		return
-	}
 	let shownDocs = []
 	let shownSlots = []
 	//Find out which docs are hidden
@@ -316,34 +302,131 @@ document.getElementById('compare-button').addEventListener('click', async () =>{
 		}
 	}
 	//At LEAST 2 docs have to be filled
-	if(shownDocs.length < 3){
+	if(shownDocs.filter(d => d !== null).length < 2){
 		alert("You must compare at least 2 documents")
 		return false
 	}
-	if(await compareScript.render(shownDocs, shownSlots, document.getElementById('table-of-contents')) === false){
+	if(await render(shownDocs, shownSlots, document.getElementById('table-of-contents')) === false){
 		alert("Upload failed. If you moved the documents since last time you opened them, you'll have to start a new project.")
 	}
-	//Hide the last unused slot
-	if(docs[docBlocks.length-1] === null){
-		docBlocks[docBlocks.length-1].style.display= "none"
-	}
-	//Show console
-	consoleBlock.style.display= "inline-block"
-	document.getElementById('edit-button').style.display= "inline-block"
-	//Show 'hide' buttons of shown docs
+	//Hide every empty/unused doc-block and any leftover upload card, so a
+	//(re-)comparison never re-surfaces upload UI for already-populated documents.
+	//(Previously only the single last slot was hidden, which let upload cards
+	//reappear on re-compare.)
 	for(let i = 0; i < docBlocks.length; i++){
-		if(docs[i])
-			hideButtons[i].style.display = "inline-block"
+		if(docs[i] === null || docs[i] === undefined){
+			docBlocks[i].style.display = "none"
+		} else {
+			let card = docBlocks[i].querySelector('.upload-card')
+			if(card) card.style.display = 'none'
+		}
 	}
-	//Show 'save' button and hide 'load' button
-	document.getElementById('save-button').style.display= "inline-block"
-	document.getElementById('load-button').style.display= "none"
+	//Show the sidebar (table of contents)
+	consoleBlock.style.display= "inline-block"
+	document.getElementById('sidebar').style.display = 'flex'
+	document.getElementById('restart-btn').style.display = 'inline-block'
+	//Hide the upload instructions so only the documents show
+	let uploadInstructions = document.getElementById('upload-instructions')
+	if(uploadInstructions) uploadInstructions.style.display = 'none'
+	//Switch the layout into side-by-side comparison mode
+	document.getElementById('docs-area').classList.add('comparing')
+	document.getElementById('upload-zone').style.flexDirection = 'row'
+	document.getElementById('upload-zone').style.alignItems = 'flex-start'
+	document.getElementById('upload-zone').style.justifyContent = 'flex-start'
+	document.getElementById('upload-zone').style.padding = '0'
+	document.getElementById('upload-zone').style.overflow = 'hidden'
+	document.getElementById('upload-zone').style.height = '100%'
+	//Show the hide/unhide button for every filled panel, and size the visible
+	//doc-blocks. A collapsed panel (currentlyShown === false) must be LEFT as its
+	//64px strip — re-compare previously reset it to flex:1, expanding it back to a
+	//full-width empty panel and stranding the Unhide button.
+	for(let i = 0; i < docBlocks.length; i++){
+		if(docs[i]){
+			hideButtons[i].style.display = "inline-block"
+			if(currentlyShown[i] !== false){
+				docBlocks[i].style.height = '100%'
+				docBlocks[i].style.flex = '1'
+			}
+		}
+	}
 	//Change doc titles
 	for(let i = 0; i < docBlocks.length; i++){
 		if(docs[i]){
 			docTitleSlots[i].style.display = "inline-block"
 			docTitleSlots[i].value = docNicknames[i]
 			uploadTextSlots[i].innerHTML = ""
+		}
+	}
+	//Add a sticky version header to each visible document panel
+	for(let i = 0; i < docBlocks.length; i++){
+		if(docs[i]){
+			let existingHeader = docBlocks[i].querySelector('.doc-version-header')
+			if(!existingHeader){
+				let header = document.createElement('div')
+				header.className = 'doc-version-header'
+				//Title lives in its own span (not a bare text node) so the collapsed
+				//64px strip can hide it via CSS while keeping the Unhide button reachable.
+				let versionName = document.createElement('span')
+				versionName.className = 'version-name'
+				versionName.innerText = docNicknames[i] || 'Version ' + (i+1)
+				header.appendChild(versionName)
+				//Print button in the ribbon — opens a clean, print-formatted copy of
+				//just this version (redlines preserved) in a new tab + print dialog
+				let printBtn = document.createElement('button')
+				printBtn.className = 'print-version-btn'
+				printBtn.innerHTML = '⎙ Print'
+				printBtn.title = 'Print this version'
+				printBtn.addEventListener('click', (e) => {
+					e.stopPropagation()
+					let docClone = docBlocks[i].querySelector('.doc').cloneNode(true)
+					//Remove every injected control. comparison.js only adds inline <input class="hide-*">
+					//+ <button class="reveal-text">; source contracts have no native form controls, so
+					//stripping all input/button is safe and catches anything the class list might miss.
+					docClone.querySelectorAll('input, button, .hide-article, .hide-paragraphs, .hide-section, .reveal-text').forEach(el => el.remove())
+					//The ONLY hiding mechanism comparison.js uses is inline style.display="none" (both the
+					//diff unchanged-paragraph hide AND the collapse handlers). Clear it on EVERY descendant
+					//unconditionally so the full document prints.
+					docClone.querySelectorAll('*').forEach(el => { el.style.display = '' })
+					let docContent = docClone.innerHTML
+					let docName = docNicknames[i] || 'Version ' + (i+1)
+					let printWindow = window.open('', '_blank')
+					printWindow.document.write(`
+						<html>
+							<head>
+								<title>${docName}</title>
+								<style>
+									body { font-family: Georgia, serif; padding: 40px; }
+									h1 { font-size: 14px; text-transform: uppercase; }
+									h2 { font-size: 13px; }
+									p { font-size: 12px; line-height: 1.6; }
+									ins { background: #c8e9d1; color: #0d5c2e; text-decoration: none; }
+									del { background: #fce8e6; color: #c5221f; text-decoration: line-through; }
+								</style>
+							</head>
+							<body>
+								<h1>${docName}</h1>
+								${docContent}
+							</body>
+						</html>
+					`)
+					printWindow.document.close()
+					printWindow.print()
+				})
+				header.appendChild(printBtn)
+				//Move the Hide button out of the scrolling doc-block and into the
+				//sticky header so it stays visible no matter how far the panel scrolls.
+				//The click listener is attached to the element itself (see the hide
+				//loop below), so it survives this DOM move intact.
+				let hideBtn = docBlocks[i].querySelector('.hide-button')
+				if(hideBtn){
+					hideBtn.style.position = 'relative'
+					hideBtn.style.top = 'auto'
+					hideBtn.style.right = 'auto'
+					hideBtn.style.display = 'inline-block'
+					header.appendChild(hideBtn)
+				}
+				docBlocks[i].insertBefore(header, docBlocks[i].querySelector('.doc'))
+			}
 		}
 	}
 	//Reveal add button
@@ -402,6 +485,8 @@ async function setUpScrollFunction(){
 			//Find where the button was pressed, then hide all subsections after that
 			//If already hidden, do the opposite
 			articleHideButtons[i].addEventListener('click', ()=>{
+				//Collapse/expand only — don't bubble to the <li>'s scroll-to-section handler
+				event.stopPropagation()
 				for(let j = allSections.indexOf(articles[i]) + 1; j < allSections.length; j++){
 					//If we've reached the next section, stop hiding/showing
 					if(allSections[j].classList.contains("section")){
@@ -409,18 +494,18 @@ async function setUpScrollFunction(){
 					}
 					if(allSections[j].style.display !== "none"){
 						allSections[j].style.display = "none"
-						articleHideButtons[i].src = "images/showSection.png"
+						articleHideButtons[i].value = "▶"
 					}
 					else{
 						allSections[j].style.display = ""
-						articleHideButtons[i].src = "images/hideSection.png"
+						articleHideButtons[i].value = "▼"
 					}
 				}
 			})
 			//If the section has changes, the subsections should start visible
 			if(articles[i].classList.contains('changed')){
 				//First change the button to reflect that the subsections are visible
-				articleHideButtons[i].src = "images/hideSection.png"
+				articleHideButtons[i].value = "▼"
 				//Then actually show the subsections
 				for(let j = allSections.indexOf(articles[i]) + 1; j < allSections.length; j++){
 					if(allSections[j].classList.contains("section")){
@@ -432,6 +517,9 @@ async function setUpScrollFunction(){
 		}
 		//Also generate the definitions
 		allDefinitions = popupScript.getDefs(docSlots)
+		//Tell the popup script where the browser window sits on screen so it can
+		//convert screen coordinates to client coordinates
+		popupScript.setPosition([window.screenX, window.screenY])
 		/*
 		Start watching for mouse hovers
 		The way this works is, when you move your mouse in a doc, it starts counting down a timer
@@ -448,14 +536,17 @@ async function setUpScrollFunction(){
 			docBlocks[i].addEventListener('scroll', () =>{
 				clearTimeout(hoverTimer)
 			})
-			docSlots[i].addEventListener('mousemove', (mouseEvent) =>{
-				hoverTimer = setTimeout(() =>{
-					//Get the element that was hover'd
-					let mousePos = [mouseEvent.screenX - position[0], mouseEvent.screenY - position[1]]
+			docSlots[i].addEventListener('mousemove', (mouseEvent) => {
+				clearTimeout(hoverTimer)
+				hoverTimer = setTimeout(() => {
+					let rect = docBlocks[i].getBoundingClientRect()
+					let mousePos = [
+						mouseEvent.clientX,
+						mouseEvent.clientY
+					]
 					let hoveredElement = document.elementFromPoint(mousePos[0], mousePos[1])
-					
-					//Prepare the element to have a hover box appear
-					popupScript.wrapWords(hoveredElement, mousePos, i, document, false)
+					if(hoveredElement && !hoveredElement.classList.contains('doc'))
+						window.popupScript.wrapWords(hoveredElement, mousePos, i, document)
 				}, 1100)
 			})
 			docSlots[i].addEventListener('mouseout', () =>{
@@ -496,59 +587,58 @@ function findParagraphs(whichDoc, paragraph){
 //Hide a doc
 for(let i = 0; i < 2; i++){
 	hideButtons[i].addEventListener('click', () =>{
-		//Show
 		if(docSlots[i].style.display === "none"){
+			//Show: restore the panel to its full comparison width
 			currentlyShown[i] = true
 			docSlots[i].style.display = "inline-block"
-			docBlocks[i].style.minWidth = globalMinW + "vw"
-			docBlocks[i].style.maxWidth = globalMaxW + "vw"
-			docBlocks[i].style.overflowX = "hidden"
-			docBlocks[i].style.overflowY = "auto"
-			docBlocks[i].style.borderStyle = "solid"
-			docBlocks[i].style.paddingLeft = "1%"	
-			docBlocks[i].style.marginLeft = "1%"
-			docBlocks[i].style.paddingRight = "1%"	
-			docBlocks[i].style.marginRight = "1%"
+			hideButtons[i].innerText = '✕ Hide'
+			docBlocks[i].style.flex = '1'
+			docBlocks[i].style.width = ''
+			docBlocks[i].style.minWidth = '320px'
+			docBlocks[i].style.padding = '0 20px 24px'
+			docBlocks[i].classList.remove('panel-collapsed')
+			let existingLabel = docBlocks[i].querySelector('.collapsed-label')
+			if(existingLabel) existingLabel.remove()
 		}
-		//Hide
+		//Hide: collapse to a narrow ~64px strip showing just the "Unhide" button
 		else{
 			currentlyShown[i] = false
 			docSlots[i].style.display = "none"
-			docBlocks[i].style.minWidth = docTitleSlots[i].clientWidth + "px"
-			docBlocks[i].style.overflowX = "visible"
-			docBlocks[i].style.overflowY = "visible"
-			docBlocks[i].style.borderStyle = "none"
-			docBlocks[i].style.paddingLeft = "0"	
-			docBlocks[i].style.marginLeft = "0"
-			docBlocks[i].style.paddingRight = "0"	
-			docBlocks[i].style.marginRight = "0"		
+			hideButtons[i].innerText = 'Unhide'
+			docBlocks[i].style.flex = 'none'
+			docBlocks[i].style.width = '64px'
+			docBlocks[i].style.minWidth = '64px'
+			docBlocks[i].style.padding = '8px 4px'
+			docBlocks[i].classList.add('panel-collapsed')
+			//Vertical document-name label so the collapsed strip is identifiable
+			let collapsedLabel = document.createElement('div')
+			collapsedLabel.className = 'collapsed-label'
+			collapsedLabel.innerText = docNicknames[i] || 'Version ' + (i+1)
+			docBlocks[i].appendChild(collapsedLabel)
 		}
 		updateCompareButton()
 	})
 }
 
-//Show/hide console
-document.getElementById('hide-console').addEventListener('click', () =>{
-	tableOfContents = document.getElementById('table-of-contents')
-	//Show
-	if(tableOfContents.style.display === "none"){
-		tableOfContents.style.display = "inline-block"
-		consoleBlock.style.minWidth = "15vw"
-		consoleBlock.style.maxWidth = "20vw"
-		consoleBlock.style.minHeight = "40vh"
-		consoleBlock.style.maxHeight = "81vh"
-		consoleBlock.style.overflowY = "auto"
-		consoleBlock.style.borderStyle = "solid"
+//Collapse / expand the sidebar to a thin strip via the arrow button in its
+//header (standard sidebar pattern, replacing the old X + top-bar Contents button)
+let sidebarCollapsed = false
+document.getElementById('sidebar-collapse-btn').addEventListener('click', () => {
+	let sidebar = document.getElementById('sidebar')
+	sidebarCollapsed = !sidebarCollapsed
+	if(sidebarCollapsed){
+		sidebar.classList.add('collapsed')
+		document.getElementById('sidebar-collapse-btn').innerText = '›'
+	} else {
+		sidebar.classList.remove('collapsed')
+		document.getElementById('sidebar-collapse-btn').innerText = '‹'
 	}
-	//Hide
-	else{
-		tableOfContents.style.display = "none"
-		consoleBlock.style.minWidth = "84px"
-		consoleBlock.style.maxWidth = "84px"
-		consoleBlock.style.minHeight = "30px"
-		consoleBlock.style.maxHeight = "30px"
-		consoleBlock.style.overflow = "visible"
-		consoleBlock.style.borderStyle = "none"
+})
+
+//Restart / new session button — reloads the page after confirmation
+document.getElementById('restart-btn').addEventListener('click', () => {
+	if(confirm('Start a new session? Your current comparison will be lost.')){
+		window.location.reload()
 	}
 })
 
@@ -557,8 +647,7 @@ let inputFileButtons = document.getElementsByClassName('file-button')
 
 for(let i = 0; i < 2; i++){
 	inputFileButtons[i].addEventListener('click', () => {
-		let buttonParent = event.target.parentElement
-		buttonParent.childNodes[1].click()
+		event.target.closest('.doc-block').querySelector('input[type="file"]').click()
 	})
 }
 
@@ -579,6 +668,10 @@ function fileAdded(){
 
 	//First get the file from the input that triggered the event
 	let inputFile = event.target.files[0]
+	if(!inputFile){
+		alert("No file detected")
+		return false
+	}
 
 	//Find out which slot the doc was added to
 	let whichDoc = -1
@@ -589,27 +682,29 @@ function fileAdded(){
 	if(whichDoc === -1)
 		throw "Could not find out which slot the file belongs to"
 
-	//Trim the path and file extension to get the filename
-	let filepath = children[1].value
-	if(filepath.slice(-5).toLowerCase() !== '.docx'){
+	//Use the standard File.name to validate and extract the filename
+	if(!inputFile.name.toLowerCase().endsWith('.docx')){
 		alert("You must upload a .docx file")
 		return false
 	}
-	let filename = filepath.substring(filepath.lastIndexOf("\\") + 1, filepath.lastIndexOf("."))
+	let filename = inputFile.name.replace(/\.docx$/i, '')
 	docNicknames[whichDoc] = filename
 
 	//Store the doc and change the title
 	docs[whichDoc] = inputFile
-	uploadTextSlots[whichDoc].innerHTML = filename + " uploaded successfully"
 
-	//Find and remove the 'Upload file' button once a file has been uploaded
-	for(let i = 0; i < children.length; i++){
-		if(children[i].className === "file-button"){
-			children[i].style.display = "none"
-		}
-	}
+	//Hide the upload card now that a file has been picked, and show the filename
+	let uploadCard = event.target.closest('.doc-block').querySelector('.upload-card')
+	if(uploadCard) uploadCard.style.display = 'none'
+	let uploadText = event.target.closest('.doc-block').querySelector('.upload-text')
+	if(uploadText) uploadText.innerHTML = filename + " uploaded successfully"
 	currentlyShown[whichDoc] = true
 	updateCompareButton()
+	//If this upload filled a newly-added slot, the re-compare button is now
+	//showing — nudge the user to re-run the comparison
+	if(document.getElementById('re-compare-button').style.display !== 'none'){
+		showToast('Version added — click Re-Compare to update')
+	}
 	//Check if all docs are full
 	docsFull()
 }
@@ -629,7 +724,7 @@ function docsFull(force = false){
 	//Update the arrays containing all docs/elements from all docs
 	docs.push(null)
 	let docNumber = docs.length
-	document.getElementById('docs').insertAdjacentHTML('beforeend', docBlockHTML)
+	document.getElementById('docs').insertAdjacentHTML('beforeend', docBlockTemplate())
 	docBlocks = document.getElementsByClassName('doc-block')
 	docSlots = document.getElementsByClassName('doc')
 	docTitleSlots = document.getElementsByClassName('doc-title')
@@ -639,38 +734,39 @@ function docsFull(force = false){
 	//Activate buttons in new docBlock
 	let inputFileButtons = document.getElementsByClassName('file-button')
 	inputFileButtons[docNumber-1].addEventListener('click', () => {
-		let buttonParent = event.target.parentElement
-		buttonParent.childNodes[1].click()
+		event.target.closest('.doc-block').querySelector('input[type="file"]').click()
 	})
 
 	let hideButtons = document.getElementsByClassName('hide-button')
 	hideButtons[docNumber-1].addEventListener('click', () => {
-		//Show
 		if(docSlots[docNumber-1].style.display === "none"){
+			//Show: restore the panel to its full comparison width
 			currentlyShown[docNumber-1] = true
 			docSlots[docNumber-1].style.display = "inline-block"
-			docBlocks[docNumber-1].style.minWidth = globalMinW + "vw"
-			docBlocks[docNumber-1].style.maxWidth = globalMaxW + "vw"
-			docBlocks[docNumber-1].style.overflowX = "hidden"
-			docBlocks[docNumber-1].style.overflowY = "auto"
-			docBlocks[docNumber-1].style.borderStyle = "solid"
-			docBlocks[docNumber-1].style.paddingLeft = "1%"	
-			docBlocks[docNumber-1].style.marginLeft = "1%"
-			docBlocks[docNumber-1].style.paddingRight = "1%"	
-			docBlocks[docNumber-1].style.marginRight = "1%"
+			hideButtons[docNumber-1].innerText = '✕ Hide'
+			docBlocks[docNumber-1].style.flex = '1'
+			docBlocks[docNumber-1].style.width = ''
+			docBlocks[docNumber-1].style.minWidth = '320px'
+			docBlocks[docNumber-1].style.padding = '0 20px 24px'
+			docBlocks[docNumber-1].classList.remove('panel-collapsed')
+			let existingLabel = docBlocks[docNumber-1].querySelector('.collapsed-label')
+			if(existingLabel) existingLabel.remove()
 		}
-		//Hide
+		//Hide: collapse to a narrow ~64px strip showing just the "Unhide" button
 		else{
 			currentlyShown[docNumber-1] = false
 			docSlots[docNumber-1].style.display = "none"
-			docBlocks[docNumber-1].style.minWidth = docTitleSlots[docNumber-1].clientWidth + "px"
-			docBlocks[docNumber-1].style.overflowX = "visible"
-			docBlocks[docNumber-1].style.overflowY = "visible"
-			docBlocks[docNumber-1].style.borderStyle = "none"
-			docBlocks[docNumber-1].style.paddingLeft = "0"	
-			docBlocks[docNumber-1].style.marginLeft = "0"
-			docBlocks[docNumber-1].style.paddingRight = "0"	
-			docBlocks[docNumber-1].style.marginRight = "0"
+			hideButtons[docNumber-1].innerText = 'Unhide'
+			docBlocks[docNumber-1].style.flex = 'none'
+			docBlocks[docNumber-1].style.width = '64px'
+			docBlocks[docNumber-1].style.minWidth = '64px'
+			docBlocks[docNumber-1].style.padding = '8px 4px'
+			docBlocks[docNumber-1].classList.add('panel-collapsed')
+			//Vertical document-name label so the collapsed strip is identifiable
+			let collapsedLabel = document.createElement('div')
+			collapsedLabel.className = 'collapsed-label'
+			collapsedLabel.innerText = docNicknames[docNumber-1] || 'Version ' + docNumber
+			docBlocks[docNumber-1].appendChild(collapsedLabel)
 		}
 		updateCompareButton()
 	})
@@ -695,6 +791,51 @@ function updateCompareButton(){
 document.getElementById('re-compare-button').addEventListener('click', () =>{
 	document.getElementById('compare-button').click()
 })
+
+//Brief toast notification at the bottom of the screen
+function showToast(message){
+	let existing = document.getElementById('toast')
+	if(existing) existing.remove()
+	let toast = document.createElement('div')
+	toast.id = 'toast'
+	toast.innerText = message
+	toast.style.cssText = `
+		position: fixed;
+		bottom: 40px;
+		left: 50%;
+		transform: translateX(-50%);
+		background: var(--navy);
+		color: var(--gold);
+		padding: 10px 24px;
+		border-radius: 20px;
+		font-size: 13px;
+		font-weight: 600;
+		letter-spacing: 0.5px;
+		z-index: 1000;
+		box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+		transition: opacity 0.4s;
+	`
+	document.body.appendChild(toast)
+	setTimeout(() => { toast.style.opacity = '0' }, 1800)
+	setTimeout(() => { toast.remove() }, 2200)
+}
+
+//Buy-side / sell-side toggle in the top bar
+document.getElementById('buyside-btn').addEventListener('click', () => {
+	document.getElementById('buyside-btn').classList.add('active')
+	document.getElementById('sellside-btn').classList.remove('active')
+	window.negotiationSide = 'buyside'
+	showToast('Buy-Side mode active')
+})
+
+document.getElementById('sellside-btn').addEventListener('click', () => {
+	document.getElementById('sellside-btn').classList.add('active')
+	document.getElementById('buyside-btn').classList.remove('active')
+	window.negotiationSide = 'sellside'
+	showToast('Sell-Side mode active')
+})
+
+window.negotiationSide = 'buyside'
 
 //Checks the equivalence of two arrays
 function arraysEqual(arr1, arr2) {

@@ -1,8 +1,9 @@
-const stringSimilarity = require('string-similarity')
-
-module.exports ={
+window.scrollScript ={
 	//The function that actually adjusts where the doc is scrolled to
 	scrollTo: function(scrollingDoc, targetP){
+		//Guard against a missing target (e.g. a section header that wasn't found)
+		//so "Go to section" degrades gracefully instead of throwing on undefined
+		if(!scrollingDoc || !targetP) return
 		scrollTarget = targetP.offsetTop - (scrollingDoc.offsetHeight/2)
 		scrollTarget += 250
 		scrollingDoc.scrollTop = scrollTarget
@@ -23,7 +24,7 @@ module.exports ={
 					//If we found the header
 					//Keep in mind each header will be written as 'ARTICLE 3 Section', so we wanna cut that number out
 					if(h1s[j].textContent.substring(h1s[j].textContent.split(" ")[0].length + h1s[j].textContent.split(" ")[1].length + 2) === clickedTextContent){
-						module.exports.scrollTo(docBlocks[i], h1s[j])
+						window.scrollScript.scrollTo(docBlocks[i], h1s[j])
 						break
 					}
 				}
@@ -36,10 +37,10 @@ module.exports ={
 						if(h2s[j-h1s.length].style.display === "none"){
 							//rip the article number from the clicked section
 							let articleNumber = clickedSection.textContent.substring(0, 1)
-							module.exports.scrollTo(docBlocks[i], h1s[articleNumber-1])
+							window.scrollScript.scrollTo(docBlocks[i], h1s[articleNumber-1])
 						}
 						else
-							module.exports.scrollTo(docBlocks[i], h2s[j-h1s.length])
+							window.scrollScript.scrollTo(docBlocks[i], h2s[j-h1s.length])
 						break
 					}
 				}
@@ -78,13 +79,13 @@ module.exports ={
 					let allTags = docSlots[i].childNodes
 					for(let j = Array.from(allTags).indexOf(allParagraphs[bestMatch.bestMatchIndex]); j >= 0; j--){
 						if(allTags[j].style.display !== "none"){
-							module.exports.scrollTo(docBlocks[i], allTags[j])
+							window.scrollScript.scrollTo(docBlocks[i], allTags[j])
 							break
 						}
 					}
 				}
 				else
-					module.exports.scrollTo(docBlocks[i], allParagraphs[bestMatch.bestMatchIndex])
+					window.scrollScript.scrollTo(docBlocks[i], allParagraphs[bestMatch.bestMatchIndex])
 			}
 		}
 	}
