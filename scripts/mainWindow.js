@@ -847,3 +847,71 @@ function arraysEqual(arr1, arr2) {
     }
     return true;
 }
+
+//Built-in sample-agreement demo: fetches the bundled .docx versions from the
+//server, loads them into doc slots as if the user had uploaded them, and kicks
+//off a comparison automatically — so prospects can see the tool work without
+//uploading their own confidential documents.
+document.getElementById('load-sample-btn')
+  .addEventListener('click', async () => {
+    try {
+      let btn = document.getElementById('load-sample-btn')
+      btn.innerText = 'Loading sample...'
+      btn.disabled = true
+
+      let res = await fetch('/api/sample-files')
+      let data = await res.json()
+
+      if(!data.files || data.files.length < 2){
+        alert('Sample files not found. Please upload your own files.')
+        btn.innerText = 'Try with sample agreement (4 versions)'
+        btn.disabled = false
+        return
+      }
+
+      // Fetch each file and convert to File objects
+      let fileObjects = []
+      for(let i = 0; i < data.files.length; i++){
+        let fileRes = await fetch(data.files[i])
+        let blob = await fileRes.blob()
+        let filename = data.files[i].split('/').pop()
+        let fileObj = new File([blob], filename,
+          {type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'})
+        fileObjects.push(fileObj)
+      }
+
+      // Ensure enough doc slots exist
+      for(let i = 2; i < fileObjects.length; i++){
+        docsFull(true)
+      }
+
+      // Load files into slots
+      for(let i = 0; i < fileObjects.length; i++){
+        docs[i] = fileObjects[i]
+        let filename = fileObjects[i].name.replace(/\.docx$/i, '')
+        docNicknames[i] = filename
+        currentlyShown[i] = true
+        let uploadCard = docBlocks[i].querySelector('.upload-card')
+        if(uploadCard) uploadCard.style.display = 'none'
+        let uploadText = docBlocks[i].querySelector('.upload-text')
+        if(uploadText) uploadText.innerHTML = filename +
+          ' loaded successfully'
+      }
+
+      updateCompareButton()
+
+      // Hide the sample button container
+      document.getElementById('sample-btn-container')
+        .style.display = 'none'
+
+      // Auto-click compare
+      document.getElementById('compare-button').click()
+
+    } catch(err) {
+      console.error('Sample load error:', err)
+      alert('Could not load sample files: ' + err.message)
+      let btn = document.getElementById('load-sample-btn')
+      btn.innerText = 'Try with sample agreement (4 versions)'
+      btn.disabled = false
+    }
+  })

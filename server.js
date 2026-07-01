@@ -20,6 +20,19 @@ app.use(cors());
 // Serve index.html and all static assets from the project root
 app.use(express.static(__dirname));
 
+// Serve the bundled sample agreement (.docx) files statically
+app.use('/samples', express.static(path.join(__dirname, 'samples')));
+
+// List the bundled sample .docx files so the app can offer a "try with sample"
+// demo without the user uploading their own (privacy-sensitive) documents.
+app.get('/api/sample-files', (req, res) => {
+  const samplesDir = path.join(__dirname, 'samples');
+  const files = fs.readdirSync(samplesDir)
+    .filter(f => f.endsWith('.docx'))
+    .sort();
+  res.json({ files: files.map(f => '/samples/' + f) });
+});
+
 // Configure multer to store uploaded files in uploads/
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
