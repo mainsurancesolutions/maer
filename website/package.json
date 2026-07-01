@@ -4,6 +4,7 @@
   "description": "ContractsCompare marketing website",
   "main": "server.js",
   "scripts": {
+    "build": "echo 'no build required'",
     "start": "node server.js"
   },
   "dependencies": {
