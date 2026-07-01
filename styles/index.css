@@ -312,6 +312,7 @@ body {
   flex-direction: column;
   overflow: hidden;
   height: calc(100vh - var(--top-bar-h));
+  padding-bottom: 0;
 }
 
 #docs-area.comparing {
@@ -428,6 +429,9 @@ body {
      scroll container's padding box, so any top padding leaves a gap above the
      header when scrolled. Top spacing now comes from the header itself. */
   padding: 0 20px 24px;
+  /* Extra clearance so the last line of content isn't hidden behind the
+     fixed #legal-disclaimer bar at the bottom of the viewport */
+  padding-bottom: 32px;
   font-size: 14px;
   line-height: 1.7;
   position: relative;
