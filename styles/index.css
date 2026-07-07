@@ -158,6 +158,24 @@ body {
   display: flex;
   flex: 1;
   overflow: hidden;
+  height: calc(100vh - var(--top-bar-h) - 24px);
+}
+
+#legal-disclaimer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(10,22,40,0.97);
+  padding: 5px 20px;
+  text-align: center;
+  font-size: 10px;
+  color: rgba(255,255,255,0.35);
+  font-family: Arial,sans-serif;
+  z-index: 40;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  height: 24px;
+  line-height: 14px;
 }
 
 /* ── Sidebar ── */
@@ -318,6 +336,18 @@ body {
 #docs-area.comparing {
   flex-direction: row;
   overflow-x: auto;
+  padding-bottom: 28px;
+}
+
+#docs-area::-webkit-scrollbar {
+  height: 10px;
+}
+#docs-area::-webkit-scrollbar-track {
+  background: var(--gray-light);
+}
+#docs-area::-webkit-scrollbar-thumb {
+  background: var(--navy-light);
+  border-radius: 5px;
 }
 
 /* ── Upload zone ── */
@@ -336,28 +366,34 @@ body {
 
 #upload-instructions {
   text-align: center;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
   padding: 0 20px;
   flex-shrink: 0;
 }
 
 #upload-instructions h2 {
-  font-size: 24px;
+  font-size: 20px;
   color: var(--navy);
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 #upload-instructions p {
   color: var(--gray-dark);
-  font-size: 15px;
+  font-size: 13px;
   max-width: 480px;
-  line-height: 1.6;
+  margin: 0 auto;
+  line-height: 1.5;
 }
 
 .upload-hint {
-  margin-top: 8px;
-  font-size: 13px !important;
+  margin-top: 4px;
+  font-size: 12px !important;
   color: var(--gray-mid) !important;
+}
+
+#sample-btn-container {
+  margin-top: 16px;
+  padding-bottom: 12px;
 }
 
 #docs {
@@ -443,10 +479,10 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  gap: 10px;
   border: 2px dashed var(--gray-light);
   border-radius: 12px;
-  padding: 40px 24px;
+  padding: 24px 20px;
   text-align: center;
   transition: border-color 0.2s, background 0.2s;
   background: var(--white);
@@ -460,7 +496,7 @@ body {
 }
 
 .upload-icon {
-  font-size: 40px;
+  font-size: 32px;
   opacity: 0.4;
 }
 
