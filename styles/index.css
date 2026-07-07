@@ -701,10 +701,12 @@ del {
   border: 1px solid rgba(255,255,255,0.3);
   color: var(--gold);
   cursor: pointer;
-  font-size: 15px;
-  padding: 4px 10px;
+  font-size: 11px;
+  padding: 4px 8px;
   border-radius: 4px;
   transition: all 0.2s;
+  white-space: nowrap;
+  font-family: Arial, sans-serif;
 }
 .print-version-btn:hover {
   background: var(--gold);

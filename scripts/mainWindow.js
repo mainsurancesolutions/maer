@@ -898,6 +898,13 @@ document.getElementById('load-sample-btn')
           ' loaded successfully'
       }
 
+      // The comparison pipeline (readDocs) converts files.length - 1 docs, treating the last
+      // slot as the trailing EMPTY placeholder the normal upload flow always leaves behind
+      // (docsFull() adds an empty slot after every upload). The sample flow fills every slot
+      // exactly, so WITHOUT a trailing empty slot the last version is dropped from conversion
+      // and its panel renders empty. Add the trailing empty slot to restore that invariant.
+      docsFull()
+
       updateCompareButton()
 
       // Hide the sample button container
