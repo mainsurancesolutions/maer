@@ -98,6 +98,46 @@ app.post('/api/cleanup', (req, res) => {
 
 app.use(express.json({ limit: '50kb' }))
 
+// TEMP debug endpoint — browser-callable GET to see the exact Claude response/
+// error from inside the Railway container. Remove once the 500 is diagnosed.
+app.get('/api/test-claude', async (req, res) => {
+  try {
+    console.log('Test endpoint hit')
+    console.log('Key present:', !!process.env.ANTHROPIC_API_KEY)
+    const key = process.env.ANTHROPIC_API_KEY
+    console.log('Key prefix:', key ? key.substring(0,15) : 'MISSING')
+
+    const response = await fetch(
+      'https://api.anthropic.com/v1/messages',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': key,
+          'anthropic-version': '2023-06-01'
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 50,
+          messages: [{ role: 'user', content: 'Say hi' }]
+        })
+      }
+    )
+    const data = await response.json()
+    console.log('Claude status:', response.status)
+    console.log('Claude response:', JSON.stringify(data).substring(0,100))
+    res.json({
+      status: response.status,
+      keyPresent: !!key,
+      keyPrefix: key ? key.substring(0,10) : 'MISSING',
+      claudeResponse: data
+    })
+  } catch(err) {
+    console.error('Test error:', err.message)
+    res.json({ error: err.message })
+  }
+})
+
 // POST /api/analyze-clause — Phase 2: strategic AI analysis of a single clause.
 // The Anthropic API key stays server-side (process.env.ANTHROPIC_API_KEY); the
 // browser never sees it. Uses the Messages API (verified against the Claude API
