@@ -1,15 +1,3 @@
-// TEMP diagnostics — surface any error Railway may be swallowing on startup.
-// Registered FIRST (before require('dotenv')) so a failed require (e.g. dotenv
-// missing from the deploy) is caught too, not only errors after this point.
-process.on('uncaughtException', (err) => {
-  console.error('UNCAUGHT EXCEPTION:', err.message)
-  console.error(err.stack)
-})
-
-process.on('unhandledRejection', (reason) => {
-  console.error('UNHANDLED REJECTION:', reason)
-})
-
 require('dotenv').config()
 const express = require('express');
 const multer = require('multer');
@@ -98,33 +86,6 @@ app.post('/api/cleanup', (req, res) => {
 
 app.use(express.json({ limit: '50kb' }))
 
-// TEMP debug endpoint — lists env var NAMES (no values) visible to the Node
-// process, to diagnose why ANTHROPIC_API_KEY isn't being injected. Remove ASAP.
-app.get('/api/test-claude', async (req, res) => {
-  try {
-    // Try multiple ways to get the key
-    const key1 = process.env.ANTHROPIC_API_KEY
-    const key2 = process.env['ANTHROPIC_API_KEY']
-
-    // Log ALL environment variables (just names, not values)
-    const envKeys = Object.keys(process.env).sort()
-    console.log('All env var names:', envKeys.join(', '))
-    console.log('Key1 present:', !!key1)
-    console.log('Key2 present:', !!key2)
-
-    const key = key1 || key2
-
-    res.json({
-      key1Present: !!key1,
-      key2Present: !!key2,
-      allEnvVarNames: envKeys,
-      keyPrefix: key ? key.substring(0,15) : 'MISSING'
-    })
-  } catch(err) {
-    res.json({ error: err.message })
-  }
-})
-
 // POST /api/analyze-clause — Phase 2: strategic AI analysis of a single clause.
 // The Anthropic API key stays server-side (process.env.ANTHROPIC_API_KEY); the
 // browser never sees it. Uses the Messages API (verified against the Claude API
@@ -132,13 +93,6 @@ app.get('/api/test-claude', async (req, res) => {
 // max_tokens + system + messages; response text at data.content[0].text).
 app.post('/api/analyze-clause', async (req, res) => {
   try {
-    // TEMP debug logging — remove after diagnosing the 500
-    console.log('API key present:', !!process.env.ANTHROPIC_API_KEY)
-    console.log('API key prefix:',
-      process.env.ANTHROPIC_API_KEY
-        ? process.env.ANTHROPIC_API_KEY.substring(0,10)
-        : 'MISSING')
-
     const { clauseText, negotiationSide, context } = req.body
 
     if(!clauseText || clauseText.trim().length < 10){
@@ -216,9 +170,7 @@ and suggest stronger language for my position.`
 
     if(!response.ok){
       const errData = await response.json()
-      console.error('Claude API error status:', response.status)
-      console.error('Claude API error body:',
-        JSON.stringify(errData))
+      console.error('Claude API error:', errData)
       return res.status(500).json({
         error: 'AI analysis failed. Please try again.'
       })
