@@ -1,3 +1,15 @@
+// TEMP diagnostics — surface any error Railway may be swallowing on startup.
+// Registered FIRST (before require('dotenv')) so a failed require (e.g. dotenv
+// missing from the deploy) is caught too, not only errors after this point.
+process.on('uncaughtException', (err) => {
+  console.error('UNCAUGHT EXCEPTION:', err.message)
+  console.error(err.stack)
+})
+
+process.on('unhandledRejection', (reason) => {
+  console.error('UNHANDLED REJECTION:', reason)
+})
+
 require('dotenv').config()
 const express = require('express');
 const multer = require('multer');
