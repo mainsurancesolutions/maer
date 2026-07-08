@@ -51,7 +51,7 @@ body {
 #top-bar-left {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
 }
 
 #logo {
@@ -104,7 +104,7 @@ body {
 
 /* ── Buttons ── */
 .nav-btn {
-  padding: 7px 16px;
+  padding: 7px 14px;
   border-radius: var(--radius);
   border: 1px solid rgba(255,255,255,0.2);
   background: transparent;
@@ -112,7 +112,7 @@ body {
   font-size: 13px;
   cursor: pointer;
   transition: all 0.2s;
-  font-family: inherit;
+  font-family: Arial, sans-serif;
 }
 
 .nav-btn:hover {
@@ -142,15 +142,22 @@ body {
   50% { box-shadow: 0 0 0 8px rgba(201,168,76,0); }
 }
 
-.nav-btn#restart-btn {
-  border-color: rgba(255,255,255,0.15);
+/* Restart + Definitions: subtle, secondary actions on the left of the nav */
+#restart-btn, #def-button {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.2);
   color: rgba(255,255,255,0.7);
-  font-size: 12px;
+  font-size: 13px;
+  font-family: Arial, sans-serif;
+  padding: 7px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
 }
-
-.nav-btn#restart-btn:hover {
+#restart-btn:hover, #def-button:hover {
   color: var(--white);
-  border-color: rgba(255,255,255,0.4);
+  border-color: rgba(255,255,255,0.5);
+  background: rgba(255,255,255,0.08);
 }
 
 /* ── Main layout ── */
@@ -870,10 +877,11 @@ del {
 /* ── Patent badge ── */
 #patent-badge {
   font-size: 9px;
-  color: rgba(255,255,255,0.4);
+  color: rgba(255,255,255,0.3);
   letter-spacing: 0.3px;
   white-space: nowrap;
-  margin-right: 8px;
+  margin-right: 4px;
+  display: none;
 }
 
 /* ── Drag over highlight ── */

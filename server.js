@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require('express');
 const multer = require('multer');
 const cors = require('cors');
@@ -82,6 +83,114 @@ app.post('/api/cleanup', (req, res) => {
     res.json({ success: true, deleted });
   });
 });
+
+app.use(express.json({ limit: '50kb' }))
+
+// POST /api/analyze-clause — Phase 2: strategic AI analysis of a single clause.
+// The Anthropic API key stays server-side (process.env.ANTHROPIC_API_KEY); the
+// browser never sees it. Uses the Messages API (verified against the Claude API
+// reference: /v1/messages, x-api-key + anthropic-version 2023-06-01, model +
+// max_tokens + system + messages; response text at data.content[0].text).
+app.post('/api/analyze-clause', async (req, res) => {
+  try {
+    const { clauseText, negotiationSide, context } = req.body
+
+    if(!clauseText || clauseText.trim().length < 10){
+      return res.status(400).json({
+        error: 'Clause text too short to analyze'
+      })
+    }
+
+    const sideLabel = negotiationSide === 'sellside'
+      ? 'Sell-Side' : 'Buy-Side'
+
+    const systemPrompt = `You are an expert M&A attorney's
+assistant specializing in contract negotiation across all
+types of complex commercial agreements including M&A
+transactions, real estate deals, derivatives contracts,
+insurance agreements, and other multi-party negotiations.
+
+You analyze contract clauses and provide strategic guidance
+based on the negotiating position provided. You have deep
+knowledge of market standard agreement language and common
+negotiating positions.
+
+Always structure your response using EXACTLY these four
+headers in this order, with nothing before the first header:
+
+**WHAT THIS CLAUSE MEANS**
+[Plain explanation of what this clause does and its legal effect]
+
+**WHY IT MATTERS**
+[The risk, implication, or strategic importance for the
+specified negotiating position]
+
+**MARKET CONTEXT**
+[What is typical/standard in comparable negotiations.
+What sophisticated parties typically accept or push back on]
+
+**SUGGESTED LANGUAGE**
+[Actual replacement or modified clause language that
+strengthens the position. Format as a direct quote
+the attorney can use or adapt]
+
+Be direct and practical. You are advising a sophisticated
+attorney, not a layperson. Keep total response under 400 words.`
+
+    const userPrompt = `I am representing the ${sideLabel}
+in this negotiation.
+
+The current clause reads:
+"${clauseText.trim()}"
+
+${context ? 'Additional context: ' + context : ''}
+
+Please analyze this clause from my ${sideLabel} perspective
+and suggest stronger language for my position.`
+
+    const response = await fetch(
+      'https://api.anthropic.com/v1/messages',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': process.env.ANTHROPIC_API_KEY,
+          'anthropic-version': '2023-06-01'
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 1024,
+          system: systemPrompt,
+          messages: [
+            { role: 'user', content: userPrompt }
+          ]
+        })
+      }
+    )
+
+    if(!response.ok){
+      const errData = await response.json()
+      console.error('Claude API error:', errData)
+      return res.status(500).json({
+        error: 'AI analysis failed. Please try again.'
+      })
+    }
+
+    const data = await response.json()
+    const analysisText = data.content[0].text
+
+    res.json({
+      analysis: analysisText,
+      side: sideLabel
+    })
+
+  } catch(err) {
+    console.error('Analyze clause error:', err)
+    res.status(500).json({
+      error: 'Something went wrong. Please try again.'
+    })
+  }
+})
 
 app.listen(PORT, () => {
   console.log('ContractsCompare server running on port ' + PORT);

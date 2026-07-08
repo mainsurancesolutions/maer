@@ -465,7 +465,14 @@ async function setUpScrollFunction(){
 			paragraphs = docSlots[i].getElementsByTagName('P')
 			//Put a click event on each paragraph indicating which doc its from
 			for(let j = 0; j < paragraphs.length; j++){
-				paragraphs[j].addEventListener('click', ()=>{findParagraphs(i, event.target)})
+				paragraphs[j].addEventListener('click', (e)=>{
+					findParagraphs(i, e.target)
+					//Phase 2: also trigger AI analysis if the AI panel is open
+					let aiPanel = document.getElementById('ai-panel')
+					if(aiPanel && aiPanel.style.display !== 'none'){
+						analyzeClause(e.target)
+					}
+				})
 			}
 			//Also create an event on each header to scroll to it in others when clicked
 			h1s = docSlots[i].getElementsByTagName('H1')
@@ -929,6 +936,140 @@ document.getElementById('load-sample-btn')
       btn.innerText = 'Try with sample agreement (4 versions)'
       btn.disabled = false
     }
+  })
+
+// ── Phase 2: clause analysis (calls the server /api/analyze-clause endpoint) ──
+async function analyzeClause(paragraphElement){
+  // Get the paragraph text
+  let clauseText = paragraphElement.innerText ||
+    paragraphElement.textContent
+  clauseText = clauseText.trim()
+
+  // Need at least 20 characters to analyze
+  if(clauseText.length < 20) return
+
+  // Remove any previously selected paragraph highlight
+  let prevSelected = document.querySelector('p.ai-selected')
+  if(prevSelected) prevSelected.classList.remove('ai-selected')
+
+  // Highlight the clicked paragraph
+  paragraphElement.classList.add('ai-selected')
+
+  // Show the AI panel if not already open
+  let aiPanel = document.getElementById('ai-panel')
+  let aiToggleBtn = document.getElementById('ai-toggle-btn')
+  aiPanel.style.display = 'flex'
+  aiToggleBtn.classList.add('active')
+
+  // Switch to loading state
+  document.getElementById('ai-welcome-state').style.display
+    = 'none'
+  document.getElementById('ai-loading-state').style.display
+    = 'flex'
+  document.getElementById('ai-result-state').style.display
+    = 'none'
+  document.getElementById('ai-error-state').style.display
+    = 'none'
+
+  // Show truncated clause text in panel
+  let displayText = clauseText.length > 200
+    ? clauseText.substring(0, 200) + '...'
+    : clauseText
+  document.getElementById('ai-clause-text').innerText =
+    '"' + displayText + '"'
+
+  try {
+    // Call the server endpoint
+    let response = await fetch('/api/analyze-clause', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        clauseText: clauseText,
+        negotiationSide: window.negotiationSide || 'buyside'
+      })
+    })
+
+    if(!response.ok){
+      throw new Error('Server returned ' + response.status)
+    }
+
+    let data = await response.json()
+
+    if(data.error){
+      throw new Error(data.error)
+    }
+
+    // Parse and display the analysis
+    displayAnalysis(data.analysis, clauseText)
+
+  } catch(err) {
+    console.error('AI analysis error:', err)
+    document.getElementById('ai-loading-state').style.display
+      = 'none'
+    document.getElementById('ai-error-state').style.display
+      = 'flex'
+    document.getElementById('ai-error-message').innerText =
+      err.message || 'Analysis failed. Please try again.'
+  }
+}
+
+function displayAnalysis(analysisText, clauseText){
+  // Hide loading, show result
+  document.getElementById('ai-loading-state').style.display
+    = 'none'
+  document.getElementById('ai-result-state').style.display
+    = 'flex'
+
+  // Show the clause text
+  let displayText = clauseText.length > 200
+    ? clauseText.substring(0, 200) + '...'
+    : clauseText
+  document.getElementById('ai-clause-text').innerText =
+    '"' + displayText + '"'
+
+  // Parse the four sections from Claude's response
+  let analysisHtml = ''
+
+  // Split by the bold headers Claude uses
+  let sections = analysisText.split(/\*\*([^*]+)\*\*/)
+
+  // sections will be: ['', 'HEADER1', 'content1',
+  //   'HEADER2', 'content2', ...]
+  for(let i = 1; i < sections.length; i += 2){
+    let header = sections[i].trim()
+    let content = sections[i+1] ? sections[i+1].trim() : ''
+
+    if(header === 'SUGGESTED LANGUAGE'){
+      analysisHtml += '<h4>' + header + '</h4>'
+      analysisHtml += '<div class="suggested-language">' +
+        content + '</div>'
+      analysisHtml += '<button class="copy-btn" onclick="' +
+        'navigator.clipboard.writeText(' +
+        'this.previousElementSibling.innerText)' +
+        '.then(()=>{ this.innerText=\'Copied!\'; ' +
+        'setTimeout(()=>this.innerText=\'Copy language\',2000)})"' +
+        '>Copy language</button>'
+    } else {
+      analysisHtml += '<h4>' + header + '</h4>'
+      analysisHtml += '<p>' + content + '</p>'
+    }
+  }
+
+  if(!analysisHtml){
+    // Fallback if parsing fails - show raw text
+    analysisHtml = '<p>' + analysisText.replace(
+      /\n/g, '</p><p>') + '</p>'
+  }
+
+  document.getElementById('ai-analysis').innerHTML =
+    analysisHtml
+}
+
+// Wire up the retry button
+document.getElementById('ai-retry-btn')
+  .addEventListener('click', () => {
+    let selected = document.querySelector('p.ai-selected')
+    if(selected) analyzeClause(selected)
   })
 
 // ── Phase 2: AI Panel controls (UI shell only — no Claude API calls yet) ──
