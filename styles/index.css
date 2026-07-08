@@ -967,16 +967,6 @@ body.drag-over #upload-zone {
   flex-shrink: 0;
 }
 
-#ai-panel-subtitle {
-  color: rgba(255,255,255,0.5);
-  font-size: 12px;
-  font-weight: 400;
-  font-family: Arial, sans-serif;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 #ai-panel-close {
   background: none;
   border: none;

@@ -1,16 +1,23 @@
 window.scrollScript ={
 	//The function that actually adjusts where the doc is scrolled to
 	scrollTo: function(scrollingDoc, targetP){
-		//Guard against a missing target (e.g. a section header that wasn't found)
-		//so "Go to section" degrades gracefully instead of throwing on undefined
 		if(!scrollingDoc || !targetP) return
-		//Offset by the sticky .doc-version-header so the target isn't hidden beneath it
-		var header = scrollingDoc.querySelector('.doc-version-header')
-		var headerH = header ? header.offsetHeight : 0
-		scrollTarget = targetP.offsetTop - (scrollingDoc.offsetHeight/2)
-		scrollTarget += 250
-		scrollTarget -= headerH
-		scrollingDoc.scrollTop = scrollTarget
+
+		// Get element position relative to the scroll container (offsetTop alone
+		// is relative to offsetParent, which may not be scrollingDoc)
+		let elementTop = 0
+		let el = targetP
+		while(el && el !== scrollingDoc){
+			elementTop += el.offsetTop
+			el = el.offsetParent
+		}
+
+		// Get sticky header height
+		let header = scrollingDoc.querySelector('.doc-version-header')
+		let headerH = header ? header.offsetHeight : 0
+
+		// Scroll so the element appears just below the header with a small buffer
+		scrollingDoc.scrollTop = elementTop - headerH - 8
 	},
 
 
