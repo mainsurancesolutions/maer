@@ -32,6 +32,9 @@
       <button id="def-button" class="nav-btn" style="display:none">
         Definitions
       </button>
+      <button id="ai-toggle-btn" class="nav-btn ai-btn" style="display:none">
+        ⚡ AI Analysis
+      </button>
       <button id="compare-button" class="nav-btn primary">
         Compare
       </button>
@@ -120,6 +123,41 @@
         </div>
       </div>
 
+    </div>
+  </div>
+
+  <!-- Phase 2: AI analysis panel (UI shell only — no Claude API calls yet) -->
+  <div id="ai-panel" style="display:none">
+    <div id="ai-panel-header">
+      <div id="ai-panel-title">
+        <span id="ai-mode-indicator">⚡ Buy-Side AI</span>
+        <span id="ai-panel-subtitle">Click any paragraph to analyze</span>
+      </div>
+      <button id="ai-panel-close">✕</button>
+    </div>
+    <div id="ai-panel-body">
+      <div id="ai-welcome-state">
+        <div id="ai-welcome-icon">⚡</div>
+        <h3>AI Analysis Ready</h3>
+        <p>Click any paragraph in any document version to get
+        AI-powered analysis and suggested language for your
+        negotiating position.</p>
+        <div id="ai-mode-display">
+          <span id="ai-mode-badge">Buy-Side Mode</span>
+        </div>
+      </div>
+      <div id="ai-loading-state" style="display:none">
+        <div id="ai-spinner"></div>
+        <p>Analyzing clause...</p>
+      </div>
+      <div id="ai-result-state" style="display:none">
+        <div id="ai-clause-text"></div>
+        <div id="ai-analysis"></div>
+      </div>
+      <div id="ai-error-state" style="display:none">
+        <p id="ai-error-message"></p>
+        <button id="ai-retry-btn">Try again</button>
+      </div>
     </div>
   </div>
 

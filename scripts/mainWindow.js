@@ -324,6 +324,8 @@ document.getElementById('compare-button').addEventListener('click', async () =>{
 	//Show the sidebar (table of contents)
 	consoleBlock.style.display= "inline-block"
 	document.getElementById('sidebar').style.display = 'flex'
+	//Phase 2: reveal the AI Analysis toggle once a comparison is on screen
+	document.getElementById('ai-toggle-btn').style.display = 'inline-block'
 	document.getElementById('restart-btn').style.display = 'inline-block'
 	//Hide the upload instructions so only the documents show
 	let uploadInstructions = document.getElementById('upload-instructions')
@@ -826,6 +828,9 @@ document.getElementById('buyside-btn').addEventListener('click', () => {
 	document.getElementById('sellside-btn').classList.remove('active')
 	window.negotiationSide = 'buyside'
 	showToast('Buy-Side mode active')
+	//Phase 2: reflect the active side in the AI panel
+	document.getElementById('ai-mode-indicator').innerText = '⚡ Buy-Side AI'
+	document.getElementById('ai-mode-badge').innerText = 'Buy-Side Mode'
 })
 
 document.getElementById('sellside-btn').addEventListener('click', () => {
@@ -833,6 +838,9 @@ document.getElementById('sellside-btn').addEventListener('click', () => {
 	document.getElementById('buyside-btn').classList.remove('active')
 	window.negotiationSide = 'sellside'
 	showToast('Sell-Side mode active')
+	//Phase 2: reflect the active side in the AI panel
+	document.getElementById('ai-mode-indicator').innerText = '⚡ Sell-Side AI'
+	document.getElementById('ai-mode-badge').innerText = 'Sell-Side Mode'
 })
 
 window.negotiationSide = 'buyside'
@@ -921,4 +929,26 @@ document.getElementById('load-sample-btn')
       btn.innerText = 'Try with sample agreement (4 versions)'
       btn.disabled = false
     }
+  })
+
+// ── Phase 2: AI Panel controls (UI shell only — no Claude API calls yet) ──
+document.getElementById('ai-toggle-btn')
+  .addEventListener('click', () => {
+    let panel = document.getElementById('ai-panel')
+    let btn = document.getElementById('ai-toggle-btn')
+    if(panel.style.display === 'none' ||
+       panel.style.display === ''){
+      panel.style.display = 'flex'
+      btn.classList.add('active')
+    } else {
+      panel.style.display = 'none'
+      btn.classList.remove('active')
+    }
+  })
+
+document.getElementById('ai-panel-close')
+  .addEventListener('click', () => {
+    document.getElementById('ai-panel').style.display = 'none'
+    document.getElementById('ai-toggle-btn')
+      .classList.remove('active')
   })
