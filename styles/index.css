@@ -939,32 +939,41 @@ body.drag-over #upload-zone {
 
 #ai-panel-header {
   background: var(--navy);
-  padding: 14px 16px;
+  padding: 10px 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-shrink: 0;
   border-bottom: 2px solid var(--gold);
+  gap: 8px;
 }
 
 #ai-panel-title {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
 }
 
 #ai-mode-indicator {
   color: var(--gold);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.5px;
   font-family: Arial, sans-serif;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 #ai-panel-subtitle {
   color: rgba(255,255,255,0.5);
   font-size: 11px;
   font-family: Arial, sans-serif;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 #ai-panel-close {

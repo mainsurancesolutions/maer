@@ -940,10 +940,22 @@ document.getElementById('load-sample-btn')
 
 // ── Phase 2: clause analysis (calls the server /api/analyze-clause endpoint) ──
 async function analyzeClause(paragraphElement){
-  // Get the paragraph text
-  let clauseText = paragraphElement.innerText ||
-    paragraphElement.textContent
-  clauseText = clauseText.trim()
+  // Get a clean version of the paragraph text
+  // Clone it, remove deleted text, get plain text
+  let clone = paragraphElement.cloneNode(true)
+  // Remove all <del> elements (deleted/struck text)
+  let delElements = clone.querySelectorAll('del')
+  delElements.forEach(el => el.remove())
+  // Remove hide buttons and other injected controls
+  let controls = clone.querySelectorAll('input, button, .hide-article, .hide-paragraphs, .hide-section, .reveal-text')
+  controls.forEach(el => el.remove())
+  // Get clean plain text
+  let clauseText = (clone.innerText ||
+    clone.textContent || '').trim()
+  // Remove any leading article/section numbers
+  // that were injected by numberSections()
+  clauseText = clauseText.replace(
+    /^(ARTICLE\s+\d+\s+|[\d]+\.[\d]+\s+)/, '')
 
   // Need at least 20 characters to analyze
   if(clauseText.length < 20) return
@@ -962,8 +974,8 @@ async function analyzeClause(paragraphElement){
   aiToggleBtn.classList.add('active')
   // Scroll the document row to the far right so the AI panel column is visible
   setTimeout(() => {
-    let docsArea = document.getElementById('docs-area')
-    if(docsArea) docsArea.scrollLeft = docsArea.scrollWidth
+    let docsEl = document.getElementById('docs')
+    if(docsEl) docsEl.scrollLeft = docsEl.scrollWidth
   }, 50)
 
   // Switch to loading state
@@ -1125,8 +1137,8 @@ document.getElementById('ai-toggle-btn')
       btn.classList.add('active')
       // Scroll the document row to the far right so the AI panel column is visible
       setTimeout(() => {
-        let docsArea = document.getElementById('docs-area')
-        if(docsArea) docsArea.scrollLeft = docsArea.scrollWidth
+        let docsEl = document.getElementById('docs')
+        if(docsEl) docsEl.scrollLeft = docsEl.scrollWidth
       }, 50)
     } else {
       panel.style.display = 'none'
