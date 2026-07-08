@@ -1041,7 +1041,16 @@ function displayAnalysis(analysisText, clauseText){
 
     if(header === 'SUGGESTED LANGUAGE'){
       analysisHtml += '<h4>' + header + '</h4>'
-      analysisHtml += '<div class="suggested-language">' +
+      // Generate a visual redline diff between the original clause and the suggestion
+      let diffed = htmldiff(
+        '<span>' + clauseText + '</span>',
+        '<span>' + content + '</span>'
+      )
+      analysisHtml += '<div class="suggested-language suggested-diff">' +
+        diffed + '</div>'
+      // Hidden clean copy of the suggested language so the Copy button grabs the
+      // final text only — not the struck-through deletions rendered in the diff.
+      analysisHtml += '<div class="suggested-clean" style="display:none">' +
         content + '</div>'
       analysisHtml += '<button class="copy-btn" onclick="' +
         'navigator.clipboard.writeText(' +

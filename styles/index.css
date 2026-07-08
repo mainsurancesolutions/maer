@@ -1179,3 +1179,21 @@ p.ai-selected {
   border-radius: 0 4px 4px 0;
   transition: all 0.2s;
 }
+
+/* Redline diff inside the AI "Suggested language" panel */
+.suggested-diff ins {
+  background: rgba(19,115,51,0.2);
+  color: #0d5c2e;
+  text-decoration: none;
+  border-radius: 2px;
+  padding: 0 1px;
+  font-weight: 600;
+}
+
+.suggested-diff del {
+  background: rgba(197,34,31,0.15);
+  color: #c5221f;
+  text-decoration: line-through;
+  border-radius: 2px;
+  padding: 0 1px;
+}
