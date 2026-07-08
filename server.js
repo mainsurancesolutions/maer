@@ -93,6 +93,13 @@ app.use(express.json({ limit: '50kb' }))
 // max_tokens + system + messages; response text at data.content[0].text).
 app.post('/api/analyze-clause', async (req, res) => {
   try {
+    // TEMP debug logging — remove after diagnosing the 500
+    console.log('API key present:', !!process.env.ANTHROPIC_API_KEY)
+    console.log('API key prefix:',
+      process.env.ANTHROPIC_API_KEY
+        ? process.env.ANTHROPIC_API_KEY.substring(0,10)
+        : 'MISSING')
+
     const { clauseText, negotiationSide, context } = req.body
 
     if(!clauseText || clauseText.trim().length < 10){
@@ -170,7 +177,9 @@ and suggest stronger language for my position.`
 
     if(!response.ok){
       const errData = await response.json()
-      console.error('Claude API error:', errData)
+      console.error('Claude API error status:', response.status)
+      console.error('Claude API error body:',
+        JSON.stringify(errData))
       return res.status(500).json({
         error: 'AI analysis failed. Please try again.'
       })
