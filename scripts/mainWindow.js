@@ -960,6 +960,11 @@ async function analyzeClause(paragraphElement){
   let aiToggleBtn = document.getElementById('ai-toggle-btn')
   aiPanel.style.display = 'flex'
   aiToggleBtn.classList.add('active')
+  // Scroll the document row to the far right so the AI panel column is visible
+  setTimeout(() => {
+    let docsArea = document.getElementById('docs-area')
+    if(docsArea) docsArea.scrollLeft = docsArea.scrollWidth
+  }, 50)
 
   // Switch to loading state
   document.getElementById('ai-welcome-state').style.display
@@ -1013,6 +1018,25 @@ async function analyzeClause(paragraphElement){
   }
 }
 
+// Strip preamble / wrapping quotes / asterisks Claude sometimes adds around the
+// suggested language, so the copied text is only the contract language itself.
+function cleanSuggestedLanguage(text){
+  // Remove preamble up to and including a colon
+  // e.g. "Add the following after the second sentence:"
+  text = text.replace(/^[^“”"\*]*[:]\s*/s, '')
+
+  // Remove surrounding asterisks and smart/regular quotes
+  text = text.replace(/^\*+[“”"]?\s*/, '')
+  text = text.replace(/\s*[“”"]\*+$/, '')
+  text = text.replace(/^[“”"]\s*/, '')
+  text = text.replace(/\s*[“”"]$/, '')
+
+  // Also clean asterisk-wrapped italic markdown
+  text = text.replace(/^\*([^*]+)\*$/, '$1')
+
+  return text.trim()
+}
+
 function displayAnalysis(analysisText, clauseText){
   // Hide loading, show result
   document.getElementById('ai-loading-state').style.display
@@ -1029,6 +1053,7 @@ function displayAnalysis(analysisText, clauseText){
 
   // Parse the four sections from Claude's response
   let analysisHtml = ''
+  let suggestedContent = null // raw SUGGESTED LANGUAGE text; cleaned into the copy node below
 
   // Split by the bold headers Claude uses
   let sections = analysisText.split(/\*\*([^*]+)\*\*/)
@@ -1049,9 +1074,10 @@ function displayAnalysis(analysisText, clauseText){
       analysisHtml += '<div class="suggested-language suggested-diff">' +
         diffed + '</div>'
       // Hidden clean copy of the suggested language so the Copy button grabs the
-      // final text only — not the struck-through deletions rendered in the diff.
-      analysisHtml += '<div class="suggested-clean" style="display:none">' +
-        content + '</div>'
+      // final text only — not the struck-through deletions in the diff, and not
+      // any preamble/quotes/asterisks (set as innerText after render, below).
+      suggestedContent = content
+      analysisHtml += '<div class="suggested-clean" style="display:none"></div>'
       analysisHtml += '<button class="copy-btn" onclick="' +
         'navigator.clipboard.writeText(' +
         'this.previousElementSibling.innerText)' +
@@ -1072,6 +1098,13 @@ function displayAnalysis(analysisText, clauseText){
 
   document.getElementById('ai-analysis').innerHTML =
     analysisHtml
+
+  // Populate the hidden copy node as plain text, stripped of preamble/quotes/
+  // asterisks, so "Copy language" yields only the final contract language.
+  if(suggestedContent !== null){
+    let cleanDiv = document.querySelector('#ai-analysis .suggested-clean')
+    if(cleanDiv) cleanDiv.innerText = cleanSuggestedLanguage(suggestedContent)
+  }
 }
 
 // Wire up the retry button
@@ -1090,6 +1123,11 @@ document.getElementById('ai-toggle-btn')
        panel.style.display === ''){
       panel.style.display = 'flex'
       btn.classList.add('active')
+      // Scroll the document row to the far right so the AI panel column is visible
+      setTimeout(() => {
+        let docsArea = document.getElementById('docs-area')
+        if(docsArea) docsArea.scrollLeft = docsArea.scrollWidth
+      }, 50)
     } else {
       panel.style.display = 'none'
       btn.classList.remove('active')

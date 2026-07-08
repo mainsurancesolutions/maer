@@ -135,7 +135,9 @@ strengthens the position. Format as a direct quote
 the attorney can use or adapt]
 
 Be direct and practical. You are advising a sophisticated
-attorney, not a layperson. Keep total response under 400 words.`
+attorney, not a layperson. Keep total response under 400 words.
+
+For the SUGGESTED LANGUAGE section, provide ONLY the actual contract language itself, with no preamble, introduction, or explanation before or after it. Do not wrap it in quotes or asterisks. Start directly with the contract language.`
 
     const userPrompt = `I am representing the ${sideLabel}
 in this negotiation.

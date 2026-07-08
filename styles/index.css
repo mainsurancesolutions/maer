@@ -922,18 +922,19 @@ body.drag-over #upload-zone {
 /* ═══ Phase 2: AI analysis panel ═══ */
 /* AI Panel */
 #ai-panel {
-  position: fixed;
-  top: var(--top-bar-h);
-  right: 0;
   width: 380px;
-  height: calc(100vh - var(--top-bar-h) - 24px);
+  min-width: 380px;
+  height: 100%;
   background: var(--white);
-  border-left: 1px solid var(--gray-light);
-  box-shadow: -4px 0 16px rgba(0,0,0,0.1);
-  z-index: 150;
-  display: flex;
+  border-left: 2px solid var(--gold);
+  display: none;
   flex-direction: column;
   overflow: hidden;
+  flex-shrink: 0;
+  /* Always render last in the #docs flex row, even though docsFull() appends new
+     doc-blocks after this element in the DOM — keeps the panel to the RIGHT of
+     every version. Doc order is unaffected (docBlocks iterate by class/DOM order). */
+  order: 999;
 }
 
 #ai-panel-header {
@@ -1112,23 +1113,24 @@ body.drag-over #upload-zone {
   margin-top: 4px;
 }
 
-#ai-analysis .copy-btn {
-  background: none;
-  border: 1px solid var(--gray-light);
-  border-radius: 4px;
-  padding: 4px 10px;
-  font-size: 11px;
-  cursor: pointer;
-  color: var(--gray-dark);
-  font-family: Arial, sans-serif;
-  margin-top: 8px;
-  transition: all 0.2s;
-}
-
-#ai-analysis .copy-btn:hover {
+.copy-btn {
+  display: inline-block;
+  margin-top: 10px;
   background: var(--navy);
   color: var(--white);
-  border-color: var(--navy);
+  border: none;
+  border-radius: 4px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-family: Arial, sans-serif;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+  text-align: center;
+}
+.copy-btn:hover {
+  background: var(--gold);
+  color: var(--navy);
 }
 
 #ai-error-state {
