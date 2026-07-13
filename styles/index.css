@@ -919,24 +919,59 @@ body.drag-over #upload-zone {
   .doc-block { min-width: 85vw; }
 }
 
-/* ── Load Session label (styled to match .nav-btn) ── */
+/* ── Upload screen: "or" divider + Load Session ── */
+#upload-divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  max-width: 500px;
+  margin: 24px auto;
+  width: 100%;
+}
+#upload-divider::before,
+#upload-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--gray-light);
+}
+#upload-divider span {
+  color: var(--gray-mid);
+  font-size: 13px;
+  font-family: Arial, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+#load-session-area {
+  text-align: center;
+}
+
 #load-session-btn {
   display: inline-flex;
   align-items: center;
-  padding: 7px 14px;
+  gap: 8px;
+  padding: 12px 28px;
   border-radius: 6px;
-  border: 1px solid rgba(255,255,255,0.2);
+  border: 2px solid var(--navy);
   background: transparent;
-  color: rgba(255,255,255,0.7);
-  font-size: 13px;
+  color: var(--navy);
+  font-size: 14px;
   font-family: Arial, sans-serif;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
 }
 #load-session-btn:hover {
+  background: var(--navy);
   color: var(--white);
-  border-color: rgba(255,255,255,0.5);
-  background: rgba(255,255,255,0.08);
+}
+
+#load-session-hint {
+  font-size: 11px;
+  color: var(--gray-mid);
+  font-family: Arial, sans-serif;
+  margin-top: 8px;
 }
 
 /* ═══ Phase 2: AI analysis panel ═══ */

@@ -331,6 +331,11 @@ document.getElementById('compare-button').addEventListener('click', async () =>{
 	//Hide the upload instructions so only the documents show
 	let uploadInstructions = document.getElementById('upload-instructions')
 	if(uploadInstructions) uploadInstructions.style.display = 'none'
+	//Hide the upload-screen-only "or" divider, Load Session, and sample options
+	let uploadDivider = document.getElementById('upload-divider')
+	if(uploadDivider) uploadDivider.style.display = 'none'
+	let loadSessionArea = document.getElementById('load-session-area')
+	if(loadSessionArea) loadSessionArea.style.display = 'none'
 	//Switch the layout into side-by-side comparison mode
 	document.getElementById('docs-area').classList.add('comparing')
 	document.getElementById('upload-zone').style.flexDirection = 'row'
@@ -1184,15 +1189,17 @@ async function saveSession() {
     let url = URL.createObjectURL(blob)
     let a = document.createElement('a')
     a.href = url
-    // Generate filename from first doc name
-    let firstName = sessionDocs[0].name
+    // Generate a descriptive filename from the first version's name
+    let firstName = (docNicknames[0] || 'session')
       .replace(/[^a-zA-Z0-9]/g, '_')
-    a.download = firstName + '_' +
-      new Date().toISOString().substring(0,10) + '.maer'
+      .substring(0, 30)
+    let dateStr = new Date().toISOString()
+      .substring(0,10)
+    a.download = 'CC_' + firstName + '_' + dateStr + '.maer'
     a.click()
     URL.revokeObjectURL(url)
 
-    showToast('Session saved successfully')
+    showToast('Session saved to your Downloads folder')
   } catch(err) {
     console.error('Save error:', err)
     alert('Save failed: ' + err.message)

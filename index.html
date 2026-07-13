@@ -19,12 +19,6 @@
         style="display:none">
         ↓ Save Session
       </button>
-      <label id="load-session-btn" class="nav-btn"
-        style="cursor:pointer">
-        ↑ Load Session
-        <input type="file" id="load-session-input"
-          accept=".maer" style="display:none"/>
-      </label>
       <button id="def-button" class="nav-btn" style="display:none">
         Definitions
       </button>
@@ -153,15 +147,42 @@
           </div>
         </div>
 
-        <!-- Built-in demo: lets prospects (e.g. attorneys wary of uploading
-             live deals) see the tool working with a bundled 4-version SPA -->
-        <div id="sample-btn-container" style="text-align:center">
-          <p style="font-size:13px; color:var(--gray-dark); margin-bottom:12px; font-family:Arial,sans-serif">
-            See a real Stock Purchase Agreement negotiation &mdash; Initial Draft through Buyer Counter &mdash; with live redlines across all 4 turns
+        <!-- "or" divider + load a previously saved .maer session -->
+        <div id="upload-divider">
+          <span>or</span>
+        </div>
+        <div id="load-session-area">
+          <label id="load-session-btn" style="cursor:pointer">
+            ↑ Load Saved Session
+            <input type="file" id="load-session-input"
+              accept=".maer" style="display:none"/>
+          </label>
+          <p id="load-session-hint">
+            Load a previously saved .maer session file
           </p>
-          <button id="load-sample-btn" class="nav-btn" style="background:var(--navy); color:var(--white); border:none; padding:10px 24px; border-radius:6px; cursor:pointer; font-size:13px">
+        </div>
+
+        <!-- Built-in demo: bundled 4-version sample SPA -->
+        <div id="sample-btn-container"
+          style="text-align:center;margin-top:16px;padding-bottom:12px">
+          <p style="font-size:13px;color:var(--gray-dark);
+            margin-bottom:12px;font-family:Arial,sans-serif">
+            Not ready to upload your own files?
+          </p>
+          <button id="load-sample-btn"
+            style="background:var(--navy);color:var(--white);
+            border:none;padding:10px 24px;border-radius:6px;
+            cursor:pointer;font-size:13px;
+            font-family:Arial,sans-serif;font-weight:600;
+            transition:background 0.2s">
             Try with sample agreement (4 versions)
           </button>
+          <p style="font-size:11px;color:var(--gray-mid);
+            margin-top:8px;font-family:Arial,sans-serif">
+            See a real Stock Purchase Agreement negotiation &mdash;
+            Initial Draft through Buyer Counter &mdash; with live
+            redlines across all 4 turns
+          </p>
         </div>
       </div>
 
