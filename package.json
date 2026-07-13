@@ -12,6 +12,7 @@
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.5.2",
     "mammoth": "^1.12.0",
     "node-htmldiff": "^0.9.3",
     "string-similarity": "^3.0.0"

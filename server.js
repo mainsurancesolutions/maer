@@ -11,6 +11,64 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 
+// Railway sits behind a proxy — trust the first hop so req.ip is the real
+// client IP (required for the per-IP rate limiting below to work correctly).
+app.set('trust proxy', 1)
+
+// Security headers
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff')
+  res.setHeader('X-Frame-Options', 'DENY')
+  res.setHeader('X-XSS-Protection', '1; mode=block')
+  res.setHeader('Referrer-Policy',
+    'strict-origin-when-cross-origin')
+  res.setHeader('Permissions-Policy',
+    'camera=(), microphone=(), geolocation=()')
+  res.setHeader('Content-Security-Policy',
+    [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline' " +
+        "https://unpkg.com " +
+        "https://cdn.jsdelivr.net",
+      "style-src 'self' 'unsafe-inline'",
+      "font-src 'self' https://fonts.gstatic.com",
+      "connect-src 'self'",
+      "img-src 'self' data:",
+      "object-src 'none'",
+      "frame-ancestors 'none'"
+    ].join('; ')
+  )
+  next()
+})
+
+const rateLimit = require('express-rate-limit')
+
+// Rate limit for AI analysis endpoint
+// 20 requests per minute per IP
+const aiLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 20,
+  message: {
+    error: 'Too many analysis requests. ' +
+      'Please wait a moment and try again.'
+  },
+  standardHeaders: true,
+  legacyHeaders: false
+})
+
+// More generous limit for general app usage
+const generalLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 200,
+  message: { error: 'Too many requests.' },
+  standardHeaders: true,
+  legacyHeaders: false
+})
+
+// Apply rate limits
+app.use('/api/analyze-clause', aiLimiter)
+app.use('/api/', generalLimiter)
+
 // Serve index.html and all static assets from the project root
 app.use(express.static(__dirname));
 
@@ -36,10 +94,23 @@ app.use(express.json({ limit: '50kb' }))
 // max_tokens + system + messages; response text at data.content[0].text).
 app.post('/api/analyze-clause', async (req, res) => {
   try {
-    const { clauseText, negotiationSide,
+    let { clauseText, negotiationSide,
             clauseHistory, totalVersions } = req.body
 
     if(!clauseText || clauseText.trim().length < 10){
+      return res.status(400).json({
+        error: 'Clause text too short to analyze'
+      })
+    }
+
+    // Sanitize input
+    clauseText = clauseText
+      .replace(/<[^>]*>/g, '') // strip HTML tags
+      .replace(/[^\x20-\x7E\n\r\t]/g, ' ') // printable ASCII only
+      .trim()
+      .substring(0, 5000) // max 5000 chars
+
+    if(clauseText.length < 10) {
       return res.status(400).json({
         error: 'Clause text too short to analyze'
       })
