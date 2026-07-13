@@ -1408,6 +1408,12 @@ async function loadSession(file) {
     console.log('Final docs:',
       docs.map((d,i) => i + ':' + (d?.name || 'null')))
 
+    // Ensure trailing empty slot exists for comparison engine
+    // (readDocs processes files.length - 1, so without this the last
+    //  real version would be dropped)
+    docsFull(true)
+    await new Promise(r => setTimeout(r, 100))
+
     showToast('Session loaded — comparing...')
     setTimeout(() => {
       document.getElementById('compare-button').click()
