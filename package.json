@@ -16,7 +16,6 @@
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "mammoth": "^1.4.8",
-    "multer": "^2.2.0",
     "node-htmldiff": "^0.9.3",
     "string-similarity": "^3.0.0"
   }
