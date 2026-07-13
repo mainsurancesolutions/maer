@@ -919,6 +919,26 @@ body.drag-over #upload-zone {
   .doc-block { min-width: 85vw; }
 }
 
+/* ── Load Session label (styled to match .nav-btn) ── */
+#load-session-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 14px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: transparent;
+  color: rgba(255,255,255,0.7);
+  font-size: 13px;
+  font-family: Arial, sans-serif;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+#load-session-btn:hover {
+  color: var(--white);
+  border-color: rgba(255,255,255,0.5);
+  background: rgba(255,255,255,0.08);
+}
+
 /* ═══ Phase 2: AI analysis panel ═══ */
 /* AI Panel */
 #ai-panel {

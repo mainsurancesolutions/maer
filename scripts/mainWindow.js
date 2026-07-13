@@ -327,6 +327,7 @@ document.getElementById('compare-button').addEventListener('click', async () =>{
 	//Phase 2: reveal the AI Analysis toggle once a comparison is on screen
 	document.getElementById('ai-toggle-btn').style.display = 'inline-block'
 	document.getElementById('restart-btn').style.display = 'inline-block'
+	document.getElementById('save-session-btn').style.display = 'inline-block'
 	//Hide the upload instructions so only the documents show
 	let uploadInstructions = document.getElementById('upload-instructions')
 	if(uploadInstructions) uploadInstructions.style.display = 'none'
@@ -645,10 +646,19 @@ document.getElementById('sidebar-collapse-btn').addEventListener('click', () => 
 })
 
 //Restart / new session button — reloads the page after confirmation
-document.getElementById('restart-btn').addEventListener('click', () => {
-	if(confirm('Start a new session? Your current comparison will be lost.')){
-		window.location.reload()
+document.getElementById('restart-btn').addEventListener('click', async () => {
+	let hasDocs = docs.some(d => d !== null)
+	if(hasDocs) {
+		let choice = confirm(
+			'Save your current session before starting over?\n\n' +
+			'Click OK to save first, or Cancel to discard and restart.')
+		if(choice) {
+			await saveSession()
+			setTimeout(() => window.location.reload(), 1000)
+			return
+		}
 	}
+	window.location.reload()
 })
 
 //The image button that activates the input field to upload files
@@ -1134,6 +1144,153 @@ document.getElementById('ai-retry-btn')
   .addEventListener('click', () => {
     let selected = document.querySelector('p.ai-selected')
     if(selected) analyzeClause(selected)
+  })
+
+// SAVE SESSION
+async function saveSession() {
+  try {
+    // Build session object
+    let sessionDocs = []
+    for(let i = 0; i < docs.length; i++) {
+      if(docs[i] === null) continue
+      // Read file as base64
+      let arrayBuffer = await docs[i].arrayBuffer()
+      let uint8 = new Uint8Array(arrayBuffer)
+      let binary = ''
+      uint8.forEach(b => binary += String.fromCharCode(b))
+      let base64 = btoa(binary)
+      sessionDocs.push({
+        name: docNicknames[i] || 'Version ' + (i+1),
+        filename: docs[i].name,
+        data: base64
+      })
+    }
+
+    if(sessionDocs.length === 0) {
+      alert('No documents to save.')
+      return
+    }
+
+    let session = {
+      version: '2.0',
+      saved: new Date().toISOString(),
+      app: 'ContractsCompare',
+      documents: sessionDocs
+    }
+
+    // Download as .maer file
+    let json = JSON.stringify(session)
+    let blob = new Blob([json], {type: 'application/json'})
+    let url = URL.createObjectURL(blob)
+    let a = document.createElement('a')
+    a.href = url
+    // Generate filename from first doc name
+    let firstName = sessionDocs[0].name
+      .replace(/[^a-zA-Z0-9]/g, '_')
+    a.download = firstName + '_' +
+      new Date().toISOString().substring(0,10) + '.maer'
+    a.click()
+    URL.revokeObjectURL(url)
+
+    showToast('Session saved successfully')
+  } catch(err) {
+    console.error('Save error:', err)
+    alert('Save failed: ' + err.message)
+  }
+}
+
+// LOAD SESSION
+async function loadSession(file) {
+  try {
+    let text = await file.text()
+    let session = JSON.parse(text)
+
+    if(!session.documents ||
+       session.documents.length === 0) {
+      alert('Invalid session file.')
+      return
+    }
+
+    if(session.app !== 'ContractsCompare') {
+      alert('This file was not created by ContractsCompare.')
+      return
+    }
+
+    // Confirm if comparison already running
+    if(docs.some(d => d !== null)) {
+      if(!confirm('Loading a session will replace your ' +
+        'current comparison. Continue?')) return
+      // Reset
+      window.location.reload()
+      return
+    }
+
+    showToast('Loading session...')
+
+    // Restore documents
+    for(let i = 0; i < session.documents.length; i++) {
+      let docData = session.documents[i]
+
+      // Convert base64 back to File object
+      let binary = atob(docData.data)
+      let uint8 = new Uint8Array(binary.length)
+      for(let j = 0; j < binary.length; j++) {
+        uint8[j] = binary.charCodeAt(j)
+      }
+      let blob = new Blob([uint8], {
+        type: 'application/vnd.openxmlformats-' +
+          'officedocument.wordprocessingml.document'
+      })
+      let fileObj = new File([blob], docData.filename,
+        {type: blob.type})
+
+      // Ensure enough slots exist
+      if(i >= 2) docsFull(true)
+
+      docs[i] = fileObj
+      docNicknames[i] = docData.name
+      currentlyShown[i] = true
+
+      // Update UI
+      let uploadCard = docBlocks[i]
+        .querySelector('.upload-card')
+      if(uploadCard) uploadCard.style.display = 'none'
+      let uploadText = docBlocks[i]
+        .querySelector('.upload-text')
+      if(uploadText) uploadText.innerHTML =
+        docData.name + ' loaded'
+    }
+
+    updateCompareButton()
+
+    // Hide sample button
+    let sampleContainer = document.getElementById(
+      'sample-btn-container')
+    if(sampleContainer)
+      sampleContainer.style.display = 'none'
+
+    // Auto-compare
+    showToast('Session loaded — comparing...')
+    setTimeout(() => {
+      document.getElementById('compare-button').click()
+    }, 500)
+
+  } catch(err) {
+    console.error('Load error:', err)
+    alert('Could not load session: ' + err.message)
+  }
+}
+
+// Wire up buttons
+document.getElementById('save-session-btn')
+  .addEventListener('click', saveSession)
+
+document.getElementById('load-session-input')
+  .addEventListener('change', (e) => {
+    if(e.target.files[0]) {
+      loadSession(e.target.files[0])
+      e.target.value = '' // reset so same file can reload
+    }
   })
 
 // ── Phase 2: AI Panel controls (UI shell only — no Claude API calls yet) ──
