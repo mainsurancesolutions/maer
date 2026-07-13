@@ -1072,6 +1072,24 @@ async function analyzeClause(paragraphElement){
         .innerText = '⚡ ' + side + ' AI · ' +
         data.versionsAnalyzed + ' versions analyzed'
     }
+
+    // Track AI usage
+    try {
+      let usageKey = 'cc_ai_usage'
+      let usage = JSON.parse(
+        localStorage.getItem(usageKey) || '{}')
+      let today = new Date().toISOString().substring(0,10)
+      usage.total = (usage.total || 0) + 1
+      usage.lastUsed = new Date().toISOString()
+      usage.byDay = usage.byDay || {}
+      usage.byDay[today] = (usage.byDay[today] || 0) + 1
+      localStorage.setItem(usageKey, JSON.stringify(usage))
+
+      // Update the usage display in the AI panel
+      updateAiUsageDisplay()
+    } catch(e) {
+      // localStorage not available - ignore
+    }
   } catch(err) {
     console.error('AI analysis error:', err)
     document.getElementById('ai-loading-state')
@@ -1448,3 +1466,40 @@ document.getElementById('ai-panel-close')
     document.getElementById('ai-toggle-btn')
       .classList.remove('active')
   })
+
+// ── AI usage tracking (localStorage, per-browser; server-side comes in Phase 3) ──
+function updateAiUsageDisplay() {
+  try {
+    let usage = JSON.parse(
+      localStorage.getItem('cc_ai_usage') || '{}')
+    let total = usage.total || 0
+    let counter = document.getElementById(
+      'ai-usage-counter')
+    if(counter) {
+      counter.innerText = total + ' analysis' +
+        (total !== 1 ? 'es' : '') + ' run'
+    }
+  } catch(e) {}
+}
+
+// Simple admin/monitoring view — call ccUsageStats() from the browser console
+function getUsageStats() {
+  try {
+    let usage = JSON.parse(
+      localStorage.getItem('cc_ai_usage') || '{}')
+    console.log('=== ContractsCompare AI Usage ===')
+    console.log('Total analyses:', usage.total || 0)
+    console.log('Last used:', usage.lastUsed || 'never')
+    console.log('By day:', usage.byDay || {})
+    console.log('=================================')
+    return usage
+  } catch(e) {
+    return {}
+  }
+}
+
+// Expose globally so you can check from console
+window.ccUsageStats = getUsageStats
+
+// Show usage count on page load
+updateAiUsageDisplay()

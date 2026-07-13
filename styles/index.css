@@ -1072,6 +1072,7 @@ body.drag-over #upload-zone {
   flex-shrink: 0;
   border-bottom: 2px solid var(--gold);
   gap: 8px;
+  position: relative;
 }
 
 #ai-panel-title {
