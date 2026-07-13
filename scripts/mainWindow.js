@@ -1284,46 +1284,71 @@ async function loadSession(file) {
       return
     }
 
-    // Confirm if comparison already running
-    if(docs.some(d => d !== null)) {
-      if(!confirm('Loading a session will replace your ' +
-        'current comparison. Continue?')) return
-      // Reset
-      window.location.reload()
-      return
-    }
-
     showToast('Loading session...')
 
-    // Calculate how many extra slots we need
-    let currentSlots = docs.length // starts at 2
-    let neededSlots = session.documents.length
-    let extraNeeded = neededSlots - currentSlots
+    let needed = session.documents.length
 
-    // Create exactly the extra slots needed
+    // STEP 1: Reset docs array to correct size
+    // Fill with nulls up to needed count
+    docs = new Array(needed).fill(null)
+    docNicknames = new Array(needed).fill(null)
+    currentlyShown = new Array(needed).fill(false)
+
+    // STEP 2: Create DOM slots
+    // We always start with 2 slots in HTML; create additional ones needed.
+    // NOTE: the block MUST include .doc-title and .upload-text — the compare
+    // loop indexes docTitleSlots[i]/uploadTextSlots[i] in parallel with
+    // docBlocks, so omitting them misaligns the collections and throws mid-compare.
+    let extraNeeded = Math.max(0, needed - 2)
     for(let i = 0; i < extraNeeded; i++) {
-      docsFull(true)
+      let newBlock = document.createElement('div')
+      newBlock.className = 'doc-block'
+      newBlock.innerHTML = `
+        <input hidden type="file" accept=".docx"
+          onchange="fileAdded()"/>
+        <div class="upload-card uploaded">
+          <div class="upload-icon">📄</div>
+          <p class="upload-label">Loading...</p>
+          <button class="file-button nav-btn"
+            disabled style="opacity:0.4">
+            ✓ Uploaded
+          </button>
+          <input class="doc-title" onClick="this.select()"
+            value="" onchange="nameChange()"
+            placeholder="Version name..." style="display:none">
+        </div>
+        <p class="upload-text"></p>
+        <button class="hide-button"
+          style="display:none">✕ Hide</button>
+        <p class="doc"></p>`
+      document.getElementById('docs')
+        .appendChild(newBlock)
     }
 
-    // Wait for DOM to update
-    await new Promise(r => setTimeout(r, 150))
+    // STEP 3: Wait for DOM to fully render
+    await new Promise(r => setTimeout(r, 200))
 
-    // Refresh ALL collection references
+    // STEP 4: Refresh ALL live collections
     docBlocks = document.getElementsByClassName('doc-block')
     docSlots = document.getElementsByClassName('doc')
     docTitleSlots = document.getElementsByClassName('doc-title')
     uploadTextSlots = document.getElementsByClassName('upload-text')
 
-    // Now populate all slots
-    for(let i = 0; i < session.documents.length; i++) {
+    console.log('After DOM creation:',
+      'docBlocks:', docBlocks.length,
+      'needed:', needed)
+
+    // STEP 5: Populate each slot
+    for(let i = 0; i < needed; i++) {
       let docData = session.documents[i]
 
+      // Convert base64 to File
       let binary = atob(docData.data)
-      let uint8 = new Uint8Array(binary.length)
+      let bytes = new Uint8Array(binary.length)
       for(let j = 0; j < binary.length; j++) {
-        uint8[j] = binary.charCodeAt(j)
+        bytes[j] = binary.charCodeAt(j)
       }
-      let blob = new Blob([uint8], {
+      let blob = new Blob([bytes], {
         type: 'application/vnd.openxmlformats-' +
           'officedocument.wordprocessingml.document'
       })
@@ -1335,69 +1360,52 @@ async function loadSession(file) {
       currentlyShown[i] = true
 
       // Update card UI
-      let card = docBlocks[i]?.querySelector('.upload-card')
-      if(card) {
-        card.classList.add('uploaded')
-        let btn = card.querySelector('.file-button')
-        if(btn) {
-          btn.disabled = true
-          btn.style.opacity = '0.4'
-          btn.innerText = '✓ Uploaded'
+      let block = docBlocks[i]
+      if(block) {
+        let card = block.querySelector('.upload-card')
+        if(card) {
+          card.classList.add('uploaded')
+          let lbl = card.querySelector('.upload-label')
+          if(lbl) lbl.innerText = docData.name
+          let btn = card.querySelector('.file-button')
+          if(btn) {
+            btn.disabled = true
+            btn.style.opacity = '0.4'
+            btn.innerText = '✓ Uploaded'
+          }
         }
-        let lbl = card.querySelector('.upload-label')
-        if(lbl) lbl.innerText = docData.name
-        let inp = card.querySelector('.doc-title')
-        if(inp) inp.style.display = 'none'
+        // Make block visible
+        block.style.display = 'inline-flex'
       }
+
+      console.log('Slot', i, 'set:',
+        docData.name, 'block:', !!block)
     }
 
-    updateCompareButton()
-
-    // Hide session UI
-    let loadSessionArea = document.getElementById(
+    // STEP 6: Hide session UI
+    let loadArea = document.getElementById(
       'load-session-area')
-    if(loadSessionArea)
-      loadSessionArea.style.display = 'none'
-    let uploadOrDivider = document.getElementById(
+    if(loadArea) loadArea.style.display = 'none'
+    let orDiv = document.getElementById(
       'upload-or-divider')
-    if(uploadOrDivider)
-      uploadOrDivider.style.display = 'none'
-    let sampleArea = document.getElementById('sample-area')
+    if(orDiv) orDiv.style.display = 'none'
+    let sampleArea = document.getElementById(
+      'sample-area')
     if(sampleArea) sampleArea.style.display = 'none'
 
+    // STEP 7: Trigger compare
+    updateCompareButton()
+
+    console.log('Final docs:',
+      docs.map((d,i) => i + ':' + (d?.name || 'null')))
+
     showToast('Session loaded — comparing...')
-
-    // Wait for all docs to be registered, then compare
-    let didCompare = false
-    let waitForDocs = setInterval(() => {
-      let filledDocs = docs.filter(d => d !== null)
-      let expectedCount = session.documents.length
-      if(filledDocs.length >= expectedCount) {
-        clearInterval(waitForDocs)
-        // Update currentlyShown for all loaded docs
-        for(let i = 0; i < expectedCount; i++) {
-          currentlyShown[i] = true
-        }
-        updateCompareButton()
-        setTimeout(() => {
-          if(didCompare) return
-          didCompare = true
-          document.getElementById('compare-button').click()
-        }, 200)
-      }
-    }, 100)
-
-    // Safety timeout - compare after 3 seconds regardless
     setTimeout(() => {
-      clearInterval(waitForDocs)
-      if(didCompare) return
-      didCompare = true
-      updateCompareButton()
       document.getElementById('compare-button').click()
-    }, 3000)
+    }, 500)
 
   } catch(err) {
-    console.error('Load error:', err)
+    console.error('Load session error:', err)
     alert('Could not load session: ' + err.message)
   }
 }
