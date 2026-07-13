@@ -317,7 +317,12 @@ document.getElementById('compare-button').addEventListener('click', async () =>{
 	let shownSlots = []
 	//Find out which docs are hidden
 	for(let i = 0; i < docs.length; i++){
-		if(docSlots[i].style.display !== "none"){
+		console.log('Compare loop slot', i,
+			'docs[i]:', !!docs[i],
+			'docTitleSlots[i]:', !!docTitleSlots[i],
+			'uploadTextSlots[i]:', !!uploadTextSlots[i],
+			'docSlots[i]:', !!docSlots[i])
+		if(docSlots[i] && docSlots[i].style.display !== "none"){
 			shownDocs.push(docs[i])
 			shownSlots.push(docSlots[i])
 		}
@@ -370,7 +375,7 @@ document.getElementById('compare-button').addEventListener('click', async () =>{
 	//full-width empty panel and stranding the Unhide button.
 	for(let i = 0; i < docBlocks.length; i++){
 		if(docs[i]){
-			hideButtons[i].style.display = "inline-block"
+			if(hideButtons[i]) hideButtons[i].style.display = "inline-block"
 			if(currentlyShown[i] !== false){
 				docBlocks[i].style.height = '100%'
 				docBlocks[i].style.flex = '1'
@@ -380,9 +385,13 @@ document.getElementById('compare-button').addEventListener('click', async () =>{
 	//Change doc titles
 	for(let i = 0; i < docBlocks.length; i++){
 		if(docs[i]){
-			docTitleSlots[i].style.display = "inline-block"
-			docTitleSlots[i].value = docNicknames[i]
-			uploadTextSlots[i].innerHTML = ""
+			if(docTitleSlots[i]) {
+				docTitleSlots[i].style.display = "inline-block"
+				docTitleSlots[i].value = docNicknames[i] || ''
+			}
+			if(uploadTextSlots[i]) {
+				uploadTextSlots[i].innerHTML = ""
+			}
 		}
 	}
 	//Add a sticky version header to each visible document panel
