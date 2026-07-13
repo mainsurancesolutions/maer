@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ContractsCompare — The only redline tool that tells the full story</title>
-  <meta name="description" content="ContractsCompare shows every turn of negotiation simultaneously — from first draft to final execution. Patent No. US-11227107-B2." />
+  <title>ContractsCompare — See every turn. Understand every move.</title>
+  <meta name="description" content="ContractsCompare shows every version of your agreement side by side, then its AI reads the full negotiation and tells you what to propose next. Patent No. US-11227107-B2." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Georgia&display=swap" rel="stylesheet" />
@@ -652,6 +652,99 @@
       .contact-card { padding: 28px 22px; }
       .nav-cta { display: none; }
     }
+
+    /* ── Hero visual: mock AI-output "screenshot" ── */
+    .hero-visual {
+      max-width: 760px;
+      margin: 48px auto 0;
+      text-align: left;
+    }
+    .mock-window {
+      background: #0d1b30;
+      border: 1px solid rgba(201, 168, 76, 0.35);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 30px 70px rgba(0, 0, 0, 0.5);
+    }
+    .mock-titlebar {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: #0a1424;
+      padding: 11px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .mock-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .mock-title {
+      margin-left: 8px;
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.5);
+      letter-spacing: 0.3px;
+    }
+    .mock-badge {
+      margin-left: auto;
+      font-family: Arial, sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--gold);
+      white-space: nowrap;
+    }
+    .mock-body { padding: 24px 28px; }
+    .mock-h {
+      font-family: Arial, sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin: 20px 0 7px;
+    }
+    .mock-body .mock-h:first-child { margin-top: 0; }
+    .mock-p {
+      font-family: Arial, sans-serif;
+      font-size: 13.5px;
+      line-height: 1.7;
+      color: rgba(255, 255, 255, 0.75);
+      margin: 0;
+    }
+    .mock-cite {
+      border-left: 2px solid var(--gold);
+      padding: 3px 0 3px 12px;
+      margin: 7px 0;
+      font-family: Arial, sans-serif;
+      font-size: 12.5px;
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.6);
+    }
+    .mock-cite b { color: var(--gold-light); font-weight: 700; }
+    .mock-redline {
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 6px;
+      padding: 12px 14px;
+      margin-top: 6px;
+      font-family: Georgia, serif;
+      font-size: 13.5px;
+      line-height: 1.75;
+      color: rgba(255, 255, 255, 0.85);
+    }
+    .mock-redline del { color: #d98a8a; }
+    .mock-redline ins {
+      color: #8fd0a0;
+      text-decoration: none;
+      background: rgba(143, 208, 160, 0.12);
+      padding: 0 2px;
+      border-radius: 3px;
+    }
+    @media (max-width: 560px) {
+      .mock-body { padding: 18px 18px; }
+      .mock-badge { display: none; }
+    }
   </style>
 </head>
 <body>
@@ -664,10 +757,8 @@
         <span class="nav-brand-name">ContractsCompare</span>
       </a>
       <ul class="nav-links" id="navLinks">
-        <li><a href="#honest-answer">Why ContractsCompare</a></li>
         <li><a href="#features">Features</a></li>
-        <li><a href="#how-it-works">How It Works</a></li>
-        <li><a href="#ai">AI</a></li>
+        <li><a href="#ai">AI Analysis</a></li>
         <li><a href="#security">Security</a></li>
         <li><a href="#pricing">Pricing</a></li>
         <li><a href="#contact">Contact</a></li>
@@ -682,177 +773,88 @@
   <!-- ── 2. HERO ── -->
   <header class="hero" id="top">
     <div class="container">
-      <span class="eyebrow">Patent No. US-11227107-B2</span>
-      <h1>Your M&amp;A negotiation <em>command center</em></h1>
-      <p class="hero-subtext">ContractsCompare combines patented multi-version redlining with AI-powered clause analysis &mdash; giving attorneys the full negotiation picture and market-grounded suggestions in one click. Not a chatbot. A workflow.</p>
+      <span class="eyebrow">Patent No. US-11227107-B2 &middot; AI Analysis now live</span>
+      <h1>See every turn. <em>Understand every move.</em></h1>
+      <p class="hero-subtext">ContractsCompare shows every version of your agreement side by side &mdash; then its AI reads the full negotiation and tells you who gave ground, how your position compares to real deals, and exactly what to propose next.</p>
       <div class="hero-buttons">
         <a class="btn btn-gold" href="https://app.contractscompare.com">Try It Free &rarr;</a>
-        <a class="btn btn-outline-white" href="#contact">Schedule a Demo</a>
+        <a class="btn btn-outline-white" href="#ai">See the AI in action</a>
       </div>
-      <p class="hero-meta">Works on any device &middot; No installation required &middot; Upload .docx files &middot; Compare in seconds</p>
+
+      <!-- Stylized "screenshot" of the actual AI analysis output -->
+      <div class="hero-visual">
+        <div class="mock-window">
+          <div class="mock-titlebar">
+            <span class="mock-dot" style="background:#ff5f56"></span>
+            <span class="mock-dot" style="background:#ffbd2e"></span>
+            <span class="mock-dot" style="background:#27c93f"></span>
+            <span class="mock-title">ContractsCompare &mdash; AI Analysis</span>
+            <span class="mock-badge">&#9889; Buy-Side AI &middot; 4 versions analyzed</span>
+          </div>
+          <div class="mock-body">
+            <div class="mock-h">What this clause means</div>
+            <p class="mock-p">The Material Adverse Effect definition sets the bar for when the buyer can walk before closing. Broad carve-outs quietly shift risk onto you.</p>
+            <div class="mock-h">Negotiation analysis</div>
+            <p class="mock-p">Across four turns the seller widened the MAE carve-outs twice &mdash; adding "pandemic" and "changes in law" with no reciprocal concession. Leverage you won on the financing condition is being spent right here.</p>
+            <div class="mock-h">Market context</div>
+            <div class="mock-cite"><b>Checkmate Pharmaceuticals</b> &middot; Healthcare &middot; 2022 &middot; $250M &mdash; carve-outs limited to industry-wide effects that are not disproportionate to the company.</div>
+            <div class="mock-cite"><b>Stemline Therapeutics</b> &middot; Healthcare &middot; 2020 &middot; $677M &mdash; pandemic risk expressly borne by the seller through closing.</div>
+            <div class="mock-h">Recommended next position</div>
+            <div class="mock-redline">&hellip; excluding any Effect resulting from <del>changes in applicable law or any pandemic or epidemic</del> <ins>industry-wide conditions that do not disproportionately affect the Company relative to comparable participants</ins>.</div>
+          </div>
+        </div>
+      </div>
     </div>
   </header>
 
-  <!-- ── 2b. WHY NOT JUST USE AI? ── -->
-  <section id="honest-answer" style="background:var(--navy-mid);
-    padding:48px 40px; text-align:center;
-    border-top:1px solid rgba(201,168,76,0.15);
-    border-bottom:1px solid rgba(201,168,76,0.15)">
-    <div style="max-width:900px;margin:0 auto">
-      <p style="font-size:12px;letter-spacing:2px;
-        text-transform:uppercase;color:var(--gold);
-        font-family:Arial,sans-serif;margin-bottom:16px">
-        The honest answer to the obvious question
-      </p>
-      <h2 style="font-size:28px;color:var(--white);
-        margin-bottom:20px;line-height:1.3">
-        "Can't I just upload the documents to Claude?"
-      </h2>
-      <p style="font-size:16px;color:rgba(255,255,255,0.65);
-        max-width:680px;margin:0 auto 32px;
-        line-height:1.8;font-family:Arial,sans-serif">
-        Yes. And a surgeon could technically use a kitchen
-        knife. ContractsCompare is purpose-built workflow
-        infrastructure — not a general-purpose chatbot.
-      </p>
-      <div style="display:grid;
-        grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-        gap:20px;text-align:left;margin-top:8px">
-
-        <div style="background:rgba(255,255,255,0.05);
-          border-radius:8px;padding:20px 24px">
-          <div style="color:var(--gold);font-size:20px;
-            margin-bottom:10px">⚡</div>
-          <h3 style="color:var(--white);font-size:14px;
-            margin-bottom:8px">One click, not ten steps</h3>
-          <p style="color:rgba(255,255,255,0.5);font-size:13px;
-            line-height:1.6;font-family:Arial,sans-serif">
-            Click any clause. AI analysis appears instantly
-            — no copy-pasting, no context-switching,
-            no prompting. In context, next to the language
-            you're reviewing.
-          </p>
-        </div>
-
-        <div style="background:rgba(255,255,255,0.05);
-          border-radius:8px;padding:20px 24px">
-          <div style="color:var(--gold);font-size:20px;
-            margin-bottom:10px">📊</div>
-          <h3 style="color:var(--white);font-size:14px;
-            margin-bottom:8px">The negotiation story, not just the clause</h3>
-          <p style="color:rgba(255,255,255,0.5);font-size:13px;
-            line-height:1.6;font-family:Arial,sans-serif">
-            AI that sees every version of a clause knows
-            who has given more ground, what was conceded
-            without quid pro quo, and where real leverage
-            still exists. A chatbot sees one snapshot.
-          </p>
-        </div>
-
-        <div style="background:rgba(255,255,255,0.05);
-          border-radius:8px;padding:20px 24px">
-          <div style="color:var(--gold);font-size:20px;
-            margin-bottom:10px">📚</div>
-          <h3 style="color:var(--white);font-size:14px;
-            margin-bottom:8px">Grounded in real deals, not training data</h3>
-          <p style="color:rgba(255,255,255,0.5);font-size:13px;
-            line-height:1.6;font-family:Arial,sans-serif">
-            Suggestions reference actual negotiated outcomes
-            from comparable transactions — with company
-            names, deal sizes, and years. Not "market
-            standard." Specific deals.
-          </p>
-        </div>
-
-        <div style="background:rgba(255,255,255,0.05);
-          border-radius:8px;padding:20px 24px">
-          <div style="color:var(--gold);font-size:20px;
-            margin-bottom:10px">🏛️</div>
-          <h3 style="color:var(--white);font-size:14px;
-            margin-bottom:8px">Built for your firm, not everyone</h3>
-          <p style="color:rgba(255,255,255,0.5);font-size:13px;
-            line-height:1.6;font-family:Arial,sans-serif">
-            Enterprise clients bring their own closed deals.
-            The AI learns how your firm negotiates.
-            That institutional memory cannot be replicated
-            by asking Claude a question.
-          </p>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- ── 3. PROBLEM BAR ── -->
-  <section class="problem-bar">
-    <div class="container">
-      <p><b>The problem:</b> Nearly every redline tool limits you to comparing two versions at a time. In a real negotiation &mdash; M&amp;A, real estate, derivatives, insurance, or any complex agreement &mdash; you're tracking 8, 12, sometimes 20 turns back and forth. ContractsCompare was built to show all of them, at once, telling the complete story of how your deal took shape.</p>
-    </div>
-  </section>
-
-  <!-- ── 4. FEATURES ── -->
+  <!-- ── 3. THE COMPARISON ENGINE (FREE) ── -->
   <section class="section section-light" id="features">
     <div class="container">
       <div class="section-head">
-        <span class="section-label">Features</span>
-        <h2>Everything you need to track a negotiation</h2>
-        <p class="section-intro">Designed by negotiation professionals, for negotiation professionals. Purpose-built for complex multi-party agreements across industries.</p>
+        <span class="section-label">The Comparison Engine &middot; Free</span>
+        <h2>Every version of your deal, side by side</h2>
+        <p class="section-intro">The full multi-version redline engine is free, forever &mdash; no account required. Upload your .docx versions and compare in seconds.</p>
       </div>
       <div class="features-grid">
         <div class="feature-card">
           <div class="feature-icon">&#10227;</div>
-          <h3>Dynamic multi-version redlines</h3>
-          <p>Compare every sequential turn of negotiation simultaneously. Watch language evolve from first draft to execution in one unified view &mdash; something no other tool offers.</p>
+          <h3>Multi-version redlines</h3>
+          <p>Compare every sequential turn of a negotiation simultaneously &mdash; watch language evolve from first draft to execution in one unified view. Patented, and something no other tool offers.</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">&#9776;</div>
-          <h3>Intelligent table of contents</h3>
-          <p>Auto-generated TOC highlights changed sections in gold so you immediately know where to focus. Collapse agreed sections to clear the noise and work faster.</p>
+          <h3>TOC navigation</h3>
+          <p>An auto-generated table of contents highlights changed sections in gold, so you immediately know where to focus. Collapse agreed sections to clear the noise.</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">&#9678;</div>
-          <h3>Hover-to-define popups</h3>
-          <p>Hover any defined term to instantly see its definition without losing your place. Recursive popups let you drill into cross-references inside definitions.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">&#8597;</div>
-          <h3>Synchronized scrolling</h3>
-          <p>Click any paragraph and every version scrolls to the matching language instantly &mdash; even when text changed substantially between turns.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">&#9733;</div>
-          <h3>AI-powered suggestions <span class="badge">Coming Soon</span></h3>
-          <p>Buy-side and sell-side positioning powered by Claude AI, informed by a curated precedent library of real negotiated agreements.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">&#8862;</div>
-          <h3>Works everywhere</h3>
-          <p>Browser-based. No installation. Works on Mac, Windows, iPad, any modern device. Upload your .docx files and compare in seconds.</p>
+          <h3>Hover-to-define</h3>
+          <p>Hover any defined term to see its definition instantly, without losing your place. Recursive popups let you drill into cross-references inside definitions.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ── 5. AI SECTION ── -->
+  <!-- ── 4. THE AI LAYER (PAID) ── -->
   <section class="section section-navy" id="ai">
     <div class="container">
       <div class="section-head">
-        <span class="section-label">Powered by Claude AI</span>
-        <h2>A negotiation co-pilot that knows which side you're on</h2>
-        <p class="section-intro">ContractsCompare AI analyzes your current draft against a curated library of real precedent agreements and suggests stronger language &mdash; based on your position. Whether you're negotiating a merger agreement, a real estate transaction, a derivatives contract, an insurance agreement, or any complex multi-party deal, ContractsCompare AI gives you an edge at every turn.</p>
+        <span class="section-label">The AI Layer &middot; Now Live</span>
+        <h2>Now with AI that reads the room</h2>
+        <p class="section-intro">Click any clause and ContractsCompare AI analyzes it against the full negotiation history and a library of real negotiated deals &mdash; then tells you what to do next. Not a chatbot. A workflow.</p>
       </div>
       <div class="ai-cols">
         <div class="ai-col">
-          <h3>Buy-Side Mode</h3>
-          <p>Identifies counterparty-favorable language and suggests buyer-protective alternatives drawn from negotiated precedent.</p>
+          <h3>Negotiation trend analysis</h3>
+          <p>Because the AI sees every version, it knows who has conceded, what moved without a quid pro quo, and where your leverage still sits &mdash; not just what a single snapshot says.</p>
         </div>
         <div class="ai-col">
-          <h3>Sell-Side Mode</h3>
-          <p>Flags overreaching positions and recommends seller-favorable language based on market standard negotiated agreements.</p>
+          <h3>Precedent citations</h3>
+          <p>Suggestions cite real negotiated outcomes by company, deal size, and year &mdash; Checkmate ($250M), Home Point ($324M), Primo Water ($350M), Stemline ($677M), Ruth's ($715M) &mdash; not vague "market standard."</p>
         </div>
         <div class="ai-col">
-          <h3>Precedent Library</h3>
-          <p>Every suggestion is grounded in real negotiated agreements &mdash; not generic boilerplate. The more you use it, the smarter it gets.</p>
+          <h3>Specific recommended language</h3>
+          <p>Every analysis ends with actual contract language to propose next, delivered as a redline against your current draft &mdash; ready to drop into your markup.</p>
         </div>
       </div>
       <div style="background:rgba(255,255,255,0.06); border:1px solid rgba(201,168,76,0.3); border-radius:8px; padding:16px 24px; max-width:720px; margin:40px auto 0; text-align:center">
@@ -862,62 +864,11 @@
         </p>
       </div>
       <p class="ai-tagline">This isn't autocomplete. This is the difference between reviewing a clause and understanding the negotiation.</p>
-      <p class="ai-earlyaccess">Coming Soon &mdash; <a href="#contact">Join the Early Access List</a></p>
+      <p class="ai-earlyaccess">Available now &mdash; <a href="https://app.contractscompare.com">Try the AI free</a></p>
     </div>
   </section>
 
-  <!-- ── 6. HOW IT WORKS ── -->
-  <section class="section section-light" id="how-it-works">
-    <div class="container">
-      <div class="section-head">
-        <span class="section-label">How It Works</span>
-        <h2>From upload to insight in seconds</h2>
-      </div>
-      <div class="steps">
-        <div class="step">
-          <div class="step-num">1</div>
-          <h3>Upload your versions</h3>
-          <p>Drag and drop your agreement files &mdash; as many versions as you have. Any complex agreement, any industry. No account required.</p>
-        </div>
-        <div class="step">
-          <div class="step-num">2</div>
-          <h3>Compare instantly</h3>
-          <p>ContractsCompare generates redlines across every consecutive turn, highlighting exactly what changed and where across all versions simultaneously.</p>
-        </div>
-        <div class="step">
-          <div class="step-num">3</div>
-          <h3>Navigate with precision</h3>
-          <p>Click any clause for instant AI analysis grounded in the full negotiation history and comparable real-world transactions &mdash; not generic suggestions.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── 7. TESTIMONIALS ── -->
-  <section class="section section-white">
-    <div class="container">
-      <div class="section-head">
-        <span class="section-label">What Professionals Say</span>
-        <h2>Trusted by negotiation professionals</h2>
-      </div>
-      <div class="quotes">
-        <div class="quote-card">
-          <p>"Other tools fail to embrace the need to compare more than two versions at a time. ContractsCompare steps up and fills that gap."</p>
-          <cite>&mdash; M&amp;A Attorney</cite>
-        </div>
-        <div class="quote-card">
-          <p>"This is the best redline comparison program I have found, particularly in regards to its use in negotiating agreements."</p>
-          <cite>&mdash; VC/PE M&amp;A Professional</cite>
-        </div>
-        <div class="quote-card">
-          <p>"ContractsCompare has eliminated the endless scroll to review reference sections and definitions within the greater document."</p>
-          <cite>&mdash; M&amp;A Insurance Professional</cite>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── SECURITY ── -->
+  <!-- ── 5. SECURITY ── -->
   <section class="section section-navy" id="security">
     <div class="container">
       <div class="section-head">
@@ -986,8 +937,8 @@
             <li>Works across all agreement types</li>
             <li>Priority support</li>
           </ul>
-          <a class="btn btn-gold" href="#contact">Contact us</a>
-          <p class="price-note">Coming soon &mdash; contact us to be first</p>
+          <a class="btn btn-gold" href="https://app.contractscompare.com">Get started &rarr;</a>
+          <p class="price-note">AI analysis is live &mdash; available today</p>
         </div>
         <!-- Enterprise -->
         <div class="price-card">
@@ -1036,7 +987,7 @@
             <select id="interest" name="Interest">
               <option>Scheduling a demo</option>
               <option>Enterprise pricing</option>
-              <option>Early AI access</option>
+              <option>AI Pro access</option>
               <option>General inquiry</option>
             </select>
           </div>
@@ -1068,8 +1019,8 @@
         </div>
         <ul class="footer-links">
           <li><a href="#features">Features</a></li>
-          <li><a href="#how-it-works">How It Works</a></li>
-          <li><a href="#ai">AI</a></li>
+          <li><a href="#ai">AI Analysis</a></li>
+          <li><a href="#security">Security</a></li>
           <li><a href="#pricing">Pricing</a></li>
           <li><a href="#contact">Contact</a></li>
         </ul>
