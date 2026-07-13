@@ -1300,11 +1300,6 @@ async function loadSession(file) {
     let neededSlots = session.documents.length
     let extraNeeded = neededSlots - currentSlots
 
-    console.log('Session docs:', session.documents.length)
-    console.log('Current slots:', currentSlots)
-    console.log('Extra needed:', extraNeeded)
-    console.log('docs.length before loop:', docs.length)
-
     // Create exactly the extra slots needed
     for(let i = 0; i < extraNeeded; i++) {
       docsFull(true)
@@ -1319,15 +1314,9 @@ async function loadSession(file) {
     docTitleSlots = document.getElementsByClassName('doc-title')
     uploadTextSlots = document.getElementsByClassName('upload-text')
 
-    console.log('docs.length after loop:', docs.length)
-    console.log('docBlocks.length:', docBlocks.length)
-
     // Now populate all slots
     for(let i = 0; i < session.documents.length; i++) {
       let docData = session.documents[i]
-
-      console.log('Loading slot', i, ':', docData.name)
-      console.log('docBlocks[i]:', docBlocks[i])
 
       let binary = atob(docData.data)
       let uint8 = new Uint8Array(binary.length)
@@ -1342,7 +1331,6 @@ async function loadSession(file) {
         {type: blob.type})
 
       docs[i] = fileObj
-      console.log('docs[i] set:', docs[i]?.name)
       docNicknames[i] = docData.name
       currentlyShown[i] = true
 
@@ -1378,9 +1366,30 @@ async function loadSession(file) {
     if(sampleArea) sampleArea.style.display = 'none'
 
     showToast('Session loaded — comparing...')
+
+    // Wait for all docs to be registered, then compare
+    let waitForDocs = setInterval(() => {
+      let filledDocs = docs.filter(d => d !== null)
+      let expectedCount = session.documents.length
+      if(filledDocs.length >= expectedCount) {
+        clearInterval(waitForDocs)
+        // Update currentlyShown for all loaded docs
+        for(let i = 0; i < expectedCount; i++) {
+          currentlyShown[i] = true
+        }
+        updateCompareButton()
+        setTimeout(() => {
+          document.getElementById('compare-button').click()
+        }, 200)
+      }
+    }, 100)
+
+    // Safety timeout - compare after 3 seconds regardless
     setTimeout(() => {
+      clearInterval(waitForDocs)
+      updateCompareButton()
       document.getElementById('compare-button').click()
-    }, 800)
+    }, 3000)
 
   } catch(err) {
     console.error('Load error:', err)
