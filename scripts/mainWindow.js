@@ -21,7 +21,7 @@ function docBlockTemplate(){
     <input hidden type="file" accept=".docx" onchange="fileAdded()"/>
     <div class="upload-card">
       <div class="upload-icon">📄</div>
-      <p class="upload-label">Drop file here</p>
+      <p class="upload-label">Drop file ${docs.length} here</p>
       <button class="file-button nav-btn">Upload File</button>
       <input class="doc-title" onClick="this.select()" value=""
         onchange="nameChange()" placeholder="Version name...">
@@ -101,9 +101,23 @@ document.addEventListener('drop', (event) => {
   //(previously the card stayed visible above the dropped doc)
   let dropBlock = docBlocks[whichDoc]
   let uploadCard = dropBlock.querySelector('.upload-card')
-  if(uploadCard) uploadCard.style.display = 'none'
-  let uploadTextEl = dropBlock.querySelector('.upload-text')
-  if(uploadTextEl) uploadTextEl.innerHTML = filename + " uploaded successfully"
+  // Don't hide the card - just update it to show uploaded state
+  if(uploadCard) {
+    uploadCard.classList.add('uploaded')
+    let uploadBtn = uploadCard.querySelector('.file-button')
+    if(uploadBtn) {
+      uploadBtn.disabled = true
+      uploadBtn.style.opacity = '0.4'
+      uploadBtn.style.cursor = 'default'
+      uploadBtn.innerText = '✓ Uploaded'
+    }
+    let label = uploadCard.querySelector('.upload-label')
+    if(label) label.innerText = filename
+    let titleInput = uploadCard.querySelector('.doc-title')
+    if(titleInput) titleInput.style.display = 'none'
+    let uploadTextEl = dropBlock.querySelector('.upload-text')
+    if(uploadTextEl) uploadTextEl.style.display = 'none'
+  }
   currentlyShown[whichDoc] = true
   updateCompareButton()
   //If this drop filled a newly-added slot, the re-compare button is now showing
@@ -331,11 +345,10 @@ document.getElementById('compare-button').addEventListener('click', async () =>{
 	//Hide the upload instructions so only the documents show
 	let uploadInstructions = document.getElementById('upload-instructions')
 	if(uploadInstructions) uploadInstructions.style.display = 'none'
-	//Hide the upload-screen-only "or" divider, Load Session, and sample options
-	let uploadDivider = document.getElementById('upload-divider')
-	if(uploadDivider) uploadDivider.style.display = 'none'
-	let loadSessionArea = document.getElementById('load-session-area')
-	if(loadSessionArea) loadSessionArea.style.display = 'none'
+	//Hide the upload-screen-only right column (Load Session + sample); the
+	//.comparing CSS also collapses the two-column wrappers so #docs goes full width
+	let uploadRight = document.getElementById('upload-right')
+	if(uploadRight) uploadRight.style.display = 'none'
 	//Switch the layout into side-by-side comparison mode
 	document.getElementById('docs-area').classList.add('comparing')
 	document.getElementById('upload-zone').style.flexDirection = 'row'
@@ -719,9 +732,23 @@ function fileAdded(){
 
 	//Hide the upload card now that a file has been picked, and show the filename
 	let uploadCard = event.target.closest('.doc-block').querySelector('.upload-card')
-	if(uploadCard) uploadCard.style.display = 'none'
-	let uploadText = event.target.closest('.doc-block').querySelector('.upload-text')
-	if(uploadText) uploadText.innerHTML = filename + " uploaded successfully"
+	// Don't hide the card - just update it to show uploaded state
+	if(uploadCard) {
+		uploadCard.classList.add('uploaded')
+		let uploadBtn = uploadCard.querySelector('.file-button')
+		if(uploadBtn) {
+			uploadBtn.disabled = true
+			uploadBtn.style.opacity = '0.4'
+			uploadBtn.style.cursor = 'default'
+			uploadBtn.innerText = '✓ Uploaded'
+		}
+		let label = uploadCard.querySelector('.upload-label')
+		if(label) label.innerText = filename
+		let titleInput = uploadCard.querySelector('.doc-title')
+		if(titleInput) titleInput.style.display = 'none'
+		let uploadText = docBlocks[whichDoc].querySelector('.upload-text')
+		if(uploadText) uploadText.style.display = 'none'
+	}
 	currentlyShown[whichDoc] = true
 	updateCompareButton()
 	//If this upload filled a newly-added slot, the re-compare button is now

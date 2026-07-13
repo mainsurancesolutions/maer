@@ -66,18 +66,16 @@
       <div id="upload-zone">
         <div id="upload-instructions">
           <h2>Upload Agreement Versions</h2>
-          <p>Upload multiple versions of an agreement to compare
-            how it evolved through negotiation</p>
-          <p class="upload-hint">Drag and drop .docx files here,
-            or use the upload buttons below</p>
         </div>
+        <div id="upload-main-layout">
+          <div id="upload-left">
         <div id="docs">
           <div id="block1" class="doc-block">
             <input hidden type="file" accept=".docx"
               onchange="fileAdded()"/>
             <div class="upload-card">
               <div class="upload-icon">📄</div>
-              <p class="upload-label">Drop file here</p>
+              <p class="upload-label">Drop file 1 here</p>
               <button class="file-button nav-btn">Upload File</button>
               <input class="doc-title"
                 onClick="this.select()" value=""
@@ -97,7 +95,7 @@
               onchange="fileAdded()"/>
             <div class="upload-card">
               <div class="upload-icon">📄</div>
-              <p class="upload-label">Drop file here</p>
+              <p class="upload-label">Drop file 2 here</p>
               <button class="file-button nav-btn">Upload File</button>
               <input class="doc-title"
                 onClick="this.select()" value=""
@@ -146,44 +144,37 @@
             </div>
           </div>
         </div>
-
-        <!-- "or" divider + load a previously saved .maer session -->
-        <div id="upload-divider">
-          <span>or</span>
-        </div>
-        <div id="load-session-area">
-          <label id="load-session-btn" style="cursor:pointer">
-            ↑ Load Saved Session
-            <input type="file" id="load-session-input"
-              accept=".maer" style="display:none"/>
-          </label>
-          <p id="load-session-hint">
-            Load a previously saved .maer session file
-          </p>
-        </div>
-
-        <!-- Built-in demo: bundled 4-version sample SPA -->
-        <div id="sample-btn-container"
-          style="text-align:center;margin-top:16px;padding-bottom:12px">
-          <p style="font-size:13px;color:var(--gray-dark);
-            margin-bottom:12px;font-family:Arial,sans-serif">
-            Not ready to upload your own files?
-          </p>
-          <button id="load-sample-btn"
-            style="background:var(--navy);color:var(--white);
-            border:none;padding:10px 24px;border-radius:6px;
-            cursor:pointer;font-size:13px;
-            font-family:Arial,sans-serif;font-weight:600;
-            transition:background 0.2s">
-            Try with sample agreement (4 versions)
-          </button>
-          <p style="font-size:11px;color:var(--gray-mid);
-            margin-top:8px;font-family:Arial,sans-serif">
-            See a real Stock Purchase Agreement negotiation &mdash;
-            Initial Draft through Buyer Counter &mdash; with live
-            redlines across all 4 turns
-          </p>
-        </div>
+          </div><!-- /#upload-left -->
+          <div id="upload-right">
+            <div id="load-session-area">
+              <p style="font-size:13px;color:var(--gray-dark);
+                margin-bottom:12px;font-family:Arial,sans-serif;
+                font-weight:600">Load a saved session</p>
+              <label id="load-session-btn" style="cursor:pointer">
+                ↑ Load Saved Session (.maer)
+                <input type="file" id="load-session-input"
+                  accept=".maer" style="display:none"/>
+              </label>
+              <p id="load-session-hint">
+                Restore a previously saved comparison
+                without re-uploading your files
+              </p>
+            </div>
+            <div id="sample-area">
+              <p style="font-size:13px;color:var(--gray-dark);
+                margin-bottom:12px;font-family:Arial,sans-serif;
+                font-weight:600">Try a sample deal</p>
+              <button id="load-sample-btn">
+                Try sample SPA (4 versions)
+              </button>
+              <p style="font-size:11px;color:var(--gray-mid);
+                margin-top:8px;font-family:Arial,sans-serif">
+                Real Stock Purchase Agreement &mdash; Initial Draft
+                through Buyer Counter &mdash; with live redlines
+              </p>
+            </div>
+          </div><!-- /#upload-right -->
+        </div><!-- /#upload-main-layout -->
       </div>
 
     </div>
