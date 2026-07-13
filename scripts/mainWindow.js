@@ -317,11 +317,6 @@ document.getElementById('compare-button').addEventListener('click', async () =>{
 	let shownSlots = []
 	//Find out which docs are hidden
 	for(let i = 0; i < docs.length; i++){
-		console.log('Compare loop slot', i,
-			'docs[i]:', !!docs[i],
-			'docTitleSlots[i]:', !!docTitleSlots[i],
-			'uploadTextSlots[i]:', !!uploadTextSlots[i],
-			'docSlots[i]:', !!docSlots[i])
 		if(docSlots[i] && docSlots[i].style.display !== "none"){
 			shownDocs.push(docs[i])
 			shownSlots.push(docSlots[i])
@@ -1343,10 +1338,6 @@ async function loadSession(file) {
     docTitleSlots = document.getElementsByClassName('doc-title')
     uploadTextSlots = document.getElementsByClassName('upload-text')
 
-    console.log('After DOM creation:',
-      'docBlocks:', docBlocks.length,
-      'needed:', needed)
-
     // STEP 5: Populate each slot
     for(let i = 0; i < needed; i++) {
       let docData = session.documents[i]
@@ -1386,9 +1377,6 @@ async function loadSession(file) {
         // Make block visible
         block.style.display = 'inline-flex'
       }
-
-      console.log('Slot', i, 'set:',
-        docData.name, 'block:', !!block)
     }
 
     // STEP 6: Hide session UI
@@ -1404,9 +1392,6 @@ async function loadSession(file) {
 
     // STEP 7: Trigger compare
     updateCompareButton()
-
-    console.log('Final docs:',
-      docs.map((d,i) => i + ':' + (d?.name || 'null')))
 
     // Ensure trailing empty slot exists for comparison engine
     // (readDocs processes files.length - 1, so without this the last
