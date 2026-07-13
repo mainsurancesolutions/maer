@@ -48,6 +48,64 @@ app.post('/api/analyze-clause', async (req, res) => {
     const sideLabel = negotiationSide === 'sellside'
       ? 'Sell-Side' : 'Buy-Side'
 
+    // Fetch relevant precedents from library
+    let precedentSection = ''
+    try {
+      const precedentsPath = path.join(
+        __dirname, 'precedents', 'index.json')
+      if(fs.existsSync(precedentsPath)) {
+        const library = JSON.parse(
+          fs.readFileSync(precedentsPath, 'utf8'))
+
+        function detectClauseType(text) {
+          let lower = text.toLowerCase()
+          if(lower.includes('material adverse'))
+            return 'MAE'
+          if(lower.includes('indemnif') ||
+             lower.includes('shall not exceed'))
+            return 'indemnification'
+          if(lower.includes('termination fee'))
+            return 'termination_fee'
+          if(lower.includes('working capital'))
+            return 'purchase_price_adjustment'
+          if(lower.includes('non-compet') ||
+             lower.includes('restrictive'))
+            return 'non_compete'
+          return 'reps_warranties'
+        }
+
+        let clauseType = detectClauseType(clauseText)
+        let precedents = []
+
+        for(let deal of (library.deals || [])) {
+          if(deal.clauses && deal.clauses[clauseType]) {
+            precedents.push({
+              company: deal.entity_name || deal.company,
+              year: deal.year,
+              industry: deal.industry,
+              size_mm: deal.deal_size_mm,
+              text: deal.clauses[clauseType]
+                .substring(0, 600)
+            })
+          }
+        }
+
+        if(precedents.length > 0) {
+          precedentSection = '\n\nPRECEDENT LIBRARY - ' +
+            'Similar clauses from real negotiated transactions ' +
+            'in the $250M-$750M range:\n'
+          for(let p of precedents.slice(0, 3)) {
+            precedentSection += '\n' + p.company +
+              ' (' + p.industry + ', ' + p.year +
+              ', $' + p.size_mm + 'M deal):\n"' +
+              p.text + '"\n'
+          }
+        }
+      }
+    } catch(e) {
+      console.error('Precedent fetch error:', e)
+    }
+
     let historySection = ''
     if(clauseHistory && clauseHistory.length > 1){
       historySection = '\n\nNEGOTIATION HISTORY across all ' +
@@ -91,6 +149,7 @@ If no history: why this clause matters for this position]
 
 **MARKET CONTEXT**
 [What is typical in comparable negotiations]
+When precedent clauses from real transactions are provided, reference them specifically by company name and year to ground your Market Context and Recommended Next Position in actual negotiated outcomes.
 
 **RECOMMENDED NEXT POSITION**
 [Actual contract language to propose next, no preamble,
@@ -105,6 +164,7 @@ Current clause (${totalVersions > 1 ?
   'Version ' + totalVersions : 'current version'}):
 "${clauseText.trim()}"
 ${historySection}
+${precedentSection}
 
 Analyze from my ${sideLabel} perspective.`
 
@@ -150,6 +210,104 @@ Analyze from my ${sideLabel} perspective.`
     res.status(500).json({
       error: 'Something went wrong. Please try again.'
     })
+  }
+})
+
+app.post('/api/search-precedents', (req, res) => {
+  try {
+    const { clauseText, industry } = req.body
+    const precedentsPath = path.join(
+      __dirname, 'precedents', 'index.json')
+
+    if(!fs.existsSync(precedentsPath)) {
+      return res.json({ precedents: [] })
+    }
+
+    const library = JSON.parse(
+      fs.readFileSync(precedentsPath, 'utf8'))
+
+    if(!library.deals || library.deals.length === 0) {
+      return res.json({ precedents: [] })
+    }
+
+    // Detect clause type from clicked text
+    function detectClauseType(text) {
+      let lower = (text || '').toLowerCase()
+      if(lower.includes('material adverse') ||
+         lower.includes('mae')) return 'MAE'
+      if(lower.includes('indemnif') ||
+         lower.includes('liability') ||
+         lower.includes('shall not exceed'))
+        return 'indemnification'
+      if(lower.includes('termination fee') ||
+         lower.includes('break-up'))
+        return 'termination_fee'
+      if(lower.includes('closing') &&
+         lower.includes('condition'))
+        return 'closing_conditions'
+      if(lower.includes('non-compet') ||
+         lower.includes('noncompet') ||
+         lower.includes('restrictive'))
+        return 'non_compete'
+      if(lower.includes('working capital') ||
+         lower.includes('purchase price adjust'))
+        return 'purchase_price_adjustment'
+      if(lower.includes('represent') ||
+         lower.includes('warrant'))
+        return 'reps_warranties'
+      return null
+    }
+
+    let clauseType = detectClauseType(clauseText)
+
+    // Find deals with matching clause type
+    let matches = []
+    for(let deal of library.deals) {
+      if(!deal.clauses) continue
+
+      // If we detected a clause type, prefer matches
+      let clauseText_found = null
+      let matchedType = null
+      if(clauseType && deal.clauses[clauseType]) {
+        clauseText_found = deal.clauses[clauseType]
+        matchedType = clauseType
+      } else {
+        // Return first available clause as context
+        let firstKey = Object.keys(deal.clauses)[0]
+        if(firstKey) {
+          clauseText_found = deal.clauses[firstKey]
+          matchedType = firstKey
+        }
+      }
+
+      if(clauseText_found) {
+        // --- reconstructed from here (original message was truncated) ---
+        matches.push({
+          company: deal.company,
+          buyer: deal.buyer,
+          industry: deal.industry,
+          deal_size_mm: deal.deal_size_mm,
+          year: deal.year,
+          clause_type: matchedType,
+          exact_match: matchedType === clauseType,
+          clause_text: clauseText_found,
+          source_url: deal.source_url
+        })
+      }
+    }
+
+    // Exact clause-type matches first, then same-industry, then the rest
+    matches.sort((a, b) =>
+      (b.exact_match - a.exact_match) ||
+      ((industry && b.industry === industry ? 1 : 0) -
+       (industry && a.industry === industry ? 1 : 0))
+    )
+
+    res.json({ clauseType: clauseType, precedents: matches })
+
+  } catch(err) {
+    console.error('Search precedents error:', err)
+    res.json({ precedents: [] })
   }
 })
 
