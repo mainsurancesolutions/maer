@@ -1110,6 +1110,14 @@ function displayAnalysis(analysisText, clauseText){
       /\n/g, '</p><p>') + '</p>'
   }
 
+  // Convert markdown strikethrough ~~text~~ to <del>
+  analysisHtml = analysisHtml.replace(
+    /~~([^~]+)~~/g, '<del>$1</del>')
+
+  // Convert markdown bold **text** to <strong>
+  analysisHtml = analysisHtml.replace(
+    /\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+
   document.getElementById('ai-analysis').innerHTML =
     analysisHtml
 
