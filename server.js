@@ -36,7 +36,8 @@ app.use(express.json({ limit: '50kb' }))
 // max_tokens + system + messages; response text at data.content[0].text).
 app.post('/api/analyze-clause', async (req, res) => {
   try {
-    const { clauseText, negotiationSide, context } = req.body
+    const { clauseText, negotiationSide,
+            clauseHistory, totalVersions } = req.body
 
     if(!clauseText || clauseText.trim().length < 10){
       return res.status(400).json({
@@ -47,51 +48,65 @@ app.post('/api/analyze-clause', async (req, res) => {
     const sideLabel = negotiationSide === 'sellside'
       ? 'Sell-Side' : 'Buy-Side'
 
-    const systemPrompt = `You are an expert M&A attorney's
-assistant specializing in contract negotiation across all
-types of complex commercial agreements including M&A
-transactions, real estate deals, derivatives contracts,
-insurance agreements, and other multi-party negotiations.
+    let historySection = ''
+    if(clauseHistory && clauseHistory.length > 1){
+      historySection = '\n\nNEGOTIATION HISTORY across all ' +
+        totalVersions + ' versions:\n'
+      for(let h of clauseHistory){
+        historySection += '\n' + h.versionName + ':\n"' +
+          h.text + '"\n'
+      }
+      if(clauseHistory.length >= 2){
+        let first = clauseHistory[0]
+        let last = clauseHistory[clauseHistory.length-1]
+        historySection += '\nThis clause has evolved across ' +
+          clauseHistory.length + ' versions, from "' +
+          first.versionName + '" to "' +
+          last.versionName + '".'
+      }
+    }
 
-You analyze contract clauses and provide strategic guidance
-based on the negotiating position provided. You have deep
-knowledge of market standard agreement language and common
-negotiating positions.
+    const systemPrompt = `You are an expert attorney's
+assistant specializing in contract negotiation across M&A
+transactions, real estate deals, derivatives,
+insurance agreements, and other complex multi-party
+negotiations.
 
-Always structure your response using EXACTLY these four
-headers in this order, with nothing before the first header:
+When negotiation history is provided, analyze the
+TREND carefully:
+- Which party has made more concessions
+- Whether the current position is favorable or unfavorable
+- What leverage exists based on the negotiation history
+- What a realistic next position would be
+
+Structure your response with EXACTLY these four headers:
 
 **WHAT THIS CLAUSE MEANS**
-[Plain explanation of what this clause does and its legal effect]
+[Plain explanation of what this clause does]
 
-**WHY IT MATTERS**
-[The risk, implication, or strategic importance for the
-specified negotiating position]
+**NEGOTIATION ANALYSIS**
+[If history provided: analyze the trend, concessions made,
+current position vs market standard.
+If no history: why this clause matters for this position]
 
 **MARKET CONTEXT**
-[What is typical/standard in comparable negotiations.
-What sophisticated parties typically accept or push back on]
+[What is typical in comparable negotiations]
 
-**SUGGESTED LANGUAGE**
-[Actual replacement or modified clause language that
-strengthens the position. Format as a direct quote
-the attorney can use or adapt]
+**RECOMMENDED NEXT POSITION**
+[Actual contract language to propose next, no preamble,
+no asterisks, just the language itself]
 
-Be direct and practical. You are advising a sophisticated
-attorney, not a layperson. Keep total response under 400 words.
+Be direct. You are advising a sophisticated attorney.
+Under 500 words total.`
 
-For the SUGGESTED LANGUAGE section, provide ONLY the actual contract language itself, with no preamble, introduction, or explanation before or after it. Do not wrap it in quotes or asterisks. Start directly with the contract language.`
+    const userPrompt = `I am representing the ${sideLabel}.
 
-    const userPrompt = `I am representing the ${sideLabel}
-in this negotiation.
-
-The current clause reads:
+Current clause (${totalVersions > 1 ?
+  'Version ' + totalVersions : 'current version'}):
 "${clauseText.trim()}"
+${historySection}
 
-${context ? 'Additional context: ' + context : ''}
-
-Please analyze this clause from my ${sideLabel} perspective
-and suggest stronger language for my position.`
+Analyze from my ${sideLabel} perspective.`
 
     const response = await fetch(
       'https://api.anthropic.com/v1/messages',
@@ -106,16 +121,15 @@ and suggest stronger language for my position.`
           model: 'claude-sonnet-4-6',
           max_tokens: 1024,
           system: systemPrompt,
-          messages: [
-            { role: 'user', content: userPrompt }
-          ]
+          messages: [{ role: 'user', content: userPrompt }]
         })
       }
     )
 
     if(!response.ok){
       const errData = await response.json()
-      console.error('Claude API error:', errData)
+      console.error('Claude API error:',
+        JSON.stringify(errData))
       return res.status(500).json({
         error: 'AI analysis failed. Please try again.'
       })
@@ -126,7 +140,9 @@ and suggest stronger language for my position.`
 
     res.json({
       analysis: analysisText,
-      side: sideLabel
+      side: sideLabel,
+      versionsAnalyzed: clauseHistory ?
+        clauseHistory.length : 1
     })
 
   } catch(err) {

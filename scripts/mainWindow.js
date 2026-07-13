@@ -940,93 +940,94 @@ document.getElementById('load-sample-btn')
 
 // ── Phase 2: clause analysis (calls the server /api/analyze-clause endpoint) ──
 async function analyzeClause(paragraphElement){
-  // Get a clean version of the paragraph text
-  // Clone it, remove deleted text, get plain text
   let clone = paragraphElement.cloneNode(true)
-  // Remove all <del> elements (deleted/struck text)
-  let delElements = clone.querySelectorAll('del')
-  delElements.forEach(el => el.remove())
-  // Remove hide buttons and other injected controls
-  let controls = clone.querySelectorAll('input, button, .hide-article, .hide-paragraphs, .hide-section, .reveal-text')
-  controls.forEach(el => el.remove())
-  // Get clean plain text
-  let clauseText = (clone.innerText ||
-    clone.textContent || '').trim()
-  // Remove any leading article/section numbers
-  // that were injected by numberSections()
-  clauseText = clauseText.replace(
-    /^(ARTICLE\s+\d+\s+|[\d]+\.[\d]+\s+)/, '')
-
-  // Need at least 20 characters to analyze
+  clone.querySelectorAll('del').forEach(el => el.remove())
+  clone.querySelectorAll('input, button, .hide-article, .hide-paragraphs, .hide-section, .reveal-text').forEach(el => el.remove())
+  let clauseText = (clone.innerText || clone.textContent || '').trim()
+  clauseText = clauseText.replace(/^(ARTICLE\s+\d+\s+|[\d]+\.[\d]+\s+)/, '')
   if(clauseText.length < 20) return
 
-  // Remove any previously selected paragraph highlight
   let prevSelected = document.querySelector('p.ai-selected')
   if(prevSelected) prevSelected.classList.remove('ai-selected')
-
-  // Highlight the clicked paragraph
   paragraphElement.classList.add('ai-selected')
 
-  // Show the AI panel if not already open
   let aiPanel = document.getElementById('ai-panel')
   let aiToggleBtn = document.getElementById('ai-toggle-btn')
   aiPanel.style.display = 'flex'
   aiToggleBtn.classList.add('active')
-  // Scroll the document row to the far right so the AI panel column is visible
-  setTimeout(() => {
-    let docsEl = document.getElementById('docs')
-    if(docsEl) docsEl.scrollLeft = docsEl.scrollWidth
-  }, 50)
+  let docsEl = document.getElementById('docs')
+  if(docsEl) docsEl.scrollLeft = docsEl.scrollWidth
 
-  // Switch to loading state
-  document.getElementById('ai-welcome-state').style.display
-    = 'none'
-  document.getElementById('ai-loading-state').style.display
-    = 'flex'
-  document.getElementById('ai-result-state').style.display
-    = 'none'
-  document.getElementById('ai-error-state').style.display
-    = 'none'
+  document.getElementById('ai-welcome-state').style.display = 'none'
+  document.getElementById('ai-loading-state').style.display = 'flex'
+  document.getElementById('ai-result-state').style.display = 'none'
+  document.getElementById('ai-error-state').style.display = 'none'
 
-  // Show truncated clause text in panel
-  let displayText = clauseText.length > 200
-    ? clauseText.substring(0, 200) + '...'
-    : clauseText
-  document.getElementById('ai-clause-text').innerText =
-    '"' + displayText + '"'
+  // Collect clause history across all versions
+  let clauseHistory = []
+  for(let i = 0; i < docSlots.length; i++){
+    if(!docs[i] || !docSlots[i] ||
+       !docSlots[i].childNodes.length) continue
+    let paragraphs = Array.from(
+      docSlots[i].getElementsByTagName('p'))
+    let validTexts = paragraphs.map(p => {
+      let c = p.cloneNode(true)
+      c.querySelectorAll('del').forEach(el => el.remove())
+      c.querySelectorAll('input,button').forEach(
+        el => el.remove())
+      return (c.innerText || c.textContent || '').trim()
+    }).filter(t => t.length > 20)
+    if(validTexts.length === 0) continue
+    try {
+      let result = stringSimilarity.findBestMatch(
+        clauseText, validTexts)
+      if(result.bestMatch.rating > 0.3){
+        clauseHistory.push({
+          version: i + 1,
+          versionName: docNicknames[i] ||
+            'Version ' + (i + 1),
+          text: result.bestMatch.target,
+          similarity: result.bestMatch.rating
+        })
+      }
+    } catch(e) {}
+  }
+  clauseHistory.sort((a, b) => a.version - b.version)
+
+  let totalVersions = docs.filter(d => d !== null).length
 
   try {
-    // Call the server endpoint
     let response = await fetch('/api/analyze-clause', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
         clauseText: clauseText,
-        negotiationSide: window.negotiationSide || 'buyside'
+        negotiationSide: window.negotiationSide || 'buyside',
+        clauseHistory: clauseHistory,
+        totalVersions: totalVersions
       })
     })
-
-    if(!response.ok){
-      throw new Error('Server returned ' + response.status)
-    }
-
+    if(!response.ok) throw new Error(
+      'Server returned ' + response.status)
     let data = await response.json()
-
-    if(data.error){
-      throw new Error(data.error)
-    }
-
-    // Parse and display the analysis
+    if(data.error) throw new Error(data.error)
     displayAnalysis(data.analysis, clauseText)
-
+    if(data.versionsAnalyzed > 1){
+      let side = window.negotiationSide === 'sellside' ?
+        'Sell-Side' : 'Buy-Side'
+      document.getElementById('ai-mode-indicator')
+        .innerText = '⚡ ' + side + ' AI · ' +
+        data.versionsAnalyzed + ' versions analyzed'
+    }
   } catch(err) {
     console.error('AI analysis error:', err)
-    document.getElementById('ai-loading-state').style.display
-      = 'none'
-    document.getElementById('ai-error-state').style.display
-      = 'flex'
-    document.getElementById('ai-error-message').innerText =
-      err.message || 'Analysis failed. Please try again.'
+    document.getElementById('ai-loading-state')
+      .style.display = 'none'
+    document.getElementById('ai-error-state')
+      .style.display = 'flex'
+    document.getElementById('ai-error-message')
+      .innerText = err.message ||
+        'Analysis failed. Please try again.'
   }
 }
 
@@ -1076,7 +1077,8 @@ function displayAnalysis(analysisText, clauseText){
     let header = sections[i].trim()
     let content = sections[i+1] ? sections[i+1].trim() : ''
 
-    if(header === 'SUGGESTED LANGUAGE'){
+    if(header === 'SUGGESTED LANGUAGE' ||
+       header === 'RECOMMENDED NEXT POSITION'){
       analysisHtml += '<h4>' + header + '</h4>'
       // Generate a visual redline diff between the original clause and the suggestion
       let diffed = htmldiff(
