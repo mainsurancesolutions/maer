@@ -81,6 +81,13 @@ document.addEventListener('drop', (event) => {
     return false
   }
 
+  // Check if it's a .maer session file
+  if(event.dataTransfer.files[0].name
+    .toLowerCase().endsWith('.maer')){
+    loadSession(event.dataTransfer.files[0])
+    return false
+  }
+
   if(!inputFile.name.toLowerCase().endsWith('.docx')){
     alert("You must upload a .docx file")
     return false
@@ -964,9 +971,9 @@ document.getElementById('load-sample-btn')
 
       updateCompareButton()
 
-      // Hide the sample button container
-      document.getElementById('sample-btn-container')
-        .style.display = 'none'
+      // Hide the upload-only sample option
+      let sampleArea = document.getElementById('sample-area')
+      if(sampleArea) sampleArea.style.display = 'none'
 
       // Auto-click compare
       document.getElementById('compare-button').click()
@@ -1261,7 +1268,21 @@ async function loadSession(file) {
 
     showToast('Loading session...')
 
-    // Restore documents
+    // Create all needed slots first, then populate
+    let neededSlots = session.documents.length
+    // Ensure we have enough slots
+    while(docs.length < neededSlots) {
+      docsFull(true)
+    }
+
+    // Wait a tick for DOM to update
+    await new Promise(r => setTimeout(r, 100))
+
+    // Refresh references after creating slots
+    let currentDocBlocks = document.getElementsByClassName(
+      'doc-block')
+
+    // Now populate all slots
     for(let i = 0; i < session.documents.length; i++) {
       let docData = session.documents[i]
 
@@ -1278,36 +1299,45 @@ async function loadSession(file) {
       let fileObj = new File([blob], docData.filename,
         {type: blob.type})
 
-      // Ensure enough slots exist
-      if(i >= 2) docsFull(true)
-
       docs[i] = fileObj
       docNicknames[i] = docData.name
       currentlyShown[i] = true
 
-      // Update UI
-      let uploadCard = docBlocks[i]
+      // Update UI - use refreshed docBlocks
+      let card = currentDocBlocks[i] && currentDocBlocks[i]
         .querySelector('.upload-card')
-      if(uploadCard) uploadCard.style.display = 'none'
-      let uploadText = docBlocks[i]
-        .querySelector('.upload-text')
-      if(uploadText) uploadText.innerHTML =
-        docData.name + ' loaded'
+      if(card) {
+        card.classList.add('uploaded')
+        let btn = card.querySelector('.file-button')
+        if(btn) {
+          btn.disabled = true
+          btn.style.opacity = '0.4'
+          btn.innerText = '✓ Uploaded'
+        }
+        let lbl = card.querySelector('.upload-label')
+        if(lbl) lbl.innerText = docData.name
+        let inp = card.querySelector('.doc-title')
+        if(inp) inp.style.display = 'none'
+      }
     }
 
     updateCompareButton()
 
-    // Hide sample button
-    let sampleContainer = document.getElementById(
-      'sample-btn-container')
-    if(sampleContainer)
-      sampleContainer.style.display = 'none'
+    // Hide session loading UI
+    let uploadDivider = document.getElementById(
+      'upload-divider')
+    if(uploadDivider) uploadDivider.style.display = 'none'
+    let loadSessionArea = document.getElementById(
+      'load-session-area')
+    if(loadSessionArea)
+      loadSessionArea.style.display = 'none'
+    let sampleArea = document.getElementById('sample-area')
+    if(sampleArea) sampleArea.style.display = 'none'
 
-    // Auto-compare
     showToast('Session loaded — comparing...')
     setTimeout(() => {
       document.getElementById('compare-button').click()
-    }, 500)
+    }, 800)
 
   } catch(err) {
     console.error('Load error:', err)

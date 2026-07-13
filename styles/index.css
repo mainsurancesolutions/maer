@@ -933,12 +933,40 @@ body.drag-over #upload-zone {
   flex-direction: column;
   gap: 24px;
 }
-#sample-area, #load-session-area {
+#load-session-area {
   background: var(--white);
   border: 1px solid var(--gray-light);
   border-radius: 8px;
   padding: 20px;
   text-align: center;
+}
+
+/* "or" divider between the two-column row and the centered sample button */
+#upload-divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  max-width: 500px;
+  width: 100%;
+  margin: 8px auto 0;
+}
+#upload-divider::before,
+#upload-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--gray-light);
+}
+#upload-divider span {
+  color: var(--gray-mid);
+  font-size: 13px;
+  font-family: Arial, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+#sample-area {
+  padding-bottom: 24px;
 }
 
 #load-session-btn {
@@ -970,11 +998,10 @@ body.drag-over #upload-zone {
 }
 
 #load-sample-btn {
-  width: 100%;
   background: var(--navy);
   color: var(--white);
   border: none;
-  padding: 10px 16px;
+  padding: 10px 24px;
   border-radius: 6px;
   cursor: pointer;
   font-size: 13px;
@@ -992,7 +1019,9 @@ body.drag-over #upload-zone {
 #docs-area.comparing #upload-left {
   display: contents;
 }
-#docs-area.comparing #upload-right {
+#docs-area.comparing #upload-right,
+#docs-area.comparing #upload-divider,
+#docs-area.comparing #sample-area {
   display: none;
 }
 
