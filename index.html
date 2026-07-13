@@ -144,39 +144,49 @@
             </div>
           </div>
         </div>
+            <div id="sample-area" style="text-align:center;margin-top:20px">
+              <button id="load-sample-btn">
+                Try sample SPA (4 versions)
+              </button>
+              <p style="font-size:11px;color:var(--gray-mid);
+                margin-top:8px;font-family:Arial,sans-serif">
+                Real Stock Purchase Agreement &mdash; Initial Draft
+                through Buyer Counter &mdash; with live redlines
+              </p>
+            </div>
           </div><!-- /#upload-left -->
+          <div id="upload-or-divider">
+            <span>OR</span>
+          </div>
           <div id="upload-right">
             <div id="load-session-area">
-              <p style="font-size:13px;color:var(--gray-dark);
-                margin-bottom:12px;font-family:Arial,sans-serif;
-                font-weight:600">Load a saved session</p>
-              <label id="load-session-btn" style="cursor:pointer">
-                ↑ Load Saved Session (.maer)
-                <input type="file" id="load-session-input"
-                  accept=".maer" style="display:none"/>
-              </label>
-              <p id="load-session-hint">
-                Restore a previously saved comparison
-                without re-uploading your files
-              </p>
+              <div id="load-session-card">
+                <div style="font-size:32px;opacity:0.4;
+                  margin-bottom:12px">📂</div>
+                <p style="font-size:14px;color:var(--gray-dark);
+                  font-weight:500;margin-bottom:4px">
+                  Load Saved Session
+                </p>
+                <p style="font-size:12px;color:var(--gray-mid);
+                  margin-bottom:16px;font-family:Arial,sans-serif">
+                  Drop .maer file here or click to browse
+                </p>
+                <label style="cursor:pointer">
+                  <span id="load-session-btn-inner"
+                    style="background:var(--navy);color:var(--white);
+                    padding:8px 20px;border-radius:6px;
+                    font-size:13px;font-family:Arial,sans-serif;
+                    font-weight:600;display:inline-block;
+                    transition:background 0.2s">
+                    Browse for .maer file
+                  </span>
+                  <input type="file" id="load-session-input"
+                    accept=".maer" style="display:none"/>
+                </label>
+              </div>
             </div>
           </div><!-- /#upload-right -->
         </div><!-- /#upload-main-layout -->
-
-        <!-- OR divider + centered sample button below the two columns -->
-        <div id="upload-divider">
-          <span>or</span>
-        </div>
-        <div id="sample-area" style="text-align:center">
-          <button id="load-sample-btn">
-            Try sample SPA (4 versions)
-          </button>
-          <p style="font-size:11px;color:var(--gray-mid);
-            margin-top:8px;font-family:Arial,sans-serif">
-            Real Stock Purchase Agreement &mdash; Initial Draft
-            through Buyer Counter &mdash; with live redlines
-          </p>
-        </div>
       </div>
 
     </div>

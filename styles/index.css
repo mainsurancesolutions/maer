@@ -934,67 +934,52 @@ body.drag-over #upload-zone {
   gap: 24px;
 }
 #load-session-area {
-  background: var(--white);
-  border: 1px solid var(--gray-light);
-  border-radius: 8px;
-  padding: 20px;
-  text-align: center;
+  width: 100%;
 }
 
-/* "or" divider between the two-column row and the centered sample button */
-#upload-divider {
+/* Vertical "OR" divider between the two columns */
+#upload-or-divider {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 16px;
-  max-width: 500px;
-  width: 100%;
-  margin: 8px auto 0;
+  justify-content: center;
+  padding: 0 20px;
+  flex-shrink: 0;
 }
-#upload-divider::before,
-#upload-divider::after {
+#upload-or-divider::before,
+#upload-or-divider::after {
   content: '';
   flex: 1;
-  height: 1px;
+  width: 1px;
   background: var(--gray-light);
+  min-height: 40px;
 }
-#upload-divider span {
+#upload-or-divider span {
   color: var(--gray-mid);
-  font-size: 13px;
+  font-size: 12px;
   font-family: Arial, sans-serif;
   text-transform: uppercase;
   letter-spacing: 1px;
+  padding: 8px 0;
 }
 
 #sample-area {
   padding-bottom: 24px;
 }
 
-#load-session-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  width: 100%;
-  padding: 10px 12px;
-  border-radius: 6px;
-  border: 2px solid var(--navy);
-  background: transparent;
-  color: var(--navy);
-  font-size: 13px;
-  font-family: Arial, sans-serif;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
+/* Load Session card — dashed style matching the upload cards */
+#load-session-card {
+  border: 2px dashed var(--gray-light);
+  border-radius: 12px;
+  padding: 40px 24px;
+  text-align: center;
+  background: var(--white);
+  transition: border-color 0.2s;
+  width: 260px;
+  box-sizing: border-box;
 }
-#load-session-btn:hover {
-  background: var(--navy);
-  color: var(--white);
-}
-#load-session-hint {
-  font-size: 11px;
-  color: var(--gray-mid);
-  font-family: Arial, sans-serif;
-  margin-top: 8px;
+#load-session-card:hover {
+  border-color: var(--gold);
 }
 
 #load-sample-btn {
@@ -1020,7 +1005,7 @@ body.drag-over #upload-zone {
   display: contents;
 }
 #docs-area.comparing #upload-right,
-#docs-area.comparing #upload-divider,
+#docs-area.comparing #upload-or-divider,
 #docs-area.comparing #sample-area {
   display: none;
 }

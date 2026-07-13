@@ -1295,25 +1295,29 @@ async function loadSession(file) {
 
     showToast('Loading session...')
 
-    // Create all needed slots first, then populate
+    // Calculate how many extra slots we need
+    let currentSlots = docs.length // starts at 2
     let neededSlots = session.documents.length
-    // Ensure we have enough slots
-    while(docs.length < neededSlots) {
+    let extraNeeded = neededSlots - currentSlots
+
+    // Create exactly the extra slots needed
+    for(let i = 0; i < extraNeeded; i++) {
       docsFull(true)
     }
 
-    // Wait a tick for DOM to update
-    await new Promise(r => setTimeout(r, 100))
+    // Wait for DOM to update
+    await new Promise(r => setTimeout(r, 150))
 
-    // Refresh references after creating slots
-    let currentDocBlocks = document.getElementsByClassName(
-      'doc-block')
+    // Refresh ALL collection references
+    docBlocks = document.getElementsByClassName('doc-block')
+    docSlots = document.getElementsByClassName('doc')
+    docTitleSlots = document.getElementsByClassName('doc-title')
+    uploadTextSlots = document.getElementsByClassName('upload-text')
 
     // Now populate all slots
     for(let i = 0; i < session.documents.length; i++) {
       let docData = session.documents[i]
 
-      // Convert base64 back to File object
       let binary = atob(docData.data)
       let uint8 = new Uint8Array(binary.length)
       for(let j = 0; j < binary.length; j++) {
@@ -1330,9 +1334,8 @@ async function loadSession(file) {
       docNicknames[i] = docData.name
       currentlyShown[i] = true
 
-      // Update UI - use refreshed docBlocks
-      let card = currentDocBlocks[i] && currentDocBlocks[i]
-        .querySelector('.upload-card')
+      // Update card UI
+      let card = docBlocks[i]?.querySelector('.upload-card')
       if(card) {
         card.classList.add('uploaded')
         let btn = card.querySelector('.file-button')
@@ -1350,14 +1353,15 @@ async function loadSession(file) {
 
     updateCompareButton()
 
-    // Hide session loading UI
-    let uploadDivider = document.getElementById(
-      'upload-divider')
-    if(uploadDivider) uploadDivider.style.display = 'none'
+    // Hide session UI
     let loadSessionArea = document.getElementById(
       'load-session-area')
     if(loadSessionArea)
       loadSessionArea.style.display = 'none'
+    let uploadOrDivider = document.getElementById(
+      'upload-or-divider')
+    if(uploadOrDivider)
+      uploadOrDivider.style.display = 'none'
     let sampleArea = document.getElementById('sample-area')
     if(sampleArea) sampleArea.style.display = 'none'
 
