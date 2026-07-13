@@ -935,7 +935,8 @@ body.drag-over #upload-zone {
   display: flex;
   flex-direction: row;
   gap: 16px;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
+  justify-content: flex-start;
   align-items: flex-start;
   width: auto;
 }

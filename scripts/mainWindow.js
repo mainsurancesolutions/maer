@@ -1368,6 +1368,7 @@ async function loadSession(file) {
     showToast('Session loaded — comparing...')
 
     // Wait for all docs to be registered, then compare
+    let didCompare = false
     let waitForDocs = setInterval(() => {
       let filledDocs = docs.filter(d => d !== null)
       let expectedCount = session.documents.length
@@ -1379,6 +1380,8 @@ async function loadSession(file) {
         }
         updateCompareButton()
         setTimeout(() => {
+          if(didCompare) return
+          didCompare = true
           document.getElementById('compare-button').click()
         }, 200)
       }
@@ -1387,6 +1390,8 @@ async function loadSession(file) {
     // Safety timeout - compare after 3 seconds regardless
     setTimeout(() => {
       clearInterval(waitForDocs)
+      if(didCompare) return
+      didCompare = true
       updateCompareButton()
       document.getElementById('compare-button').click()
     }, 3000)
