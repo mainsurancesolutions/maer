@@ -1217,23 +1217,50 @@ async function saveSession() {
       documents: sessionDocs
     }
 
-    // Download as .maer file
+    // Serialize + build a descriptive filename
     let json = JSON.stringify(session)
-    let blob = new Blob([json], {type: 'application/json'})
-    let url = URL.createObjectURL(blob)
-    let a = document.createElement('a')
-    a.href = url
-    // Generate a descriptive filename from the first version's name
     let firstName = (docNicknames[0] || 'session')
       .replace(/[^a-zA-Z0-9]/g, '_')
       .substring(0, 30)
     let dateStr = new Date().toISOString()
       .substring(0,10)
-    a.download = 'CC_' + firstName + '_' + dateStr + '.maer'
+
+    // Try File System Access API first (Chrome/Edge)
+    // This shows a real "Save As" dialog
+    if(window.showSaveFilePicker) {
+      try {
+        let fileHandle = await window.showSaveFilePicker({
+          suggestedName: 'CC_' + firstName + '_' +
+            dateStr + '.maer',
+          types: [{
+            description: 'ContractsCompare Session',
+            accept: {'application/json': ['.maer']}
+          }]
+        })
+        let writable = await fileHandle.createWritable()
+        await writable.write(json)
+        await writable.close()
+        showToast('Session saved successfully')
+        return
+      } catch(e) {
+        // User cancelled or API failed
+        if(e.name === 'AbortError') return
+        // Fall through to download method
+      }
+    }
+
+    // Fallback: automatic download to Downloads folder
+    // (Safari, Firefox, older browsers)
+    let blob = new Blob([json], {type: 'application/json'})
+    let url = URL.createObjectURL(blob)
+    let a = document.createElement('a')
+    a.href = url
+    a.download = 'CC_' + firstName + '_' +
+      dateStr + '.maer'
     a.click()
     URL.revokeObjectURL(url)
-
-    showToast('Session saved to your Downloads folder')
+    showToast('Saved to Downloads: CC_' +
+      firstName + '_' + dateStr + '.maer')
   } catch(err) {
     console.error('Save error:', err)
     alert('Save failed: ' + err.message)
