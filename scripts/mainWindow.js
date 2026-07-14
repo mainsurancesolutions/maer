@@ -1476,8 +1476,8 @@ function updateAiUsageDisplay() {
     let counter = document.getElementById(
       'ai-usage-counter')
     if(counter) {
-      counter.innerText = total + ' analysis' +
-        (total !== 1 ? 'es' : '') + ' run'
+      counter.innerText = total + ' ' +
+        (total === 1 ? 'analysis' : 'analyses') + ' run'
     }
   } catch(e) {}
 }
