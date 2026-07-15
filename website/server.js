@@ -59,11 +59,11 @@ app.post('/contact', async (req, res) => {
       host: 'smtp.office365.com',
       port: 587,
       secure: false,
+      family: 4,
       auth: {
         user: process.env.CONTACT_EMAIL,
         pass: process.env.CONTACT_PASSWORD
-      },
-      tls: { ciphers: 'SSLv3' }
+      }
     })
 
     await transporter.sendMail({
