@@ -92,7 +92,9 @@ Time: ${new Date().toISOString()}
     res.redirect('/?submitted=true')
 
   } catch(err) {
-    console.error('Contact form error:', err)
+    console.error('Contact form error:', err.message)
+    console.error('Error code:', err.code)
+    console.error('Error response:', err.response)
     res.redirect('/?error=true')
   }
 })
