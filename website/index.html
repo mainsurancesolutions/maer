@@ -993,22 +993,26 @@
         <p class="section-intro">Whether you want to schedule a demo, ask about enterprise pricing, or just try the tool &mdash; we'd love to hear from you.</p>
       </div>
       <div class="contact-card">
-        <form action="mailto:info@contractscompare.com" method="POST" enctype="text/plain">
+        <form action="/contact" method="POST">
+          <!-- Honeypot: hidden from humans, catches bots that fill every field -->
+          <input type="text" name="website"
+            style="display:none" tabindex="-1"
+            autocomplete="off"/>
           <div class="form-group">
             <label for="name">Name</label>
-            <input type="text" id="name" name="Name" required />
+            <input type="text" id="name" name="name" required />
           </div>
           <div class="form-group">
             <label for="email">Email</label>
-            <input type="email" id="email" name="Email" required />
+            <input type="email" id="email" name="email" required />
           </div>
           <div class="form-group">
             <label for="org">Organization</label>
-            <input type="text" id="org" name="Organization" />
+            <input type="text" id="org" name="organization" />
           </div>
           <div class="form-group">
             <label for="interest">I'm interested in...</label>
-            <select id="interest" name="Interest">
+            <select id="interest" name="interest">
               <option>Scheduling a demo</option>
               <option>Enterprise pricing</option>
               <option>AI Pro access</option>
@@ -1017,10 +1021,31 @@
           </div>
           <div class="form-group">
             <label for="message">Message</label>
-            <textarea id="message" name="Message" rows="4"></textarea>
+            <textarea id="message" name="message" rows="4"></textarea>
           </div>
           <button type="submit" class="btn btn-gold" style="width:100%;">Send message</button>
         </form>
+
+        <div id="form-success" style="display:none;
+          text-align:center;padding:40px 20px">
+          <div style="font-size:40px;margin-bottom:16px">✓</div>
+          <h3 style="color:var(--white);margin-bottom:8px">
+            Message received</h3>
+          <p style="color:rgba(255,255,255,0.6);
+            font-family:Arial,sans-serif;font-size:14px">
+            We'll be in touch within one business day.
+          </p>
+        </div>
+
+        <div id="form-error" style="display:none;
+          text-align:center;padding:40px 20px">
+          <p style="color:#ff6b6b;font-family:Arial,sans-serif">
+            Something went wrong. Please email us directly at
+            <a href="mailto:info@contractscompare.com"
+              style="color:var(--gold)">
+              info@contractscompare.com</a>
+          </p>
+        </div>
       </div>
       <div class="contact-meta">
         <a class="email" href="mailto:info@contractscompare.com">info@contractscompare.com</a>
@@ -1096,6 +1121,23 @@
         navLinks.classList.remove('open');
       }
     });
+  </script>
+  <script>
+  (function(){
+    let params = new URLSearchParams(window.location.search)
+    if(params.get('submitted') === 'true'){
+      let f = document.querySelector('#contact form')
+      let s = document.getElementById('form-success')
+      if(f) f.style.display = 'none'
+      if(s) s.style.display = 'block'
+      history.replaceState({}, '', '/')
+    }
+    if(params.get('error')){
+      let e = document.getElementById('form-error')
+      if(e) e.style.display = 'block'
+      history.replaceState({}, '', '/')
+    }
+  })()
   </script>
 </body>
 </html>
