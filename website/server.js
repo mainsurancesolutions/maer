@@ -56,13 +56,16 @@ app.post('/contact', async (req, res) => {
     }
 
     let transporter = nodemailer.createTransport({
-      host: 'smtp.office365.com',
+      host: 'smtp-mail.outlook.com',
       port: 587,
       secure: false,
       family: 4,
       auth: {
         user: process.env.CONTACT_EMAIL,
         pass: process.env.CONTACT_PASSWORD
+      },
+      tls: {
+        rejectUnauthorized: false
       }
     })
 
