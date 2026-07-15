@@ -1,6 +1,7 @@
 const express = require('express')
 const path = require('path')
 const nodemailer = require('nodemailer')
+require('dns').setDefaultResultOrder('ipv4first')
 const app = express()
 const PORT = process.env.PORT || 4000
 
