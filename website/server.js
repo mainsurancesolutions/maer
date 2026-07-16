@@ -57,7 +57,7 @@ app.post('/contact', async (req, res) => {
 
     const resend = new Resend(process.env.RESEND_API_KEY)
 
-    await resend.emails.send({
+    const result = await resend.emails.send({
       from: 'ContractsCompare <info@contractscompare.com>',
       to: ['info@contractscompare.com'],
       replyTo: email,
@@ -76,6 +76,7 @@ ${message}
 Time: ${new Date().toISOString()}
       `
     })
+    console.log('Resend result:', JSON.stringify(result))
 
     res.redirect('/?submitted=true')
 
