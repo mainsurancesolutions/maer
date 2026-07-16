@@ -746,6 +746,7 @@
       .mock-badge { display: none; }
     }
   </style>
+  <script src="https://www.google.com/recaptcha/api.js?render=6LdpwFYtAAAAAPW8qoB5dZ6u0yRKQuhyOFBn9-_W"></script>
 </head>
 <body>
 
@@ -998,6 +999,8 @@
           <input type="text" name="website"
             style="display:none" tabindex="-1"
             autocomplete="off"/>
+          <input type="hidden" name="g-recaptcha-response"
+            id="g-recaptcha-response"/>
           <div class="form-group">
             <label for="name">Name</label>
             <input type="text" id="name" name="name" required />
@@ -1138,6 +1141,21 @@
       history.replaceState({}, '', '/')
     }
   })()
+
+  document.querySelector('#contact form')
+    .addEventListener('submit', function(e) {
+      e.preventDefault()
+      var form = this
+      grecaptcha.ready(function() {
+        grecaptcha.execute('6LdpwFYtAAAAAPW8qoB5dZ6u0yRKQuhyOFBn9-_W',
+          {action: 'contact'})
+        .then(function(token) {
+          document.getElementById(
+            'g-recaptcha-response').value = token
+          form.submit()
+        })
+      })
+    })
   </script>
 </body>
 </html>

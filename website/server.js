@@ -28,6 +28,31 @@ function isRateLimited(ip) {
 
 app.use(express.static(path.join(__dirname)))
 
+async function verifyRecaptcha(token) {
+  try {
+    let response = await fetch(
+      'https://www.google.com/recaptcha/api/siteverify',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type':
+            'application/x-www-form-urlencoded'
+        },
+        body: 'secret=' +
+          process.env.RECAPTCHA_SECRET_KEY +
+          '&response=' + token
+      }
+    )
+    let data = await response.json()
+    console.log('reCAPTCHA score:', data.score)
+    // Score 0.5+ is likely human, below is likely bot
+    return data.success && data.score >= 0.5
+  } catch(e) {
+    console.error('reCAPTCHA error:', e)
+    return true // fail open so real users aren't blocked
+  }
+}
+
 app.post('/contact', async (req, res) => {
   try {
     // Rate limit: max 3 submissions per IP per hour
@@ -53,6 +78,17 @@ app.post('/contact', async (req, res) => {
     // is filled, it's a bot
     if(req.body.website) {
       return res.redirect('/?submitted=true')
+    }
+
+    // Verify reCAPTCHA
+    let recaptchaToken = req.body['g-recaptcha-response']
+    if(recaptchaToken) {
+      let isHuman = await verifyRecaptcha(recaptchaToken)
+      if(!isHuman) {
+        console.log('reCAPTCHA failed - likely bot')
+        return res.redirect('/?submitted=true')
+        // Redirect as if success so bots don't know they failed
+      }
     }
 
     const resend = new Resend(process.env.RESEND_API_KEY)
