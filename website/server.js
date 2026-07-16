@@ -4,6 +4,11 @@ const path = require('path')
 const app = express()
 const PORT = process.env.PORT || 4000
 
+app.use((req, res, next) => {
+  console.log(req.method, req.path)
+  next()
+})
+
 // Railway runs behind a proxy — needed for correct req.ip in the
 // contact-form rate limiter (otherwise every visitor shares one bucket)
 app.set('trust proxy', 1)
@@ -29,6 +34,7 @@ function isRateLimited(ip) {
 app.use(express.static(path.join(__dirname)))
 
 app.post('/contact', async (req, res) => {
+  console.log('Contact form POST received', new Date().toISOString())
   try {
     // Rate limit: max 3 submissions per IP per hour
     let ip = req.ip || req.connection.remoteAddress
