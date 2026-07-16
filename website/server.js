@@ -1,7 +1,6 @@
 const express = require('express')
+const { Resend } = require('resend')
 const path = require('path')
-const nodemailer = require('nodemailer')
-require('dns').setDefaultResultOrder('ipv4first')
 const app = express()
 const PORT = process.env.PORT || 4000
 
@@ -56,26 +55,13 @@ app.post('/contact', async (req, res) => {
       return res.redirect('/?submitted=true')
     }
 
-    let transporter = nodemailer.createTransport({
-      host: 'smtp-mail.outlook.com',
-      port: 587,
-      secure: false,
-      family: 4,
-      auth: {
-        user: process.env.CONTACT_EMAIL,
-        pass: process.env.CONTACT_PASSWORD
-      },
-      tls: {
-        rejectUnauthorized: false
-      }
-    })
+    const resend = new Resend(process.env.RESEND_API_KEY)
 
-    await transporter.sendMail({
-      from: process.env.CONTACT_EMAIL,
-      to: 'info@contractscompare.com',
+    await resend.emails.send({
+      from: 'ContractsCompare <info@contractscompare.com>',
+      to: ['info@contractscompare.com'],
       replyTo: email,
-      subject: 'ContractsCompare inquiry: ' +
-        (interest || 'General'),
+      subject: 'New inquiry: ' + (interest || 'General'),
       text: `
 New inquiry from ContractsCompare website
 
@@ -87,8 +73,6 @@ Interest: ${interest || 'Not specified'}
 Message:
 ${message}
 
----
-Submitted from: ${ip}
 Time: ${new Date().toISOString()}
       `
     })
